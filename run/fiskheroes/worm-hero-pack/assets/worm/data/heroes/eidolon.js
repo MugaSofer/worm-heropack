@@ -1,8 +1,8 @@
 // Eidolon — 3 slots with themed powersets
 //
-// Slot 1 → Key 4: 0=Gravity Control (gravity_manipulation + flight), 1=Energy Absorption (energy_projection + arrow_catching + immunities)
-// Slot 2 → Key 5: 0=Chronokinesis (slow_motion), 1=Aerokinesis (flight + telekinesis)
-// Slot 3 → passive: 0=Damage Reflection (thorns), 1=Energy Form (shadowform + regeneration)
+// Slot 1 → Key 4: 0=Gravity Control (gravity_manipulation + energy_manipulation + flight), 1=Energy Absorption (heat_vision + arrow_catching + immunities)
+// Slot 2 → Key 5: 0=Chronokinesis (slow_motion), 1=Aerokinesis (flight + telekinesis + sonic_waves)
+// Slot 3 → passive: 0=Damage Reflection (thorns), 1=Energy Form (shadowform + regeneration + flight + contact damage)
 
 var SLOT1_COUNT = 2;
 var SLOT2_COUNT = 2;
@@ -11,8 +11,10 @@ var SLOT3_COUNT = 2;
 var debounce1 = false;
 var debounce2 = false;
 var debounce3 = false;
+var heroRef = null;
 
 function init(hero) {
+    heroRef = hero;
     hero.setName("Eidolon");
     hero.setTier(10);
 
@@ -79,13 +81,15 @@ function init(hero) {
         return true;
     }, "\u00A7dEnergy Form \u00A78>", 3);
 
-    // Key 4: Slot 1 active ability
+    // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
+    hero.addKeyBind("GROUND_SMASH", "Gravity Blast", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
 
-    // Key 5: Slot 2 active ability
+    // Key 5: Slot 2 active abilities
     hero.addKeyBind("SLOW_MOTION", "Chronokinesis", 5);
     hero.addKeyBind("TELEKINESIS", "Aerokinesis", 5);
+    hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
 
     hero.setTickHandler(function (entity, manager) {
         debounce1 = false;
@@ -124,6 +128,18 @@ function init(hero) {
             manager.setData(entity, "fiskheroes:shadowform", false);
         }
 
+        // Energy Form: contact damage to nearby entities
+        if (s3 == 1) {
+            var world = entity.world();
+            var nearby = world.getEntitiesInRangeOf(entity.pos(), 3.0);
+            for (var i = 0; i < nearby.length; i++) {
+                var target = nearby[i];
+                if (target.isLivingEntity() && target != entity) {
+                    target.hurt(heroRef, "ENERGY_FORM", "%1$s was torn apart by Eidolon", 4.0);
+                }
+            }
+        }
+
         return false;
     });
 
@@ -134,6 +150,11 @@ function init(hero) {
     hero.addDamageProfile("PUNCH", {
         "types": {
             "BLUNT": 1.0
+        }
+    });
+    hero.addDamageProfile("ENERGY_FORM", {
+        "types": {
+            "ENERGY": 1.0
         }
     });
     hero.setDamageProfile(getDamageProfile);
@@ -151,6 +172,8 @@ function isModifierEnabled(entity, modifier) {
     switch (modifier.name()) {
     // Slot 1: Gravity Control (0) vs Energy Absorption (1)
     case "fiskheroes:gravity_manipulation":
+        return s1 == 0;
+    case "fiskheroes:ground_smash":
         return s1 == 0;
     case "fiskheroes:heat_vision":
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
@@ -172,10 +195,12 @@ function isModifierEnabled(entity, modifier) {
         return s2 == 0;
     case "fiskheroes:telekinesis":
         return s2 == 1;
+    case "fiskheroes:sonic_waves":
+        return s2 == 1;
 
-    // Flight: Gravity Control (s1==0) or Aerokinesis (s2==1)
+    // Flight: Gravity Control (s1==0), Aerokinesis (s2==1), or Energy Form (s3==1)
     case "fiskheroes:controlled_flight":
-        return s1 == 0 || s2 == 1;
+        return s1 == 0 || s2 == 1 || s3 == 1;
 
     // Slot 3: Damage Reflection (0) vs Energy Form (1)
     case "fiskheroes:thorns":
@@ -214,12 +239,16 @@ function isKeyBindEnabled(entity, keyBind) {
     // Slot 1 active abilities (key 4)
     case "GRAVITY_MANIPULATION":
         return s1 == 0;
+    case "GROUND_SMASH":
+        return s1 == 0;
     case "HEAT_VISION":
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
     // Slot 2 active abilities (key 5)
     case "SLOW_MOTION":
         return s2 == 0;
     case "TELEKINESIS":
+        return s2 == 1;
+    case "SONIC_WAVES":
         return s2 == 1;
     default:
         return true;

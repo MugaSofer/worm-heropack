@@ -65,6 +65,28 @@
         "recovery": 0
       }
     },
+    "fiskheroes:ground_smash": {
+      "damageProfile": {
+        "damage": 8.0,
+        "types": {
+          "ENERGY": 1.0
+        }
+      },
+      "radius": 6.0,
+      "knockback": 2.0,
+      "cooldownTime": 30,
+      "canDoGriefing": false
+    },
+    "fiskheroes:sonic_waves": {
+      "damageProfile": {
+        "damage": 6.0,
+        "types": {
+          "BLUNT": 0.5,
+          "SOUND": 0.5
+        }
+      },
+      "knockback": 0.04
+    },
     "fiskheroes:slow_motion": {},
     "fiskheroes:telekinesis": {
       "telekinesis": {
