@@ -1,0 +1,19 @@
+# Reference packs (large, not ours)
+reference-packs/
+
+# Internet-sourced skins (not redistributable)
+internet_skins/
+
+# Gradle artifacts (if gradle setup returns)
+.gradle/
+build/
+jdk*/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
