@@ -16,7 +16,7 @@ var heroRef = null;
 function init(hero) {
     heroRef = hero;
     hero.setName("Eidolon");
-    hero.setTier(10);
+    hero.setTier(3);
 
     hero.setHelmet("Helmet");
     hero.setChestplate("Chestplate");
@@ -134,7 +134,7 @@ function init(hero) {
             var nearby = world.getEntitiesInRangeOf(entity.pos(), 3.0);
             for (var i = 0; i < nearby.length; i++) {
                 var target = nearby[i];
-                if (target.isLivingEntity() && target != entity) {
+                if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
                     target.hurt(heroRef, "ENERGY_FORM", "%1$s was torn apart by Eidolon", 4.0);
                 }
             }
