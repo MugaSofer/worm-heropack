@@ -17,10 +17,11 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Heat vision beam — red/orange from eyes
-    utils.bindBeam(renderer, "fiskheroes:energy_projection", "fiskheroes:energy_projection", "head", 0xFF4422, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.5, 1.5] }
-    ]);
+    // Heat vision — dual eye beams, green-tinted for Eidolon
+    utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:heat_vision", "head", 0x44FF66, [
+        { "firstPerson": [2.2, 0.0, 2.0], "offset": [2.2, -3.3, -4.0], "size": [1.0, 0.5] },
+        { "firstPerson": [-2.2, 0.0, 2.0], "offset": [-2.2, -3.3, -4.0], "size": [1.0, 0.5] }
+    ]).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_heat_vision"));
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {

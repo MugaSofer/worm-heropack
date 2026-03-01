@@ -68,27 +68,28 @@
     },
     "fiskheroes:charged_beam|ice": {
       "damageProfile": {
-        "damage": 6.0,
+        "damage": 4.0,
         "types": {
           "COLD": 1.0
         },
         "properties": {
           "COOK_ENTITY": false,
           "HEAT_TRANSFER": 0,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [
             {
               "id": "minecraft:slowness",
-              "duration": 200,
-              "amplifier": 3,
+              "duration": 300,
+              "amplifier": 8,
               "chance": 1
             }
           ]
         }
       },
-      "chargeTime": 20,
-      "duration": 30,
-      "cooldownTime": 60,
-      "range": 40.0,
+      "chargeTime": 5,
+      "duration": 40,
+      "cooldownTime": 10,
+      "range": 48.0,
       "radius": 0.3
     },
     "fiskheroes:charged_beam|aoe": {

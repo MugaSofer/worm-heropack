@@ -28,7 +28,7 @@
       "range": 20.0,
       "radius": 12.0
     },
-    "fiskheroes:energy_projection": {
+    "fiskheroes:heat_vision": {
       "damageProfile": {
         "damage": 7.0,
         "types": {
@@ -36,16 +36,19 @@
         },
         "properties": {
           "COOK_ENTITY": true,
-          "HEAT_TRANSFER": 10
+          "HEAT_TRANSFER": 15
         }
       },
-      "range": 20.0,
-      "radius": 0.2,
+      "range": 32.0,
+      "radius": 0.1,
       "soundEvents": {
-        "SHOOT": "fiskheroes:heat_vision"
+        "BEAM_AMBIENT": "fiskheroes:heat_vision"
       }
     },
     "fiskheroes:arrow_catching": {},
+    "fiskheroes:frost_walking": {
+      "radius": 4
+    },
     "fiskheroes:fire_immunity": {},
     "fiskheroes:damage_immunity|explosion": {
       "damageType": "EXPLOSION"

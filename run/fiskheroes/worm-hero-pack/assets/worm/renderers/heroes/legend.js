@@ -17,11 +17,40 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Single beam binding for all laser modes — renders for whichever charged_beam variant is active
-    // Color is white/gold; per-mode colors can be added later once we confirm piped bindBeam works
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0xFFFFAA, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.5, 2.5] }
-    ]);
+    // Mode 0: Laser Beam — standard focused beam
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_mode") == 0;
+    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
+
+    // Mode 1: Ice Laser — same blue beam look, frost on impact
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_mode") == 1;
+    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:ice_impact"));
+
+    // Mode 2: AoE Blast — wide beam
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_mode") == 2;
+    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
+
+    // Mode 3: Concussive Bolt — thin fast beam, no impact particles
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.0, 1.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_mode") == 3;
+    });
+
+    // Mode 4: Laser Swarm — wide spread beam
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [4.0, 4.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_mode") == 4;
+    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
 
     // Camera shake on beam firing
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {

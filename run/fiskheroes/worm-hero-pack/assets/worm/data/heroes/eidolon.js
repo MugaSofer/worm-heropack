@@ -81,7 +81,7 @@ function init(hero) {
 
     // Key 4: Slot 1 active ability
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
-    hero.addKeyBind("ENERGY_PROJECTION", "Heat Vision", 4);
+    hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
 
     // Key 5: Slot 2 active ability
     hero.addKeyBind("SLOW_MOTION", "Chronokinesis", 5);
@@ -104,7 +104,7 @@ function init(hero) {
         }
 
         // Drain charge while firing heat vision
-        if (s1 == 1 && entity.getData("fiskheroes:energy_projection")) {
+        if (s1 == 1 && entity.getData("fiskheroes:heat_vision")) {
             var charge = entity.getData("worm:dyn/eidolon_charge");
             if (charge > 0) {
                 manager.setData(entity, "worm:dyn/eidolon_charge", Math.max(0, charge - 0.005));
@@ -152,8 +152,10 @@ function isModifierEnabled(entity, modifier) {
     // Slot 1: Gravity Control (0) vs Energy Absorption (1)
     case "fiskheroes:gravity_manipulation":
         return s1 == 0;
-    case "fiskheroes:energy_projection":
+    case "fiskheroes:heat_vision":
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
+    case "fiskheroes:frost_walking":
+        return s1 == 1;
     case "fiskheroes:arrow_catching":
         return s1 == 1;
     case "fiskheroes:fire_immunity":
@@ -212,7 +214,7 @@ function isKeyBindEnabled(entity, keyBind) {
     // Slot 1 active abilities (key 4)
     case "GRAVITY_MANIPULATION":
         return s1 == 0;
-    case "ENERGY_PROJECTION":
+    case "HEAT_VISION":
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
     // Slot 2 active abilities (key 5)
     case "SLOW_MOTION":
