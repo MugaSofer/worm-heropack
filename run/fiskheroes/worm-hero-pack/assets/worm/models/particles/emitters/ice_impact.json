@@ -2,9 +2,15 @@
   "particles": [
     {
       "type": "CRYO_SMOKE",
-      "amount": 10,
-      "randOffset": [0.1, 0.1, 0.1],
-      "randMotion": [0.01, 0.0, 0.01]
+      "amount": 40,
+      "randOffset": [0.5, 0.5, 0.5],
+      "randMotion": [0.08, 0.04, 0.08]
+    },
+    {
+      "type": "CRYO_SMOKE",
+      "amount": 20,
+      "randOffset": [1.0, 0.3, 1.0],
+      "randMotion": [0.15, 0.02, 0.15]
     }
   ]
 }
