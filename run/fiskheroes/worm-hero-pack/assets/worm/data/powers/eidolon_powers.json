@@ -120,7 +120,43 @@
     },
     "fiskheroes:regeneration": {
       "factor": 3.0
-    }
+    },
+    "fiskheroes:energy_projection": {
+      "damageProfile": {
+        "damage": 8.0,
+        "types": {
+          "ENERGY": 1.0
+        },
+        "properties": {
+          "COOK_ENTITY": false,
+          "HEAT_TRANSFER": 0
+        }
+      },
+      "range": 30.0,
+      "radius": 0.3
+    },
+    "fiskheroes:shield": {
+      "shield": {
+        "health": 400.0,
+        "regeneration": 10.0,
+        "recoveryDelay": 60,
+        "cooldown": 200
+      },
+      "coverage": {
+        "yawRadius": 180.0,
+        "pitchRadius": 180.0,
+        "yawOffset": 0.0,
+        "pitchOffset": 0.0
+      },
+      "knockback": 0.5,
+      "isToggle": false,
+      "soundEvents": {
+        "BLOCK_START": "fiskheroes:anti_forcefield",
+        "DEFLECT": "fiskheroes:anti_forcefield_deflect"
+      }
+    },
+    "fiskheroes:metal_skin": {},
+    "fiskheroes:projectile_immunity": {}
   },
   "hud": [
     {

@@ -1,12 +1,12 @@
 // Eidolon — 3 slots with themed powersets
 //
-// Slot 1 → Key 4: 0=Gravity Control (gravity_manipulation + energy_manipulation + flight), 1=Energy Absorption (heat_vision + arrow_catching + immunities)
-// Slot 2 → Key 5: 0=Chronokinesis (slow_motion), 1=Aerokinesis (flight + telekinesis + sonic_waves)
-// Slot 3 → passive: 0=Damage Reflection (thorns), 1=Energy Form (shadowform + regeneration + flight + contact damage)
+// Slot 1 → Key 4: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm
+// Slot 2 → Key 5: 0=Chronokinesis, 1=Aerokinesis, 2=Forcefield
+// Slot 3 → passive: 0=Damage Reflection, 1=Energy Form, 2=Crystal Armor
 
-var SLOT1_COUNT = 2;
-var SLOT2_COUNT = 2;
-var SLOT3_COUNT = 2;
+var SLOT1_COUNT = 3;
+var SLOT2_COUNT = 3;
+var SLOT3_COUNT = 3;
 
 var debounce1 = false;
 var debounce2 = false;
@@ -30,7 +30,7 @@ function init(hero) {
     hero.addAttribute("SPRINT_SPEED", 0.2, 1);
     hero.addAttribute("JUMP_HEIGHT", 0.5, 0);
 
-    // Key 1: Cycle slot 1 — display shows current powerset
+    // Key 1: Cycle slot 1
     hero.addKeyBindFunc("SLOT1_CYCLE_0", function (entity, manager) {
         if (debounce1) return false;
         debounce1 = true;
@@ -46,6 +46,14 @@ function init(hero) {
         manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
         return true;
     }, "\u00A7bEnergy Absorb \u00A78>", 1);
+
+    hero.addKeyBindFunc("SLOT1_CYCLE_2", function (entity, manager) {
+        if (debounce1) return false;
+        debounce1 = true;
+        var current = entity.getData("worm:dyn/slot1");
+        manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
+        return true;
+    }, "\u00A7eLightning Storm \u00A78>", 1);
 
     // Key 2: Cycle slot 2
     hero.addKeyBindFunc("SLOT2_CYCLE_0", function (entity, manager) {
@@ -64,6 +72,14 @@ function init(hero) {
         return true;
     }, "\u00A7fAerokinesis \u00A78>", 2);
 
+    hero.addKeyBindFunc("SLOT2_CYCLE_2", function (entity, manager) {
+        if (debounce2) return false;
+        debounce2 = true;
+        var current = entity.getData("worm:dyn/slot2");
+        manager.setData(entity, "worm:dyn/slot2", (current + 1) % SLOT2_COUNT);
+        return true;
+    }, "\u00A79Forcefield \u00A78>", 2);
+
     // Key 3: Cycle slot 3
     hero.addKeyBindFunc("SLOT3_CYCLE_0", function (entity, manager) {
         if (debounce3) return false;
@@ -81,15 +97,25 @@ function init(hero) {
         return true;
     }, "\u00A7dEnergy Form \u00A78>", 3);
 
+    hero.addKeyBindFunc("SLOT3_CYCLE_2", function (entity, manager) {
+        if (debounce3) return false;
+        debounce3 = true;
+        var current = entity.getData("worm:dyn/slot3");
+        manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
+        return true;
+    }, "\u00A73Crystal Armor \u00A78>", 3);
+
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
     hero.addKeyBind("GROUND_SMASH", "Gravity Blast", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
+    hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
 
     // Key 5: Slot 2 active abilities
     hero.addKeyBind("SLOW_MOTION", "Chronokinesis", 5);
     hero.addKeyBind("TELEKINESIS", "Aerokinesis", 5);
     hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
+    hero.addKeyBind("SHIELD", "Forcefield", 5);
 
     hero.setTickHandler(function (entity, manager) {
         debounce1 = false;
@@ -170,7 +196,7 @@ function isModifierEnabled(entity, modifier) {
     var s3 = entity.getData("worm:dyn/slot3");
 
     switch (modifier.name()) {
-    // Slot 1: Gravity Control (0) vs Energy Absorption (1)
+    // Slot 1: Gravity Control (0), Energy Absorption (1), Lightning Storm (2)
     case "fiskheroes:gravity_manipulation":
         return s1 == 0;
     case "fiskheroes:ground_smash":
@@ -181,34 +207,42 @@ function isModifierEnabled(entity, modifier) {
         return s1 == 1;
     case "fiskheroes:arrow_catching":
         return s1 == 1;
-    case "fiskheroes:fire_immunity":
-        return s1 == 1;
-    case "fiskheroes:damage_immunity":
-        return s1 == 1;
-    case "fiskheroes:damage_resistance":
-        return s1 == 1;
     case "fiskheroes:cooldown":
         return s1 == 1;
+    case "fiskheroes:energy_projection":
+        return s1 == 2;
 
-    // Slot 2: Chronokinesis (0) vs Aerokinesis (1)
+    // Slot 2: Chronokinesis (0), Aerokinesis (1), Forcefield (2)
     case "fiskheroes:slow_motion":
         return s2 == 0;
     case "fiskheroes:telekinesis":
         return s2 == 1;
     case "fiskheroes:sonic_waves":
         return s2 == 1;
+    case "fiskheroes:shield":
+        return s2 == 2;
 
-    // Flight: Gravity Control (s1==0), Aerokinesis (s2==1), or Energy Form (s3==1)
+    // Flight: Gravity Control (s1==0), Lightning Storm (s1==2), Aerokinesis (s2==1), Energy Form (s3==1)
     case "fiskheroes:controlled_flight":
-        return s1 == 0 || s2 == 1 || s3 == 1;
+        return s1 == 0 || s1 == 2 || s2 == 1 || s3 == 1;
 
-    // Slot 3: Damage Reflection (0) vs Energy Form (1)
+    // Slot 3: Damage Reflection (0), Energy Form (1), Crystal Armor (2)
     case "fiskheroes:thorns":
         return s3 == 0;
     case "fiskheroes:shadowform":
         return s3 == 1;
     case "fiskheroes:regeneration":
         return s3 == 1;
+    case "fiskheroes:metal_skin":
+        return s3 == 2;
+    case "fiskheroes:projectile_immunity":
+        return s3 == 2;
+    case "fiskheroes:fire_immunity":
+        return s3 == 2;
+    case "fiskheroes:damage_immunity":
+        return s1 == 1;
+    case "fiskheroes:damage_resistance":
+        return s1 == 1;
 
     default:
         return true;
@@ -226,16 +260,22 @@ function isKeyBindEnabled(entity, keyBind) {
         return s1 == 0;
     case "SLOT1_CYCLE_1":
         return s1 == 1;
+    case "SLOT1_CYCLE_2":
+        return s1 == 2;
     // Slot 2 display cycle (key 2)
     case "SLOT2_CYCLE_0":
         return s2 == 0;
     case "SLOT2_CYCLE_1":
         return s2 == 1;
+    case "SLOT2_CYCLE_2":
+        return s2 == 2;
     // Slot 3 display cycle (key 3)
     case "SLOT3_CYCLE_0":
         return s3 == 0;
     case "SLOT3_CYCLE_1":
         return s3 == 1;
+    case "SLOT3_CYCLE_2":
+        return s3 == 2;
     // Slot 1 active abilities (key 4)
     case "GRAVITY_MANIPULATION":
         return s1 == 0;
@@ -243,6 +283,8 @@ function isKeyBindEnabled(entity, keyBind) {
         return s1 == 0;
     case "HEAT_VISION":
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
+    case "ENERGY_PROJECTION":
+        return s1 == 2;
     // Slot 2 active abilities (key 5)
     case "SLOW_MOTION":
         return s2 == 0;
@@ -250,6 +292,8 @@ function isKeyBindEnabled(entity, keyBind) {
         return s2 == 1;
     case "SONIC_WAVES":
         return s2 == 1;
+    case "SHIELD":
+        return s2 == 2;
     default:
         return true;
     }
