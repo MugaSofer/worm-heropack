@@ -17,40 +17,71 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Mode 0: Laser Beam — standard focused beam
+    var impactCharged = renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam");
+    var impactIce = renderer.createResource("PARTICLE_EMITTER", "worm:ice_impact");
+
+    // Method 0: Basic — standard focused beam
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_mode") == 0;
-    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
+        return entity.getData("worm:dyn/laser_method") == 0 && entity.getData("worm:dyn/laser_effect") != 3;
+    }).setParticles(impactCharged);
 
-    // Mode 1: Ice Laser — same blue beam look, frost on impact
+    // Method 0 + Cold effect — same beam, ice particles
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_mode") == 1;
-    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:ice_impact"));
+        return entity.getData("worm:dyn/laser_method") == 0 && entity.getData("worm:dyn/laser_effect") == 3;
+    }).setParticles(impactIce);
 
-    // Mode 2: AoE Blast — wide beam
+    // Method 1: Fat AoE — wide beam
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_mode") == 2;
-    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
+        return entity.getData("worm:dyn/laser_method") == 1 && entity.getData("worm:dyn/laser_effect") != 3;
+    }).setParticles(impactCharged);
 
-    // Mode 3: Concussive Bolt — thin fast beam, no impact particles
+    // Method 1 + Cold
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.0, 1.0] }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_mode") == 3;
+        return entity.getData("worm:dyn/laser_method") == 1 && entity.getData("worm:dyn/laser_effect") == 3;
+    }).setParticles(impactIce);
+
+    // Method 2: Staccato — standard beam (rapid fire is in the stats)
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.5, 1.5] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == 2 && entity.getData("worm:dyn/laser_effect") != 3;
+    }).setParticles(impactCharged);
+
+    // Method 2 + Cold
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.5, 1.5] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == 2 && entity.getData("worm:dyn/laser_effect") == 3;
+    }).setParticles(impactIce);
+
+    // Method 3: Invisible — no visible beam, no particles
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:invisible", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == 3;
     });
 
-    // Mode 4: Laser Swarm — multiple zig-zagging beams via custom LIGHTNING model
+    // Method 4: Swarm — zig-zagging lightning branches
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", "head", 0x4488FF, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [30.0, 30.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_mode") == 4;
-    }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
+        return entity.getData("worm:dyn/laser_method") == 4 && entity.getData("worm:dyn/laser_effect") != 3;
+    }).setParticles(impactCharged);
+
+    // Method 4 + Cold
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [30.0, 30.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == 4 && entity.getData("worm:dyn/laser_effect") == 3;
+    }).setParticles(impactIce);
 
     // Camera shake on beam firing
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {
