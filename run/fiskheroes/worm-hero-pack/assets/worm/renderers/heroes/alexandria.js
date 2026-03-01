@@ -31,6 +31,14 @@ function initAnimations(renderer) {
     }).setCondition(function (entity) {
         return entity.getData("fiskheroes:beam_shooting");
     }).priority = 101;
+
+    // Roundhouse kick animation
+    addAnimationWithData(renderer, "alexandria.KICK", "worm:roundhouse_kick", "worm:dyn/kick_timer")
+        .setCondition(function (entity) {
+            return entity.getData("worm:dyn/kick");
+        });
+
+
 }
 
 function initEffects(renderer) {
@@ -44,9 +52,11 @@ function initEffects(renderer) {
     cape = capes.createDefault(renderer, 26, "fiskheroes:cape_default.mesh.json", physics);
     cape.effect.texture.set("cape");
 
+    // Thunder clap beam effect
     utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:thunder_clap", "head", 0xF0F0F0, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
     ]);
+
 
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {
         return entity.getInterpolatedData("fiskheroes:beam_shooting_timer") > 0;

@@ -67,7 +67,7 @@
       },
       "chargeTime": 15,
       "duration": 15,
-      "cooldownTime": 40,
+      "cooldownTime": 0,
       "range": 16.0,
       "radius": 16.0
     },
@@ -84,6 +84,18 @@
     "fiskheroes:damage_immunity|fire": {
       "damageType": "FIRE"
     },
+    "fiskheroes:damage_immunity|blunt": {
+      "damageType": "BLUNT"
+    },
+    "fiskheroes:damage_immunity|sharp": {
+      "damageType": "SHARP"
+    },
+    "fiskheroes:damage_immunity|energy": {
+      "damageType": "ENERGY"
+    },
+    "fiskheroes:damage_immunity|electricity": {
+      "damageType": "ELECTRICITY"
+    },
     "fiskheroes:fire_immunity": {},
     "fiskheroes:projectile_immunity": {},
     "fiskheroes:arrow_catching": {},
@@ -94,6 +106,14 @@
     },
     "fiskheroes:leaping": {
       "leapAmount": [1.0, 0.5]
+    },
+    "fiskheroes:transformation|kick": {
+      "key": "ROUNDHOUSEKICK",
+      "transformation": {
+        "toggleData": "worm:dyn/kick",
+        "timerData": "worm:dyn/kick_timer",
+        "time": 12
+      }
     }
   }
 }

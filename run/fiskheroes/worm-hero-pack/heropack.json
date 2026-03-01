@@ -2,5 +2,9 @@
   "name": "Worm: Parahumans Hero Pack",
   "description": "Heroes and villains from Worm by Wildbow",
   "domain": "worm",
-  "packFormat": 1
+  "packFormat": 1,
+  "dataVars": {
+    "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "kick_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+  }
 }
