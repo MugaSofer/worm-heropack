@@ -16,72 +16,57 @@ function initAnimations(renderer) {
     utils.addHoverAnimation(renderer, "legend.HOVER", "fiskheroes:flight/idle/default");
 }
 
+// Helper: bind a beam with 4 particle variants (default, cutting, heat, cold)
+function bindMethodBeam(renderer, model, size, methodIndex, impactDefault, impactHeat, impactIce) {
+    // Default particles (concussive, disintegration)
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": size }
+    ]).setCondition(function (entity) {
+        var e = entity.getData("worm:dyn/laser_effect");
+        return entity.getData("worm:dyn/laser_method") == methodIndex && e != 1 && e != 2 && e != 3;
+    }).setParticles(impactDefault);
+
+    // Cutting — no particles
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": size }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 1;
+    });
+
+    // Heat particles (sparks)
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": size }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 2;
+    }).setParticles(impactHeat);
+
+    // Cold particles (cryo smoke)
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": size }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 3;
+    }).setParticles(impactIce);
+}
+
 function initEffects(renderer) {
-    var impactCharged = renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam");
+    var impactDefault = renderer.createResource("PARTICLE_EMITTER", "worm:laser_impact");
+    var impactHeat = renderer.createResource("PARTICLE_EMITTER", "worm:heat_impact");
     var impactIce = renderer.createResource("PARTICLE_EMITTER", "worm:ice_impact");
 
     // Method 0: Basic — standard focused beam
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 0 && entity.getData("worm:dyn/laser_effect") != 3;
-    }).setParticles(impactCharged);
-
-    // Method 0 + Cold effect — same beam, ice particles
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 0 && entity.getData("worm:dyn/laser_effect") == 3;
-    }).setParticles(impactIce);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", [2.0, 2.0], 0, impactDefault, impactHeat, impactIce);
 
     // Method 1: Fat AoE — wide beam
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 1 && entity.getData("worm:dyn/laser_effect") != 3;
-    }).setParticles(impactCharged);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", [6.0, 6.0], 1, impactDefault, impactHeat, impactIce);
 
-    // Method 1 + Cold
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 1 && entity.getData("worm:dyn/laser_effect") == 3;
-    }).setParticles(impactIce);
+    // Method 2: Staccato — slightly thinner beam
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", [1.5, 1.5], 2, impactDefault, impactHeat, impactIce);
 
-    // Method 2: Staccato — standard beam (rapid fire is in the stats)
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.5, 1.5] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 2 && entity.getData("worm:dyn/laser_effect") != 3;
-    }).setParticles(impactCharged);
-
-    // Method 2 + Cold
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [1.5, 1.5] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 2 && entity.getData("worm:dyn/laser_effect") == 3;
-    }).setParticles(impactIce);
-
-    // Method 3: Invisible — no visible beam, no particles
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:invisible", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [2.0, 2.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 3;
-    });
+    // Method 3: Invisible — no visible beam, but still has impact particles
+    bindMethodBeam(renderer, "worm:invisible", [2.0, 2.0], 3, impactDefault, impactHeat, impactIce);
 
     // Method 4: Swarm — zig-zagging lightning branches
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [30.0, 30.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 4 && entity.getData("worm:dyn/laser_effect") != 3;
-    }).setParticles(impactCharged);
-
-    // Method 4 + Cold
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [30.0, 30.0] }
-    ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/laser_method") == 4 && entity.getData("worm:dyn/laser_effect") == 3;
-    }).setParticles(impactIce);
+    bindMethodBeam(renderer, "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
 
     // Camera shake on beam firing
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {

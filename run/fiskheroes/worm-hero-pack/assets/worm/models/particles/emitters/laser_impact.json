@@ -1,0 +1,14 @@
+{
+  "particles": [
+    {
+      "type": "minecraft:largeexplode",
+      "amount": 1
+    },
+    {
+      "type": "ENERGY_SMOKE",
+      "amount": 8,
+      "randOffset": [0.1, 0.1, 0.1],
+      "randMotion": [0.2, 0.2, 0.0]
+    }
+  ]
+}

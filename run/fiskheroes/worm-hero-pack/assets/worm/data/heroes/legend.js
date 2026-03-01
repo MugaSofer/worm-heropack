@@ -33,7 +33,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_method");
         manager.setData(entity, "worm:dyn/laser_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A7fBasic \u00A78>", 1);
+    }, "\u00A7fMethod: \u00A7fBasic \u00A78>", 1);
 
     hero.addKeyBindFunc("METHOD_1", function (entity, manager) {
         if (debounce_method) return false;
@@ -41,7 +41,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_method");
         manager.setData(entity, "worm:dyn/laser_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A7cFat AoE \u00A78>", 1);
+    }, "\u00A7fMethod: \u00A7cFat AoE \u00A78>", 1);
 
     hero.addKeyBindFunc("METHOD_2", function (entity, manager) {
         if (debounce_method) return false;
@@ -49,7 +49,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_method");
         manager.setData(entity, "worm:dyn/laser_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A76Staccato \u00A78>", 1);
+    }, "\u00A7fMethod: \u00A76Staccato \u00A78>", 1);
 
     hero.addKeyBindFunc("METHOD_3", function (entity, manager) {
         if (debounce_method) return false;
@@ -57,7 +57,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_method");
         manager.setData(entity, "worm:dyn/laser_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A78Invisible \u00A78>", 1);
+    }, "\u00A7fMethod: \u00A78Invisible \u00A78>", 1);
 
     hero.addKeyBindFunc("METHOD_4", function (entity, manager) {
         if (debounce_method) return false;
@@ -65,19 +65,16 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_method");
         manager.setData(entity, "worm:dyn/laser_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A7eSwarm \u00A78>", 1);
+    }, "\u00A7fMethod: \u00A7eSwarm \u00A78>", 1);
 
-    // Key 2: Fire laser
-    hero.addKeyBind("CHARGED_BEAM", "Fire", 2);
-
-    // Key 3: Cycle effect — damage type/properties
+    // Key 2: Cycle effect — damage type/properties
     hero.addKeyBindFunc("EFFECT_0", function (entity, manager) {
         if (debounce_effect) return false;
         debounce_effect = true;
         var current = entity.getData("worm:dyn/laser_effect");
         manager.setData(entity, "worm:dyn/laser_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A77Concussive \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A77Concussive \u00A78>", 2);
 
     hero.addKeyBindFunc("EFFECT_1", function (entity, manager) {
         if (debounce_effect) return false;
@@ -85,7 +82,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_effect");
         manager.setData(entity, "worm:dyn/laser_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A7fCutting \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A7fCutting \u00A78>", 2);
 
     hero.addKeyBindFunc("EFFECT_2", function (entity, manager) {
         if (debounce_effect) return false;
@@ -93,7 +90,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_effect");
         manager.setData(entity, "worm:dyn/laser_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A7cHeat \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A7cHeat \u00A78>", 2);
 
     hero.addKeyBindFunc("EFFECT_3", function (entity, manager) {
         if (debounce_effect) return false;
@@ -101,7 +98,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_effect");
         manager.setData(entity, "worm:dyn/laser_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A7bCold \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A7bCold \u00A78>", 2);
 
     hero.addKeyBindFunc("EFFECT_4", function (entity, manager) {
         if (debounce_effect) return false;
@@ -109,7 +106,10 @@ function init(hero) {
         var current = entity.getData("worm:dyn/laser_effect");
         manager.setData(entity, "worm:dyn/laser_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A74Disintegration \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A74Disintegration \u00A78>", 2);
+
+    // Key 3: Fire laser
+    hero.addKeyBind("CHARGED_BEAM", "Fire", 3);
 
     hero.setHasProperty(hasProperty);
     hero.setModifierEnabled(isModifierEnabled);
@@ -122,7 +122,7 @@ function init(hero) {
     });
     hero.setDamageProfile(getDamageProfile);
 
-    falcon_base.init(hero, super_boost, "2", 0.25, function (entity, manager) {
+    falcon_base.init(hero, super_boost, "3", 0.25, function (entity, manager) {
         debounce_method = false;
         debounce_effect = false;
     });
