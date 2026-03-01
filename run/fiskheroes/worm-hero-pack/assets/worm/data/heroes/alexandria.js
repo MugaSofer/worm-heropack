@@ -96,9 +96,13 @@ function init(hero) {
         }
         manager.incrementData(entity, "worm:dyn/superhero_landing_timer", 2, 8, entity.getData("worm:dyn/superhero_landing_ticks") > 0);
 
-        // Two-Handed Blow sound - play thunder on impact
-        if (entity.getData("fiskheroes:beam_shooting") && entity.getInterpolatedData("fiskheroes:beam_shooting_timer") < 0.1) {
-            entity.playSound("ambient.weather.thunder", 1.5, 0.5);
+        // Two-Handed Blow sound - play once on impact
+        var isBeamShooting = entity.getData("fiskheroes:beam_shooting");
+        if (isBeamShooting && !entity.getData("worm:dyn/thunderclap_sound")) {
+            manager.setData(entity, "worm:dyn/thunderclap_sound", true);
+            entity.playSound("fiskheroes:modifier.flight.boost.super", 1.5, 0.5);
+        } else if (!isBeamShooting && entity.getData("worm:dyn/thunderclap_sound")) {
+            manager.setData(entity, "worm:dyn/thunderclap_sound", false);
         }
 
         // Kick damage logic

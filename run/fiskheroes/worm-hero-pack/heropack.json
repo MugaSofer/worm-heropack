@@ -7,6 +7,13 @@
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "kick_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "superhero_landing_ticks": {"type": "BYTE", "resetWithoutSuit": true},
-    "superhero_landing_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "superhero_landing_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "thunderclap_sound": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "laser_mode": {"type": "BYTE", "resetWithoutSuit": true},
+    "slot1": {"type": "BYTE", "resetWithoutSuit": true},
+    "slot2": {"type": "BYTE", "resetWithoutSuit": true},
+    "slot3": {"type": "BYTE", "resetWithoutSuit": true},
+    "eidolon_absorb": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "eidolon_charge": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }

@@ -1,0 +1,107 @@
+{
+  "name": "Eidolon Package",
+  "modifiers": {
+    "fiskheroes:controlled_flight": {
+      "speed": 0.1,
+      "boostSpeed": 0.2,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": true
+        }
+      },
+      "knockback": 0.4,
+      "soundEvents": {
+        "ENABLE": ["fiskheroes:flight_loop", "fiskheroes:flight_cape_loop"],
+        "BOOST": "fiskheroes:flight_boost"
+      }
+    },
+    "fiskheroes:gravity_manipulation": {
+      "affectsUser": true,
+      "minGravity": 0.1,
+      "maxGravity": 6.0,
+      "range": 20.0,
+      "radius": 12.0
+    },
+    "fiskheroes:energy_projection": {
+      "damageProfile": {
+        "damage": 7.0,
+        "types": {
+          "ENERGY": 1.0
+        },
+        "properties": {
+          "COOK_ENTITY": true,
+          "HEAT_TRANSFER": 10
+        }
+      },
+      "range": 20.0,
+      "radius": 0.2,
+      "soundEvents": {
+        "SHOOT": "fiskheroes:heat_vision"
+      }
+    },
+    "fiskheroes:arrow_catching": {},
+    "fiskheroes:fire_immunity": {},
+    "fiskheroes:damage_immunity|explosion": {
+      "damageType": "EXPLOSION"
+    },
+    "fiskheroes:damage_resistance|energy": {
+      "damageType": "ENERGY",
+      "factor": 0.75
+    },
+    "fiskheroes:cooldown|eidolon_absorb": {
+      "cooldown": {
+        "toggleData": "worm:dyn/eidolon_absorb",
+        "cooldownData": "worm:dyn/eidolon_charge",
+        "duration": 400,
+        "recovery": 0
+      }
+    },
+    "fiskheroes:slow_motion": {},
+    "fiskheroes:telekinesis": {
+      "telekinesis": {
+        "crushMelons": false,
+        "crushThrowables": false,
+        "squeezeChickens": false,
+        "explodeCreepers": false,
+        "destroyInanimates": false
+      },
+      "canGrab": {
+        "mobs": true,
+        "items": true,
+        "projectiles": true,
+        "inanimates": true
+      },
+      "range": 16.0
+    },
+    "fiskheroes:thorns": {
+      "damageProfile": {
+        "types": {
+          "ENERGY": 1.0
+        }
+      },
+      "factor": 0.5
+    },
+    "fiskheroes:shadowform": {
+      "soundEvents": {
+        "ENABLE": ["fiskheroes:shadowform_enable", "fiskheroes:shadowform_loop"],
+        "DISABLE": "fiskheroes:shadowform_disable"
+      }
+    },
+    "fiskheroes:regeneration": {
+      "factor": 3.0
+    }
+  },
+  "hud": [
+    {
+      "type": "CHARGE",
+      "texture": "fiskheroes:textures/gui/bars/cryo_charge.png",
+      "data": "worm:dyn/eidolon_charge"
+    }
+  ]
+}
