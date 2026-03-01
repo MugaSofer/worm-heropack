@@ -1,0 +1,33 @@
+{
+  "aspects": [
+    {
+      "type": "LASER",
+      "opacity": 0.0,
+      "scale": 1.0
+    },
+    {
+      "type": "LIGHTNING",
+      "opacity": 0.8,
+      "scale": 0.1,
+      "amount": 8,
+      "segments": {
+        "min": 3,
+        "spacing": 20.0
+      },
+      "intensity": 2.0,
+      "changeRate": 0.1,
+      "bounds": [40.0, 40.0],
+      "core": {
+        "color": "0x4488FF",
+        "additiveBlending": true
+      },
+      "bloom": {
+        "strength": 0.8,
+        "spread": 1.0,
+        "dropoff": 1.5,
+        "quality": 1.0,
+        "scaleToSize": true
+      }
+    }
+  ]
+}

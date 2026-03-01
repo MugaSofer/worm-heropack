@@ -45,9 +45,9 @@ function initEffects(renderer) {
         return entity.getData("worm:dyn/laser_mode") == 3;
     });
 
-    // Mode 4: Laser Swarm — wide spread beam
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", "head", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [4.0, 4.0] }
+    // Mode 4: Laser Swarm — multiple zig-zagging beams via custom LIGHTNING model
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [30.0, 30.0] }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_mode") == 4;
     }).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_charged_beam"));
