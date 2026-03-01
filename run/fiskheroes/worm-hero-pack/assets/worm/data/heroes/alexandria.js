@@ -1,6 +1,5 @@
 var super_boost = implement("fiskheroes:external/super_boost");
 var falcon_base = implement("fiskheroes:external/falcon_base");
-var landing = implement("fiskheroes:external/superhero_landing");
 
 function isInFront(entity, other) {
     return entity.getLookVector().dot(entity.pos().subtract(other.pos())) < 0;
@@ -74,7 +73,27 @@ function init(hero) {
     hero.setKeyBindEnabled(isKeyBindEnabled);
 
     falcon_base.init(hero, super_boost, "2", 0.25, function (entity, manager) {
-        landing.tick(entity, manager);
+        // Superhero landing - normal falls and boost dives
+        var t = entity.getData("worm:dyn/superhero_landing_ticks");
+        var isBoosting = entity.getData("fiskheroes:flight_boost_timer") > 0;
+        var canLand = t == 0 && !entity.isOnGround() && entity.motionY() < -1.0 && entity.world().blockAt(entity.pos().add(0, -2, 0)).isSolid() && entity.getData("fiskheroes:beam_charge") == 0;
+        if (canLand && (isBoosting || !entity.isSprinting())) {
+            manager.setDataWithNotify(entity, "worm:dyn/superhero_landing_ticks", 12);
+            // Shockwave only on boost dives
+            if (isBoosting) {
+                var fallSpeed = Math.abs(entity.motionY());
+                var damage = Math.min(fallSpeed * 8.0, 20.0);
+                var radius = Math.min(fallSpeed * 2.5, 5.0);
+                entity.world().getEntitiesInRangeOf(entity.pos(), radius).forEach(function (other) {
+                    if (!entity.equals(other) && other.isLivingEntity()) {
+                        other.hurtByAttacker(hero, "PUNCH", "%s was crushed by %s", damage, entity);
+                    }
+                });
+            }
+        } else if (t > 0) {
+            manager.setData(entity, "worm:dyn/superhero_landing_ticks", t - 1);
+        }
+        manager.incrementData(entity, "worm:dyn/superhero_landing_timer", 2, 8, entity.getData("worm:dyn/superhero_landing_ticks") > 0);
 
         // Kick damage logic
         if (entity.getData("worm:dyn/kick_timer") == 1) {

@@ -5,6 +5,8 @@
   "packFormat": 1,
   "dataVars": {
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
-    "kick_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "kick_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "superhero_landing_ticks": {"type": "BYTE", "resetWithoutSuit": true},
+    "superhero_landing_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }

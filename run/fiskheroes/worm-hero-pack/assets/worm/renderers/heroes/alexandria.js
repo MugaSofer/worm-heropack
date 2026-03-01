@@ -18,7 +18,7 @@ function initAnimations(renderer) {
     parent.initAnimations(renderer);
     utils.addFlightAnimationWithLanding(renderer, "alexandria.FLIGHT", "fiskheroes:flight/default.anim.json");
     utils.addHoverAnimation(renderer, "alexandria.HOVER", "fiskheroes:flight/idle/default");
-    addAnimationWithData(renderer, "alexandria.LAND", "fiskheroes:superhero_landing", "fiskheroes:dyn/superhero_landing_timer").priority = -8;
+    addAnimationWithData(renderer, "alexandria.LAND", "fiskheroes:superhero_landing", "worm:dyn/superhero_landing_timer").priority = -8;
 
     addAnimation(renderer, "alexandria.THUNDERCLAP_CHARGE", "worm:thunder_clap_charge").setData(function (entity, data) {
         data.load(entity.getInterpolatedData("fiskheroes:beam_charge"));
