@@ -89,11 +89,17 @@ function init(hero) {
                         other.hurtByAttacker(hero, "PUNCH", "%s was crushed by %s", damage, entity);
                     }
                 });
+                entity.playSound("fiskheroes:modifier.flight.boost.super", 1, 0.6);
             }
         } else if (t > 0) {
             manager.setData(entity, "worm:dyn/superhero_landing_ticks", t - 1);
         }
         manager.incrementData(entity, "worm:dyn/superhero_landing_timer", 2, 8, entity.getData("worm:dyn/superhero_landing_ticks") > 0);
+
+        // Two-Handed Blow sound - play thunder on impact
+        if (entity.getData("fiskheroes:beam_shooting") && entity.getInterpolatedData("fiskheroes:beam_shooting_timer") < 0.1) {
+            entity.playSound("ambient.weather.thunder", 1.5, 0.5);
+        }
 
         // Kick damage logic
         if (entity.getData("worm:dyn/kick_timer") == 1) {
