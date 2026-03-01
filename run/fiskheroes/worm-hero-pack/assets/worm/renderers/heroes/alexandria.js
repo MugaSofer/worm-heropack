@@ -62,6 +62,12 @@ function initEffects(renderer) {
         return entity.getInterpolatedData("fiskheroes:beam_shooting_timer") > 0;
     });
     shake.factor = 0.8;
+
+    // Landing camera shake
+    var landShake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {
+        return entity.getInterpolatedData("worm:dyn/superhero_landing_timer") > 0 && entity.getInterpolatedData("worm:dyn/superhero_landing_timer") < 0.3;
+    });
+    landShake.factor = 0.5;
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
