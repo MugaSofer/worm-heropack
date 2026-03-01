@@ -21,6 +21,26 @@
         "BOOST": "fiskheroes:flight_boost"
       }
     },
+    "fiskheroes:controlled_flight|boosted": {
+      "speed": 0.18,
+      "boostSpeed": 0.30,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": true
+        }
+      },
+      "knockback": 1.0,
+      "soundEvents": {
+        "ENABLE": "fiskheroes:mysterio_boost_enable",
+        "BOOST": "fiskheroes:mysterio_boost_loop"
+      }
+    },
     "fiskheroes:ground_smash": {
       "damageProfile": {
         "damage": 16.0,
@@ -32,6 +52,26 @@
       "knockback": 3.0,
       "cooldownTime": 40
     },
+    "fiskheroes:charged_beam": {
+      "damageProfile": {
+        "damage": 35.0,
+        "types": {
+          "BLUNT": 0.8,
+          "SOUND": 0.2
+        },
+        "properties": {
+          "COOK_ENTITY": false,
+          "HEAT_TRANSFER": 0,
+          "ADD_KNOCKBACK": 8.0
+        }
+      },
+      "chargeTime": 15,
+      "duration": 15,
+      "cooldownTime": 40,
+      "range": 16.0,
+      "radius": 16.0
+    },
+    "fiskheroes:slow_motion": {},
     "fiskheroes:damage_immunity|bullet": {
       "damageType": "BULLET"
     },

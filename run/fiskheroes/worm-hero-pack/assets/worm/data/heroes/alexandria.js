@@ -1,3 +1,5 @@
+var super_boost = implement("fiskheroes:external/super_boost");
+var falcon_base = implement("fiskheroes:external/falcon_base");
 var landing = implement("fiskheroes:external/superhero_landing");
 
 function init(hero) {
@@ -18,21 +20,40 @@ function init(hero) {
     hero.addAttribute("KNOCKBACK", 0.5, 0);
     hero.addAttribute("MAX_HEALTH", 10.0, 0);
 
+    hero.addKeyBind("CHARGED_BEAM", "Two-Handed Blow", 1);
+    hero.addKeyBind("SLOW_MOTION", "Combat Thinker", 2);
     hero.addKeyBind("GROUND_SMASH", "key.groundSmash", 3);
 
-    hero.setKeyBindEnabled(isKeyBindEnabled);
     hero.setHasProperty(hasProperty);
 
-    hero.setTickHandler(function (entity, manager) {
+    hero.addDamageProfile("PUNCH", {
+        "types": {
+            "BLUNT": 1.0
+        },
+        "properties": {
+            "ADD_KNOCKBACK": 3.0
+        }
+    });
+    hero.setDamageProfile(getDamageProfile);
+
+    hero.setModifierEnabled(isModifierEnabled);
+    hero.setKeyBindEnabled(isKeyBindEnabled);
+
+    falcon_base.init(hero, super_boost, "2", 0.25, function (entity, manager) {
         landing.tick(entity, manager);
     });
 }
 
+function getDamageProfile(entity) {
+    return "PUNCH";
+}
+
+function isModifierEnabled(entity, modifier) {
+    return super_boost.isModifierEnabled(entity, modifier);
+}
+
 function isKeyBindEnabled(entity, keyBind) {
-    if (entity.isSprinting() && entity.getData("fiskheroes:flying")) {
-        return false;
-    }
-    return true;
+    return super_boost.isKeyBindEnabled(entity, keyBind);
 }
 
 function hasProperty(entity, property) {
