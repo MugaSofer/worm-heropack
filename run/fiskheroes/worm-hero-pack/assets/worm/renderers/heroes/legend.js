@@ -68,6 +68,10 @@ function initEffects(renderer) {
     // Method 4: Swarm — zig-zagging lightning branches
     bindMethodBeam(renderer, "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
 
+    // Night vision — always on
+    var nightVision = renderer.bindProperty("fiskheroes:night_vision");
+    nightVision.firstPersonOnly = true;
+
     // Camera shake on beam firing
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {
         return entity.getInterpolatedData("fiskheroes:beam_shooting_timer") > 0;

@@ -13,9 +13,9 @@ function init(hero) {
     hero.setName("Legend");
     hero.setTier(9);
 
-    hero.setHelmet("Helmet");
-    hero.setChestplate("Chestplate");
-    hero.setLeggings("Leggings");
+    hero.setHelmet("Mask");
+    hero.setChestplate("Shirt");
+    hero.setLeggings("Tights");
     hero.setBoots("Boots");
 
     hero.addPowers("worm:legend_powers");

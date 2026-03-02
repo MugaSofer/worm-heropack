@@ -1,5 +1,5 @@
 {
-  "name": "Legend Package",
+  "name": "Flying Artillery",
   "modifiers": {
     "fiskheroes:controlled_flight": {
       "speed": 0.14,

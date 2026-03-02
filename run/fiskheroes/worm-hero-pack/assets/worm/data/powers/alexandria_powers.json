@@ -100,7 +100,6 @@
     "fiskheroes:projectile_immunity": {},
     "fiskheroes:arrow_catching": {},
     "fiskheroes:metal_skin": {},
-    "fiskheroes:water_breathing": {},
     "fiskheroes:potion_immunity": {
       "potionEffects": ["minecraft:nausea", "minecraft:poison", "minecraft:wither"]
     },

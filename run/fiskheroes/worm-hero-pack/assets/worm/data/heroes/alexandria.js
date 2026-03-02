@@ -19,8 +19,8 @@ function init(hero) {
     hero.setName("Alexandria");
     hero.setTier(9);
 
-    hero.setHelmet("Helmet");
-    hero.setChestplate("Chestplate");
+    hero.setHelmet("Visor");
+    hero.setChestplate("Chestpiece");
     hero.setLeggings("Leggings");
     hero.setBoots("Boots");
 
@@ -154,5 +154,5 @@ function isKeyBindEnabled(entity, keyBind) {
 }
 
 function hasProperty(entity, property) {
-    return property == "BREATHE_SPACE";
+    return false;
 }

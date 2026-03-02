@@ -1,0 +1,168 @@
+# Worm: Parahumans Hero Pack — Character Guide
+
+A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
+
+---
+
+## Alexandria
+
+**Tier 9** | The Triumvirate's bruiser. Near-total invulnerability, super strength, flight, and a combat thinker ability.
+
+### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Two-Handed Blow | Charge-up two-handed slam with shockwave. Massive blunt + sound damage with extreme knockback. Short range, wide AoE. |
+| 2 | Combat Thinker | Slow-motion perception toggle. See the battlefield in bullet-time. |
+| 3 | Ground Smash | AoE slam centered on you. High blunt damage and knockback. |
+| 4 | Kick / Stop Kick | Roundhouse kick. Locks movement briefly, hits the nearest target in front of you for heavy damage. |
+| 5 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
+
+### Passive Abilities
+
+- **Near-total invulnerability** — Immune to bullets, projectiles, fire, explosions, poison, blunt, sharp, energy, electricity, and cold damage.
+- **Super strength** — 12 punch damage with heavy knockback. Mobs get launched.
+- **Enhanced mobility** — High sprint speed, enhanced jump, full fall resistance.
+- **Arrow catching** — Snatches projectiles out of the air if you're looking in their direction.
+- **Superhero landing** — Land from a high fall or flight boost dive for a shockwave that damages nearby enemies.
+
+### Notes
+
+- Flight collisions damage entities but don't stop you or hurt you from blocks.
+- Boost dive into the ground for maximum landing shockwave damage.
+- The kick roots you in place — use it tactically, not mid-brawl.
+
+---
+
+## Legend
+
+**Tier 9** | The Triumvirate's flying artillery. The fastest flyer in the pack, with a modular laser system offering 25 unique combinations.
+
+### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Cycle Method | Cycles beam delivery: Basic > Fat AoE > Staccato > Invisible > Swarm |
+| 2 | Cycle Effect | Cycles damage type: Concussive > Cutting > Heat > Cold > Disintegration |
+| 3 | Fire | Hold to charge and fire the current laser combination. |
+| 4 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
+
+### Laser Methods
+
+| Method | Behaviour |
+|--------|-----------|
+| **Basic** | Standard beam. Long range (48), fast charge, long duration. Your bread and butter. |
+| **Fat AoE** | Wide beam (radius 8). Slower charge, shorter duration, long cooldown. Crowd control. |
+| **Staccato** | Rapid-fire bursts. Near-instant charge, very short duration, short cooldown. Tap repeatedly. |
+| **Invisible** | Same as Basic but with no visible beam. Stealth kills. |
+| **Swarm** | Multiple zig-zagging beams (radius 4). Medium charge, medium cooldown.|
+
+### Laser Effects
+
+| Effect | Damage | Special |
+|--------|--------|---------|
+| **Concussive** | 5 blunt | Extreme knockback. Sends targets flying. |
+| **Cutting** | 10 sharp | Clean damage, no knockback reduction. |
+| **Heat** | 8 energy | Sets targets on fire, cooks entities. |
+| **Cold** | 4 cold | Applies Slowness VIII for 15 seconds. Near-total immobilization. |
+| **Disintegration** | 14 energy/explosion | Highest damage. Burns and cooks. |
+
+### Passive Abilities
+
+- **Fastest flight** — Base speed 0.14, boost 0.28, super boost available. Barrel rolls.
+- **Regeneration** — Passive health regen (factor 2).
+- **Durability** — 50% resistance to blunt and sharp damage. Fire and projectile immunity.
+- **Night vision** — Always active. Can see in the dark.
+- **Space breathing** — Can breathe in space.
+
+### Notes
+
+- Mix methods and effects for 25 combinations (5 x 5). Experiment to find your favourites.
+- Staccato + Concussive is great for juggling targets. AoE + Cold locks down groups. Invisible + Disintegration for silent devastation.
+- Legend's flight is noticeably faster than Alexandria's or Eidolon's, with barrel roll capability.
+
+---
+
+## Eidolon
+
+**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 10 abilities. The most versatile hero in the pack.
+
+### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm |
+| 2 | Cycle Slot 2 | Cycles active power: Chronokinesis > Aerokinesis > Forcefield |
+| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility |
+| 4 | Slot 1 Ability | Activates the current Slot 1 power (see below). |
+| 5 | Slot 2 Ability | Activates the current Slot 2 power (see below). |
+
+### Slot 1 — Active (Key 1 to change, Key 4 to use)
+
+| Power | Key 4 Abilities | Passives | Flight? |
+|-------|----------------|----------|---------|
+| **Gravity Control** | Gravity Manipulation (AoE pull/push, range 20, radius 12), Gravity Blast (8 energy damage, radius 6, knockback 2) | — | Yes |
+| **Energy Absorption** | Expel Energy (7 energy damage eye beams, range 32, cooks entities — requires 10%+ charge) | Frost walking (radius 4); projectile, fire, blunt, explosion immunity; 75% energy resistance | No |
+| **Lightning Storm** | Lightning Storm (8 energy damage beam, range 30) | — | Yes |
+
+### Slot 2 — Active (Key 2 to change, Key 5 to use)
+
+| Power | Key 5 Abilities | Passives | Flight? |
+|-------|----------------|----------|---------|
+| **Chronokinesis** | Slow Time (toggle slow-motion perception + super speed + arrow catching) | — | No |
+| **Aerokinesis** | Tornado (telekinesis grab + 6 blunt/sound damage wind blast, range 16) | — | Yes |
+| **Forcefield** | Forcefield (hold to block — 360-degree energy shield, 400 HP, regenerates 10/tick) | — | No |
+
+### Slot 3 — Passive (Key 3)
+
+| Power | Effect | Flight? |
+|-------|--------|---------|
+| **Damage Reflection** | Reflects 50% of incoming damage back at attacker as energy damage. | No |
+| **Energy Form** | Shadowform (translucent green energy body), passive regeneration (factor 3), contact damage (4 energy/tick to all living entities within 3 blocks), green particle cloud + glow. | Yes |
+| **Crystal Armor** | Increased durability. Projectile & Fire immunity. | No |
+| **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise). | Yes |
+
+### Energy Absorption Details
+
+Energy Absorption has a unique charge mechanic:
+1. Select Energy Absorption (Slot 1, index 1).
+2. **Take damage** — the charge bar fills when you're hit (visible as an orange HUD bar).
+3. **Orange glow** intensifies as charge builds, with frost walking as a side effect.
+4. Once charged above 10%, you can **fire orange eye beams** (Key 4: "Expel Energy") which drain the charge.
+5. While charged, you also gain explosion immunity and 75% energy damage resistance.
+6. Charge resets to zero if you switch away from Energy Absorption.
+
+### Base Stats
+
+| Stat | Value |
+|------|-------|
+| Punch damage | 6 blunt |
+| Fall resistance | 50% |
+| Sprint speed | +20% |
+| Jump height | +0.5 |
+
+### Flight Summary
+
+Flight is available when any of these are active:
+- Slot 1: Gravity Control or Lightning Storm
+- Slot 2: Aerokinesis
+- Slot 3: Energy Form or Intangibility
+
+Flight speed: 0.1 base, 0.2 boost. Slower than Legend or Alexandria.
+
+### Notes
+
+- The three slots are fully independent — mix and match any combination.
+- Eidolon is deliberately lower tier than Alexandria/Legend. His strength comes from versatility, not innate durability.
+- Chronokinesis bundles slow-mo and super speed together — they toggle on and off as one.
+- Intangibility forces flight on every tick. You cannot disable flight while intangible.
+- Energy Form's contact damage affects all living entities within 3 blocks every tick. Don't stand near allies.
+- Arrow catching is only available via Chronokinesis (Slot 2), and only while Slow Time is active.
+
+---
+
+## Installation
+
+1. Place the `worm-hero-pack` folder in your Fisk's Superheroes hero packs directory.
+2. Run `/fiskheroes reload` in-game to load the pack.
+3. Equip any hero's armour pieces from the creative menu (search "worm").

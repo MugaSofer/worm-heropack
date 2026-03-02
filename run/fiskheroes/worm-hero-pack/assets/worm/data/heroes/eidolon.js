@@ -20,9 +20,9 @@ function init(hero) {
     hero.setName("Eidolon");
     hero.setTier(3);
 
-    hero.setHelmet("Helmet");
-    hero.setChestplate("Chestplate");
-    hero.setLeggings("Leggings");
+    hero.setHelmet("Cloak & Mask");
+    hero.setChestplate("Top");
+    hero.setLeggings("Tights");
     hero.setBoots("Boots");
 
     hero.addPowers("worm:eidolon_powers");
@@ -118,14 +118,14 @@ function init(hero) {
 
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
-    hero.addKeyBind("GROUND_SMASH", "Gravity Blast", 4);
+    hero.addKeyBind("GROUND_SMASH", "Gravity Blast (Scroll: Gravity)", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
 
     // Key 5: Slot 2 active abilities
     hero.addKeyBind("SUPER_SPEED", "Chronokinesis", 5);
     hero.addKeyBind("SLOW_MOTION", "Slow Time", 5);
-    hero.addKeyBind("TELEKINESIS", "Aerokinesis", 5);
+    hero.addKeyBind("TELEKINESIS", "Tornado", 5);
     hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
     hero.addKeyBind("SHIELD", "Forcefield", 5);
 
@@ -230,6 +230,18 @@ function init(hero) {
         }
     });
     hero.setDamageProfile(getDamageProfile);
+
+    hero.addAttributeProfile("GRAVITY", gravityProfile);
+    hero.setAttributeProfile(getAttributeProfile);
+}
+
+function gravityProfile(profile) {
+    profile.inheritDefaults();
+    profile.addAttribute("REACH_DISTANCE", 50.0, 0);
+}
+
+function getAttributeProfile(entity) {
+    return entity.getData("worm:dyn/slot1") == 0 && entity.getData("fiskheroes:gravity_manip") && entity.getHeldItem().isEmpty() ? "GRAVITY" : null;
 }
 
 function getDamageProfile(entity) {
@@ -252,7 +264,7 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:frost_walking":
         return s1 == 1;
     case "fiskheroes:arrow_catching":
-        return s1 == 1 || s2 == 0;
+        return s2 == 0 && entity.getData("fiskheroes:slow_motion");
     case "fiskheroes:cooldown":
         return s1 == 1;
     case "fiskheroes:energy_projection":
@@ -284,9 +296,9 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:metal_skin":
         return s3 == 2;
     case "fiskheroes:projectile_immunity":
-        return s3 == 2;
+        return s1 == 1 || s3 == 2;
     case "fiskheroes:fire_immunity":
-        return s3 == 2;
+        return s1 == 1 || s3 == 2;
     case "fiskheroes:intangibility":
         return s3 == 3;
     case "fiskheroes:damage_immunity":

@@ -37,7 +37,7 @@ function initEffects(renderer) {
     });
 
     // Gravity manipulation — AoE visual effect (default color)
-    renderer.bindProperty("fiskheroes:gravity_manipulation");
+    renderer.bindProperty("fiskheroes:gravity_manipulation").color.set(0x44FF66);
 
     // Telekinesis — cloud visual around grabbed targets (white)
     utils.bindCloud(renderer, "fiskheroes:telekinesis", "worm:eidolon_telekinesis");

@@ -1,5 +1,5 @@
 {
-  "name": "Eidolon Package",
+  "name": "Whatever You Need",
   "modifiers": {
     "fiskheroes:controlled_flight": {
       "speed": 0.1,
@@ -25,7 +25,7 @@
       "affectsUser": true,
       "minGravity": 0.1,
       "maxGravity": 6.0,
-      "range": 20.0,
+      "range": 50.0,
       "radius": 12.0
     },
     "fiskheroes:heat_vision": {
@@ -50,8 +50,12 @@
       "radius": 4
     },
     "fiskheroes:fire_immunity": {},
+    "fiskheroes:projectile_immunity": {},
     "fiskheroes:damage_immunity|explosion": {
       "damageType": "EXPLOSION"
+    },
+    "fiskheroes:damage_immunity|blunt": {
+      "damageType": "BLUNT"
     },
     "fiskheroes:damage_resistance|energy": {
       "damageType": "ENERGY",
@@ -156,7 +160,6 @@
       }
     },
     "fiskheroes:metal_skin": {},
-    "fiskheroes:projectile_immunity": {},
     "fiskheroes:intangibility": {
       "isAbsolute": false,
       "soundEvents": {
@@ -174,6 +177,12 @@
       "type": "CHARGE",
       "texture": "worm:textures/gui/bars/eidolon_charge.png",
       "data": "worm:dyn/eidolon_charge"
+    },
+    {
+      "type": "DIAL",
+      "color": "fiskheroes:gravity_manipulation",
+      "data": "fiskheroes:gravity_amount",
+      "condition": "fiskheroes:gravity_manip"
     }
   ]
 }
