@@ -6,8 +6,8 @@ loadTextures({
 
 var utils = implement("fiskheroes:external/utils");
 
-var glow;
-var ffGlow;
+var energyFormGlow;
+var chargeGlow;
 
 function init(renderer) {
     parent.init(renderer);
@@ -20,8 +20,8 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Heat vision — dual eye beams, green-tinted (Energy Absorption only)
-    utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:heat_vision", "head", 0x44FF66, [
+    // Heat vision — dual eye beams, orange-red (Energy Absorption only)
+    utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:heat_vision", "head", 0xFF6622, [
         { "firstPerson": [2.2, 0.0, 2.0], "offset": [2.2, -3.3, -4.0], "size": [1.0, 0.5] },
         { "firstPerson": [-2.2, 0.0, 2.0], "offset": [-2.2, -3.3, -4.0], "size": [1.0, 0.5] }
     ]).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_heat_vision"))
@@ -51,30 +51,30 @@ function initEffects(renderer) {
         return entity.getData("worm:dyn/slot2") == 2;
     });
 
-    // Forcefield — green body glow when forcefield mode is active
-    ffGlow = renderer.createEffect("fiskheroes:glowerlay");
-    ffGlow.color.set(0x44FF66);
-
     // Energy Form — green particle cloud when in shadowform
     utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:eidolon_energy").setCondition(function (entity) {
         return entity.getData("worm:dyn/slot3") == 1;
     });
 
     // Energy Form — green body glow
-    glow = renderer.createEffect("fiskheroes:glowerlay");
-    glow.color.set(0x44FF66);
+    energyFormGlow = renderer.createEffect("fiskheroes:glowerlay");
+    energyFormGlow.color.set(0x44FF66);
+
+    // Energy Absorption — orange charge aura (intensity tied to charge level)
+    chargeGlow = renderer.createEffect("fiskheroes:glowerlay");
+    chargeGlow.color.set(0xFF6622);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    var s2 = entity.getData("worm:dyn/slot2");
+    var s1 = entity.getData("worm:dyn/slot1");
     var s3 = entity.getData("worm:dyn/slot3");
 
     // Energy Form glow
-    glow.opacity = s3 == 1 ? 0.3 : 0.0;
-    glow.render();
+    energyFormGlow.opacity = s3 == 1 ? 0.3 : 0.0;
+    energyFormGlow.render();
 
-    // Forcefield mode glow — subtle when selected, brighter when actively blocking
-    var blocking = entity.getInterpolatedData("fiskheroes:shield_blocking_timer");
-    ffGlow.opacity = s2 == 2 ? (0.1 + blocking * 0.3) : 0.0;
-    ffGlow.render();
+    // Energy Absorption charge glow — brightens as charge fills
+    var charge = s1 == 1 ? entity.getInterpolatedData("worm:dyn/eidolon_charge") : 0.0;
+    chargeGlow.opacity = charge * 0.5;
+    chargeGlow.render();
 }

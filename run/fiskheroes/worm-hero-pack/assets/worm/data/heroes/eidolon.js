@@ -2,11 +2,13 @@
 //
 // Slot 1 → Key 4: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm
 // Slot 2 → Key 5: 0=Chronokinesis, 1=Aerokinesis, 2=Forcefield
-// Slot 3 → passive: 0=Damage Reflection, 1=Energy Form, 2=Crystal Armor
+// Slot 3 → passive: 0=Damage Reflection, 1=Energy Form, 2=Crystal Armor, 3=Intangibility
 
 var SLOT1_COUNT = 3;
 var SLOT2_COUNT = 3;
-var SLOT3_COUNT = 3;
+var SLOT3_COUNT = 4;
+
+var speedster_base = implement("fiskheroes:external/speedster_base");
 
 var debounce1 = false;
 var debounce2 = false;
@@ -29,6 +31,7 @@ function init(hero) {
     hero.addAttribute("FALL_RESISTANCE", 0.5, 1);
     hero.addAttribute("SPRINT_SPEED", 0.2, 1);
     hero.addAttribute("JUMP_HEIGHT", 0.5, 0);
+    hero.addAttribute("BASE_SPEED_LEVELS", 3.0, 0);
 
     // Key 1: Cycle slot 1
     hero.addKeyBindFunc("SLOT1_CYCLE_0", function (entity, manager) {
@@ -105,6 +108,14 @@ function init(hero) {
         return true;
     }, "\u00A73Crystal Armor \u00A78>", 3);
 
+    hero.addKeyBindFunc("SLOT3_CYCLE_3", function (entity, manager) {
+        if (debounce3) return false;
+        debounce3 = true;
+        var current = entity.getData("worm:dyn/slot3");
+        manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
+        return true;
+    }, "\u00A78Intangibility \u00A78>", 3);
+
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
     hero.addKeyBind("GROUND_SMASH", "Gravity Blast", 4);
@@ -112,7 +123,8 @@ function init(hero) {
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
 
     // Key 5: Slot 2 active abilities
-    hero.addKeyBind("SLOW_MOTION", "Chronokinesis", 5);
+    hero.addKeyBind("SUPER_SPEED", "Chronokinesis", 5);
+    hero.addKeyBind("SLOW_MOTION", "Slow Time", 5);
     hero.addKeyBind("TELEKINESIS", "Aerokinesis", 5);
     hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
     hero.addKeyBind("SHIELD", "Forcefield", 5);
@@ -123,6 +135,7 @@ function init(hero) {
         debounce3 = false;
 
         var s1 = entity.getData("worm:dyn/slot1");
+        var s2 = entity.getData("worm:dyn/slot2");
         var s3 = entity.getData("worm:dyn/slot3");
 
         // Energy Absorption: charge when taking damage
@@ -144,6 +157,7 @@ function init(hero) {
         // Reset charge when switching away from Energy Absorption
         if (s1 != 1) {
             manager.setData(entity, "worm:dyn/eidolon_absorb", false);
+            manager.setData(entity, "worm:dyn/eidolon_charge", 0);
         }
 
         // Force shadowform on/off based on slot 3 selection
@@ -153,6 +167,38 @@ function init(hero) {
         } else if (s3 != 1 && isShadow) {
             manager.setData(entity, "fiskheroes:shadowform", false);
         }
+
+        // Force intangibility + flight on/off based on slot 3 selection
+        var isIntang = entity.getData("fiskheroes:intangible");
+        if (s3 == 3 && !isIntang) {
+            manager.setData(entity, "fiskheroes:intangible", true);
+            manager.setData(entity, "fiskheroes:flying", true);
+        } else if (s3 != 3 && isIntang) {
+            manager.setData(entity, "fiskheroes:intangible", false);
+        }
+
+        // Keep flight on while intangible (prevent falling through world)
+        if (s3 == 3 && !entity.getData("fiskheroes:flying")) {
+            manager.setData(entity, "fiskheroes:flying", true);
+        }
+
+        // Sync super speed with slow motion (both are "Chronokinesis")
+        var isSpeeding = entity.getData("fiskheroes:speeding");
+        var isSlowMo = entity.getData("fiskheroes:slow_motion");
+        if (s2 == 0) {
+            // Keep speeding in sync with slow motion toggle
+            if (isSlowMo && !isSpeeding) {
+                manager.setData(entity, "fiskheroes:speeding", true);
+            } else if (!isSlowMo && isSpeeding) {
+                manager.setData(entity, "fiskheroes:speeding", false);
+            }
+        } else if (isSpeeding) {
+            // Force off when not on Chronokinesis
+            manager.setData(entity, "fiskheroes:speeding", false);
+        }
+
+        // Speedster base tick for super speed
+        speedster_base.tick(entity, manager);
 
         // Energy Form: contact damage to nearby entities
         if (s3 == 1) {
@@ -206,13 +252,15 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:frost_walking":
         return s1 == 1;
     case "fiskheroes:arrow_catching":
-        return s1 == 1;
+        return s1 == 1 || s2 == 0;
     case "fiskheroes:cooldown":
         return s1 == 1;
     case "fiskheroes:energy_projection":
         return s1 == 2;
 
     // Slot 2: Chronokinesis (0), Aerokinesis (1), Forcefield (2)
+    case "fiskheroes:super_speed":
+        return s2 == 0;
     case "fiskheroes:slow_motion":
         return s2 == 0;
     case "fiskheroes:telekinesis":
@@ -222,11 +270,11 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:shield":
         return s2 == 2;
 
-    // Flight: Gravity Control (s1==0), Lightning Storm (s1==2), Aerokinesis (s2==1), Energy Form (s3==1)
+    // Flight: Gravity Control (s1==0), Lightning Storm (s1==2), Aerokinesis (s2==1), Energy Form (s3==1), Intangibility (s3==3)
     case "fiskheroes:controlled_flight":
-        return s1 == 0 || s1 == 2 || s2 == 1 || s3 == 1;
+        return s1 == 0 || s1 == 2 || s2 == 1 || s3 == 1 || s3 == 3;
 
-    // Slot 3: Damage Reflection (0), Energy Form (1), Crystal Armor (2)
+    // Slot 3: Damage Reflection (0), Energy Form (1), Crystal Armor (2), Intangibility (3)
     case "fiskheroes:thorns":
         return s3 == 0;
     case "fiskheroes:shadowform":
@@ -239,6 +287,8 @@ function isModifierEnabled(entity, modifier) {
         return s3 == 2;
     case "fiskheroes:fire_immunity":
         return s3 == 2;
+    case "fiskheroes:intangibility":
+        return s3 == 3;
     case "fiskheroes:damage_immunity":
         return s1 == 1;
     case "fiskheroes:damage_resistance":
@@ -276,6 +326,8 @@ function isKeyBindEnabled(entity, keyBind) {
         return s3 == 1;
     case "SLOT3_CYCLE_2":
         return s3 == 2;
+    case "SLOT3_CYCLE_3":
+        return s3 == 3;
     // Slot 1 active abilities (key 4)
     case "GRAVITY_MANIPULATION":
         return s1 == 0;
@@ -286,6 +338,8 @@ function isKeyBindEnabled(entity, keyBind) {
     case "ENERGY_PROJECTION":
         return s1 == 2;
     // Slot 2 active abilities (key 5)
+    case "SUPER_SPEED":
+        return s2 == 0;
     case "SLOW_MOTION":
         return s2 == 0;
     case "TELEKINESIS":

@@ -156,12 +156,23 @@
       }
     },
     "fiskheroes:metal_skin": {},
-    "fiskheroes:projectile_immunity": {}
+    "fiskheroes:projectile_immunity": {},
+    "fiskheroes:intangibility": {
+      "isAbsolute": false,
+      "soundEvents": {
+        "ENABLE": "fiskheroes:vision_intang_on",
+        "DISABLE": "fiskheroes:vision_intang_off"
+      }
+    },
+    "fiskheroes:super_speed": {
+      "canUseTreadmill": false,
+      "canUseTachyons": false
+    }
   },
   "hud": [
     {
       "type": "CHARGE",
-      "texture": "fiskheroes:textures/gui/bars/cryo_charge.png",
+      "texture": "worm:textures/gui/bars/eidolon_charge.png",
       "data": "worm:dyn/eidolon_charge"
     }
   ]
