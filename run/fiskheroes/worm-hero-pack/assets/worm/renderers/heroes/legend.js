@@ -6,7 +6,8 @@ loadTextures({
 
 var utils = implement("fiskheroes:external/utils");
 
-var handCharge;
+var handChargeMirrored;
+var handChargeSingle;
 
 function init(renderer) {
     parent.init(renderer);
@@ -123,7 +124,8 @@ function initEffects(renderer) {
     // Bombardment hand charge glow
     var blueFireIcon = renderer.createResource("ICON", "fiskheroes:blue_fire_layer_%s");
 
-    handCharge = createHandCharge(renderer, blueFireIcon, "rightArm", true);
+    handChargeMirrored = createHandCharge(renderer, blueFireIcon, "rightArm", true);
+    handChargeSingle = createHandCharge(renderer, blueFireIcon, "rightArm", false);
 
     // Night vision — always on
     var nightVision = renderer.bindProperty("fiskheroes:night_vision");
@@ -138,9 +140,25 @@ function initEffects(renderer) {
 
 function render(entity, renderLayer, isFirstPersonArm) {
     if (renderLayer == "CHESTPLATE") {
-        var chargeTimer = entity.getInterpolatedData("worm:dyn/ground_smash_timer");
-        if (chargeTimer > 0) {
-            handCharge.render(chargeTimer);
+        // Bombardment mode: mirrored glow while holding key 4
+        var groundSmashTimer = entity.getInterpolatedData("worm:dyn/ground_smash_timer");
+        if (groundSmashTimer > 0) {
+            // Dim if on cooldown, full if ready
+            var cooldown = entity.getData("worm:dyn/bombardment_cooldown");
+            var bombardmentGlow = groundSmashTimer * (cooldown > 0 ? (1 - cooldown / 60.0) : 1.0);
+            if (bombardmentGlow > 0) {
+                handChargeMirrored.render(bombardmentGlow);
+            }
+        }
+
+        // Beam charge glow for slow-charging methods only (AoE, Swarm)
+        var method = entity.getData("worm:dyn/laser_method");
+        if (method == 1 || method == 4) {
+            var beamCharge = entity.getInterpolatedData("fiskheroes:beam_charge");
+            var isCharging = entity.getData("fiskheroes:beam_charging");
+            if (isCharging && beamCharge > 0 && beamCharge < 1) {
+                handChargeSingle.render(beamCharge);
+            }
         }
     }
 }

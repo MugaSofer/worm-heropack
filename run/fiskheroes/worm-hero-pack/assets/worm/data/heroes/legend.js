@@ -143,6 +143,13 @@ function init(hero) {
         manager.incrementData(entity, "worm:dyn/bombardment_timer", 5, isBombarding);
         if (bombTimer >= 1.0) {
             manager.setData(entity, "worm:dyn/bombardment_active", false);
+            manager.setData(entity, "worm:dyn/bombardment_cooldown", 60);
+        }
+
+        // Count down bombardment cooldown
+        var cooldown = entity.getData("worm:dyn/bombardment_cooldown");
+        if (cooldown > 0) {
+            manager.setData(entity, "worm:dyn/bombardment_cooldown", cooldown - 1);
         }
     });
 
