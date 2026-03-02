@@ -1,0 +1,24 @@
+{
+  "aspects": [
+    {
+      "type": "LASER",
+      "opacity": 0.6,
+      "scale": 4.0,
+      "pulse": {
+        "length": 3.0,
+        "size": 8.0,
+        "frequency": 15.0
+      },
+      "core": {
+        "additiveBlending": true,
+        "bloom": {
+          "strength": 1.5,
+          "spread": 2.0,
+          "dropoff": 1.5,
+          "quality": 1.0,
+          "scaleToSize": true
+        }
+      }
+    }
+  ]
+}

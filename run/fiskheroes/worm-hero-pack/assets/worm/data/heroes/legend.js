@@ -111,6 +111,11 @@ function init(hero) {
     // Key 3: Fire laser
     hero.addKeyBind("CHARGED_BEAM", "Fire", 3);
 
+    // Key 4: Bombardment (ground slam + beam VFX)
+    hero.addKeyBind("GROUND_SMASH", "Bombardment", 4);
+    hero.addKeyBind("GROUND_SMASH_VISUAL", "Bombardment", 4);
+    hero.addKeyBind("ENERGY_PROJECTION", "Bombardment", 4);
+
     hero.setHasProperty(hasProperty);
     hero.setModifierEnabled(isModifierEnabled);
     hero.setKeyBindEnabled(isKeyBindEnabled);
@@ -125,7 +130,24 @@ function init(hero) {
     falcon_base.init(hero, super_boost, "3", 0.25, function (entity, manager) {
         debounce_method = false;
         debounce_effect = false;
+
+        // Bombardment: detect right-click while holding ground_smash key
+        var isBombarding = entity.getData("worm:dyn/bombardment_active");
+        var bombTimer = entity.getData("worm:dyn/bombardment_timer");
+
+        if (!isBombarding && entity.getData("worm:dyn/ground_smash") && entity.getPunchTimer() > 0) {
+            manager.setData(entity, "worm:dyn/bombardment_active", true);
+        }
+
+        // Increment timer while active, reset when done
+        manager.incrementData(entity, "worm:dyn/bombardment_timer", 5, isBombarding);
+        if (bombTimer >= 1.0) {
+            manager.setData(entity, "worm:dyn/bombardment_active", false);
+        }
     });
+
+    hero.addAttributeProfile("BOMBARDMENT", bombardmentProfile);
+    hero.setAttributeProfile(getAttributeProfile);
 }
 
 function getDamageProfile(entity) {
@@ -150,12 +172,26 @@ function getEffectName(e) {
     return "concussive";
 }
 
+function bombardmentProfile(profile) {
+    profile.inheritDefaults();
+    profile.addAttribute("REACH_DISTANCE", 40.0, 0);
+}
+
+function getAttributeProfile(entity) {
+    return entity.getData("worm:dyn/ground_smash") ? "BOMBARDMENT" : null;
+}
+
 function isModifierEnabled(entity, modifier) {
+    var effect = entity.getData("worm:dyn/laser_effect");
+    var effectName = getEffectName(effect);
+
     if (modifier.name() == "fiskheroes:charged_beam") {
         var method = entity.getData("worm:dyn/laser_method");
-        var effect = entity.getData("worm:dyn/laser_effect");
-        var expected = getMethodName(method) + "_" + getEffectName(effect);
+        var expected = getMethodName(method) + "_" + effectName;
         return modifier.id() == expected;
+    }
+    if (modifier.name() == "fiskheroes:energy_projection") {
+        return entity.getData("worm:dyn/bombardment_active") && modifier.id() == "bombardment_" + effectName;
     }
     return super_boost.isModifierEnabled(entity, modifier);
 }
@@ -176,6 +212,9 @@ function isKeyBindEnabled(entity, keyBind) {
     case "EFFECT_3": return effect == 3;
     case "EFFECT_4": return effect == 4;
     case "CHARGED_BEAM": return true;
+    case "GROUND_SMASH": return true;
+    case "GROUND_SMASH_VISUAL": return true;
+    case "ENERGY_PROJECTION": return true;
     default:
         return super_boost.isKeyBindEnabled(entity, keyBind);
     }

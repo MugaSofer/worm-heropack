@@ -17,6 +17,10 @@
     "eidolon_absorb": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "eidolon_charge": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "night_vision": {"type": "BOOLEAN", "resetWithoutSuit": true},
-    "night_vision_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "night_vision_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "ground_smash": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "ground_smash_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "bombardment_active": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "bombardment_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }

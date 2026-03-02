@@ -14,6 +14,14 @@ function initAnimations(renderer) {
     parent.initAnimations(renderer);
     utils.addFlightAnimationWithLanding(renderer, "legend.FLIGHT", "fiskheroes:flight/default.anim.json");
     utils.addHoverAnimation(renderer, "legend.HOVER", "fiskheroes:flight/idle/default");
+
+    // Bombardment channeling — arms forward, palms together
+    addAnimation(renderer, "legend.BOMBARDMENT_CHARGE", "worm:bombardment_charge")
+        .setData(function (entity, data) {
+            data.load(entity.getData("worm:dyn/ground_smash") ? 1.0 : 0.0);
+        }).setCondition(function (entity) {
+            return entity.getData("worm:dyn/ground_smash");
+        }).priority = 100;
 }
 
 // Helper: bind a beam with 4 particle variants (default, cutting, heat, cold)
@@ -67,6 +75,11 @@ function initEffects(renderer) {
 
     // Method 4: Swarm — zig-zagging lightning branches
     bindMethodBeam(renderer, "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
+
+    // Bombardment beam — thick blue laser, fires on right-click with ground slam
+    utils.bindBeam(renderer, "fiskheroes:energy_projection", "worm:legend_bombardment", "body", 0x4488FF, [
+        { "firstPerson": [0.0, 0.0, 2.0], "offset": [0.0, -3.3, -4.0], "size": [8.0, 8.0] }
+    ]).setParticles(impactDefault);
 
     // Night vision — always on
     var nightVision = renderer.bindProperty("fiskheroes:night_vision");
