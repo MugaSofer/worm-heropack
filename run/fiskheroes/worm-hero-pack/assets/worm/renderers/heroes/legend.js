@@ -17,6 +17,14 @@ function initAnimations(renderer) {
     utils.addFlightAnimationWithLanding(renderer, "legend.FLIGHT", "fiskheroes:flight/default.anim.json");
     utils.addHoverAnimation(renderer, "legend.HOVER", "fiskheroes:flight/idle/default");
 
+    // Single-arm aim tracking — right arm follows where player is looking while firing
+    addAnimation(renderer, "legend.BEAM_AIM", "worm:beam_aim")
+        .setData(function (entity, data) {
+            data.load(entity.getInterpolatedData("fiskheroes:beam_shooting_timer"));
+        }).setCondition(function (entity) {
+            return entity.getInterpolatedData("fiskheroes:beam_shooting_timer") > 0;
+        }).priority = 10;
+
     // Bombardment channeling — arms forward, palms together
     addAnimation(renderer, "legend.BOMBARDMENT_CHARGE", "worm:bombardment_charge")
         .setData(function (entity, data) {
@@ -59,7 +67,7 @@ function createHandCharge(renderer, icon, anchor, mirror) {
 function bindMethodBeam(renderer, model, size, methodIndex, impactDefault, impactHeat, impactIce) {
     // Default particles (concussive, disintegration)
     utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, -2.5], "size": size }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         var e = entity.getData("worm:dyn/laser_effect");
         return entity.getData("worm:dyn/laser_method") == methodIndex && e != 1 && e != 2 && e != 3;
@@ -67,21 +75,21 @@ function bindMethodBeam(renderer, model, size, methodIndex, impactDefault, impac
 
     // Cutting — no particles
     utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, -2.5], "size": size }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 1;
     });
 
     // Heat particles (sparks)
     utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, -2.5], "size": size }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 2;
     }).setParticles(impactHeat);
 
     // Cold particles (cryo smoke)
     utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, -2.5], "size": size }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 3;
     }).setParticles(impactIce);
@@ -109,7 +117,7 @@ function initEffects(renderer) {
 
     // Bombardment beam — wide beam from hands
     utils.bindBeam(renderer, "fiskheroes:energy_projection", "fiskheroes:charged_beam", "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, -2.5], "size": [6.0, 6.0] }
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": [6.0, 6.0] }
     ]).setParticles(impactDefault);
 
     // Bombardment hand charge glow

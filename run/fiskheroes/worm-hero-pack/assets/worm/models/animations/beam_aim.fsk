@@ -1,0 +1,7 @@
+; Right arm tracks where the player is looking
+; data = beam_shooting_timer (1.0 while firing, 0.0 otherwise)
+; Offset rotX by -90 degrees so the hand points at the target, not the arm face
+
+{rightArm_rotX} @ {data} -> {head_rotX} - 90'
+{rightArm_rotY} @ {data} -> {head_rotY}
+{rightArm_rotZ} @ {data} -> {head_rotZ}
