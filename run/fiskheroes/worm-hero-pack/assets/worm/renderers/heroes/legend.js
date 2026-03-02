@@ -6,6 +6,8 @@ loadTextures({
 
 var utils = implement("fiskheroes:external/utils");
 
+var handCharge;
+
 function init(renderer) {
     parent.init(renderer);
 }
@@ -22,6 +24,35 @@ function initAnimations(renderer) {
         }).setCondition(function (entity) {
             return entity.getData("worm:dyn/ground_smash");
         }).priority = 100;
+}
+
+// Helper: create a hand charge glow effect (3 boosters around the hand)
+function createHandCharge(renderer, icon, anchor, mirror) {
+    var front = renderer.createEffect("fiskheroes:booster").setIcon(icon);
+    front.setOffset(1.2, 10.0, 0.15).setRotation(-12.0, 5.0, 173.0).setSize(6.0, 2.0);
+    front.anchor.set(anchor);
+
+    var back = renderer.createEffect("fiskheroes:booster").setIcon(icon);
+    back.setOffset(1.2, 10.0, -0.15).setRotation(12.0, -5.0, 173.0).setSize(6.0, 2.0);
+    back.anchor.set(anchor);
+
+    var bottom = renderer.createEffect("fiskheroes:booster").setIcon(icon);
+    bottom.setOffset(-1.0, 8.4, 0.0).setRotation(0.0, 0.0, 83.0).setSize(4.0, 1.5);
+    bottom.anchor.set(anchor);
+
+    front.opacity = back.opacity = bottom.opacity = 0.5;
+    front.flutter = back.flutter = bottom.flutter = 0.5;
+    front.speedScale = back.speedScale = bottom.speedScale = 0;
+    front.mirror = back.mirror = bottom.mirror = mirror;
+
+    return {
+        render: function (progress) {
+            front.progress = back.progress = bottom.progress = progress;
+            front.render();
+            back.render();
+            bottom.render();
+        }
+    };
 }
 
 // Helper: bind a beam with 4 particle variants (default, cutting, heat, cold)
@@ -76,10 +107,15 @@ function initEffects(renderer) {
     // Method 4: Swarm — zig-zagging lightning branches
     bindMethodBeam(renderer, "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
 
-    // Bombardment beam — thick blue laser, fires on right-click with ground slam
-    utils.bindBeam(renderer, "fiskheroes:energy_projection", "worm:legend_bombardment", "body", 0x4488FF, [
-        { "firstPerson": [0.0, 0.0, 2.0], "offset": [0.0, -3.3, -4.0], "size": [8.0, 8.0] }
+    // Bombardment beam — uses same setup as fat AoE laser
+    utils.bindBeam(renderer, "fiskheroes:energy_projection", "fiskheroes:charged_beam", "head", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [0.0, -3.0, -4.0], "size": [6.0, 6.0] }
     ]).setParticles(impactDefault);
+
+    // Bombardment hand charge glow
+    var blueFireIcon = renderer.createResource("ICON", "fiskheroes:blue_fire_layer_%s");
+
+    handCharge = createHandCharge(renderer, blueFireIcon, "rightArm", true);
 
     // Night vision — always on
     var nightVision = renderer.bindProperty("fiskheroes:night_vision");
@@ -93,4 +129,10 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
+    if (renderLayer == "CHESTPLATE") {
+        var chargeTimer = entity.getInterpolatedData("worm:dyn/ground_smash_timer");
+        if (chargeTimer > 0) {
+            handCharge.render(chargeTimer);
+        }
+    }
 }

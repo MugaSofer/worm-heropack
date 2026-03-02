@@ -3,7 +3,7 @@
     {
       "type": "LASER",
       "opacity": 0.6,
-      "scale": 4.0,
+      "scale": 1.5,
       "pulse": {
         "length": 3.0,
         "size": 8.0,
