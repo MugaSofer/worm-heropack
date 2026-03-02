@@ -118,7 +118,7 @@ function init(hero) {
 
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
-    hero.addKeyBind("GROUND_SMASH", "Gravity Blast (Scroll: Gravity)", 4);
+    hero.addKeyBind("GROUND_SMASH", "Gravity Slam \u00A77+ \u00A7eScroll\u00A7f Raise/Lower", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
 
