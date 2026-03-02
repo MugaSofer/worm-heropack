@@ -54,16 +54,17 @@
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "ADD_KNOCKBACK": 5.0 }
+        "properties": { "ADD_KNOCKBACK": 5.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|basic_cutting": {
       "damageProfile": {
         "damage": 10.0,
-        "types": { "SHARP": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0 }
+        "types": { "SHARP": 1.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|basic_heat": {
@@ -79,10 +80,11 @@
         "damage": 4.0,
         "types": { "COLD": 1.0 },
         "properties": {
-          "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "REDUCE_KNOCKBACK": 0.9,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|basic_disintegration": {
@@ -99,16 +101,17 @@
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "ADD_KNOCKBACK": 5.0 }
+        "properties": { "ADD_KNOCKBACK": 5.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 20, "duration": 30, "cooldownTime": 60, "range": 36.0, "radius": 8.0
     },
     "fiskheroes:charged_beam|aoe_cutting": {
       "damageProfile": {
         "damage": 10.0,
-        "types": { "SHARP": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0 }
+        "types": { "SHARP": 1.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 20, "duration": 30, "cooldownTime": 60, "range": 36.0, "radius": 8.0
     },
     "fiskheroes:charged_beam|aoe_heat": {
@@ -124,10 +127,11 @@
         "damage": 4.0,
         "types": { "COLD": 1.0 },
         "properties": {
-          "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "REDUCE_KNOCKBACK": 0.9,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 20, "duration": 30, "cooldownTime": 60, "range": 36.0, "radius": 8.0
     },
     "fiskheroes:charged_beam|aoe_disintegration": {
@@ -144,16 +148,17 @@
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "ADD_KNOCKBACK": 5.0 }
+        "properties": { "ADD_KNOCKBACK": 5.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|staccato_cutting": {
       "damageProfile": {
         "damage": 10.0,
-        "types": { "SHARP": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0 }
+        "types": { "SHARP": 1.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|staccato_heat": {
@@ -169,10 +174,11 @@
         "damage": 4.0,
         "types": { "COLD": 1.0 },
         "properties": {
-          "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "REDUCE_KNOCKBACK": 0.9,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|staccato_disintegration": {
@@ -189,16 +195,17 @@
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "ADD_KNOCKBACK": 5.0 }
+        "properties": { "ADD_KNOCKBACK": 5.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|invisible_cutting": {
       "damageProfile": {
         "damage": 10.0,
-        "types": { "SHARP": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0 }
+        "types": { "SHARP": 1.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|invisible_heat": {
@@ -214,10 +221,11 @@
         "damage": 4.0,
         "types": { "COLD": 1.0 },
         "properties": {
-          "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "REDUCE_KNOCKBACK": 0.9,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 5, "duration": 40, "cooldownTime": 10, "range": 48.0, "radius": 0.3
     },
     "fiskheroes:charged_beam|invisible_disintegration": {
@@ -234,16 +242,17 @@
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "ADD_KNOCKBACK": 5.0 }
+        "properties": { "ADD_KNOCKBACK": 5.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 8, "duration": 25, "cooldownTime": 20, "range": 36.0, "radius": 4.0
     },
     "fiskheroes:charged_beam|swarm_cutting": {
       "damageProfile": {
         "damage": 10.0,
-        "types": { "SHARP": 1.0 },
-        "properties": { "COOK_ENTITY": false, "HEAT_TRANSFER": 0 }
+        "types": { "SHARP": 1.0 }
       },
+      "canDoGriefing": false,
       "chargeTime": 8, "duration": 25, "cooldownTime": 20, "range": 36.0, "radius": 4.0
     },
     "fiskheroes:charged_beam|swarm_heat": {
@@ -259,10 +268,11 @@
         "damage": 4.0,
         "types": { "COLD": 1.0 },
         "properties": {
-          "COOK_ENTITY": false, "HEAT_TRANSFER": 0, "REDUCE_KNOCKBACK": 0.9,
+          "REDUCE_KNOCKBACK": 0.9,
           "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 8, "duration": 25, "cooldownTime": 20, "range": 36.0, "radius": 4.0
     },
     "fiskheroes:charged_beam|swarm_disintegration": {

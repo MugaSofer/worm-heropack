@@ -60,11 +60,10 @@
           "SOUND": 0.2
         },
         "properties": {
-          "COOK_ENTITY": false,
-          "HEAT_TRANSFER": 0,
           "ADD_KNOCKBACK": 8.0
         }
       },
+      "canDoGriefing": false,
       "chargeTime": 15,
       "duration": 15,
       "cooldownTime": 0,
