@@ -57,14 +57,21 @@ function initEffects(renderer) {
         return entity.getData("worm:dyn/slot2") == 2;
     });
 
-    // Energy Form — green particle cloud when in shadowform
+    // Aerokinesis — wind particles while flying
+    renderer.bindProperty("fiskheroes:particles").setParticles(
+        renderer.createResource("PARTICLE_EMITTER", "worm:eidolon_aerokinesis")
+    ).setCondition(function (entity) {
+        return entity.getData("worm:dyn/slot2") == 1 && entity.getData("fiskheroes:flying");
+    });
+
+    // Energy Form — azure particle cloud when in shadowform
     utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:eidolon_energy").setCondition(function (entity) {
         return entity.getData("worm:dyn/slot3") == 1;
     });
 
-    // Energy Form — green body glow
+    // Energy Form — azure body glow
     energyFormGlow = renderer.createEffect("fiskheroes:glowerlay");
-    energyFormGlow.color.set(0x44FF66);
+    energyFormGlow.color.set(0x44DDFF);
 
     // Energy Absorption — orange charge aura (intensity tied to charge level)
     chargeGlow = renderer.createEffect("fiskheroes:glowerlay");
@@ -83,6 +90,7 @@ function initEffects(renderer) {
 
 function render(entity, renderLayer, isFirstPersonArm) {
     var s1 = entity.getData("worm:dyn/slot1");
+    var s2 = entity.getData("worm:dyn/slot2");
     var s3 = entity.getData("worm:dyn/slot3");
 
     // Energy Form glow

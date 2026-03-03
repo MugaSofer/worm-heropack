@@ -5,12 +5,12 @@
       "rand": 0.15
     },
     "green": {
-      "base": 0.6,
+      "base": 0.5,
       "rand": 0.3
     },
     "blue": {
-      "base": 0.15,
-      "rand": 0.1
+      "base": 0.7,
+      "rand": 0.25
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "particles": [
+    {
+      "type": "minecraft:cloud",
+      "anchor": "rightLeg",
+      "amount": 1,
+      "offset": [ 0.0, 11.0, 0.0 ],
+      "motion": [ 0.0, -0.1, 0.0 ],
+      "randMotion": [ 0.15, 0.05, 0.15 ],
+      "mirror": true
+    },
+    {
+      "type": "minecraft:cloud",
+      "anchor": "body",
+      "amount": 1,
+      "offset": [ 0.0, 14.0, 0.0 ],
+      "motion": [ 0.0, -0.02, 0.0 ],
+      "randMotion": [ 0.12, 0.04, 0.12 ]
+    }
+  ]
+}
