@@ -118,10 +118,19 @@ function initEffects(renderer) {
     // Method 4: Swarm — zig-zagging lightning branches
     bindMethodBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
 
-    // Bombardment beam — small beam that flickers on/off when mining with key 4 held
+    // Bombardment small beam — flickers on/off when mining with key 4 held
     utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:charged_beam", "rightArm", 0x4488FF, [
         { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": [1.5, 1.5] }
-    ]).setParticles(impactDefault);
+    ]).setCondition(function (entity) {
+        return !entity.getData("worm:dyn/bombardment_active");
+    }).setParticles(impactDefault);
+
+    // Bombardment big beam — fires during slam burst
+    utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:charged_beam", "rightArm", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": [6.0, 6.0] }
+    ]).setCondition(function (entity) {
+        return entity.getData("worm:dyn/bombardment_active");
+    }).setParticles(impactDefault);
 
     // Bombardment hand charge glow
     var blueFireIcon = renderer.createResource("ICON", "fiskheroes:blue_fire_layer_%s");

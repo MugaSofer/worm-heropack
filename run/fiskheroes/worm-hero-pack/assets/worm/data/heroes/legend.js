@@ -132,11 +132,13 @@ function init(hero) {
         debounce_method = false;
         debounce_effect = false;
 
-        // Bombardment: detect right-click while holding ground_smash key
+        // Bombardment state
         var isBombarding = entity.getData("worm:dyn/bombardment_active");
         var bombTimer = entity.getData("worm:dyn/bombardment_timer");
+        var cooldown = entity.getData("worm:dyn/bombardment_cooldown");
 
-        if (!isBombarding && entity.getData("worm:dyn/bombardment_held") && entity.getPunchTimer() > 0) {
+        // Detect click while holding bombardment key (cooldown gate prevents retrigger)
+        if (!isBombarding && entity.getData("worm:dyn/bombardment_held") && entity.getPunchTimer() > 0 && cooldown == 0) {
             manager.setData(entity, "worm:dyn/bombardment_active", true);
         }
 
@@ -148,7 +150,6 @@ function init(hero) {
         }
 
         // Count down bombardment cooldown
-        var cooldown = entity.getData("worm:dyn/bombardment_cooldown");
         if (cooldown > 0) {
             manager.setData(entity, "worm:dyn/bombardment_cooldown", cooldown - 1);
         }
