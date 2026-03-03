@@ -16,6 +16,17 @@ var lightningGlow;
 var crystalOverlay;
 var flickerGlow;
 
+// Power IDs (must match eidolon.js hero data)
+// 0=Gravity, 1=Energy Absorb, 2=Lightning, 3=Conjuration
+// 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
+// 8=Dmg Reflect, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen
+
+function hasPower(entity, powerId) {
+    return entity.getData("worm:dyn/slot1") == powerId ||
+           entity.getData("worm:dyn/slot2") == powerId ||
+           entity.getData("worm:dyn/slot3") == powerId;
+}
+
 function init(renderer) {
     parent.init(renderer);
 }
@@ -33,14 +44,14 @@ function initEffects(renderer) {
         { "firstPerson": [-2.2, 0.0, 2.0], "offset": [-2.2, -3.3, -4.0], "size": [1.0, 0.5] }
     ]).setParticles(renderer.createResource("PARTICLE_EMITTER", "fiskheroes:impact_heat_vision"))
     .setCondition(function (entity) {
-        return entity.getData("worm:dyn/slot1") == 1;
+        return hasPower(entity, 1);
     });
 
     // Lightning Storm — energy projection with lightning beam model
     utils.bindBeam(renderer, "fiskheroes:energy_projection", "worm:eidolon_lightning", "body", 0xAABBFF, [
         { "firstPerson": [0.0, 0.0, 2.0], "offset": [0.0, -3.3, -4.0], "size": [20.0, 20.0] }
     ]).setCondition(function (entity) {
-        return entity.getData("worm:dyn/slot1") == 2;
+        return hasPower(entity, 2);
     });
 
     // Gravity manipulation — AoE visual effect (default color)
@@ -55,19 +66,19 @@ function initEffects(renderer) {
     forcefield.setShape(36, 18).setOffset(0.0, 6.0, 0.0).setScale(1.5);
     forcefield.setCondition(function (entity) {
         forcefield.opacity = entity.getInterpolatedData("fiskheroes:shield_blocking_timer") * 0.15;
-        return entity.getData("worm:dyn/slot2") == 2;
+        return hasPower(entity, 6);
     });
 
     // Aerokinesis — wind particles while flying
     renderer.bindProperty("fiskheroes:particles").setParticles(
         renderer.createResource("PARTICLE_EMITTER", "worm:eidolon_aerokinesis")
     ).setCondition(function (entity) {
-        return entity.getData("worm:dyn/slot2") == 1 && entity.getData("fiskheroes:flying");
+        return hasPower(entity, 5) && entity.getData("fiskheroes:flying");
     });
 
     // Energy Form — azure particle cloud when in shadowform
     utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:eidolon_energy").setCondition(function (entity) {
-        return entity.getData("worm:dyn/slot3") == 1;
+        return hasPower(entity, 9);
     });
 
     // Energy Form — azure body glow
@@ -80,7 +91,7 @@ function initEffects(renderer) {
 
     // Lightning Storm — electric flicker aura (3rd person) + glow (1st person)
     utils.bindTrail(renderer, "worm:eidolon_lightning").setCondition(function (entity) {
-        return entity.getData("worm:dyn/slot1") == 2;
+        return hasPower(entity, 2);
     });
     lightningGlow = renderer.createEffect("fiskheroes:glowerlay");
     lightningGlow.color.set(0xAABBFF);
@@ -95,29 +106,25 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    var s1 = entity.getData("worm:dyn/slot1");
-    var s2 = entity.getData("worm:dyn/slot2");
-    var s3 = entity.getData("worm:dyn/slot3");
-
     // Energy Form glow
-    energyFormGlow.opacity = s3 == 1 ? 0.3 : 0.0;
+    energyFormGlow.opacity = hasPower(entity, 9) ? 0.3 : 0.0;
     energyFormGlow.render();
 
     // Energy Absorption charge glow — brightens as charge fills
-    var charge = s1 == 1 ? entity.getInterpolatedData("worm:dyn/eidolon_charge") : 0.0;
+    var charge = hasPower(entity, 1) ? entity.getInterpolatedData("worm:dyn/eidolon_charge") : 0.0;
     chargeGlow.opacity = charge * 0.5;
     chargeGlow.render();
 
     // Lightning Storm glow (visible in 1st person where trail isn't)
-    lightningGlow.opacity = s1 == 2 ? 0.2 : 0.0;
+    lightningGlow.opacity = hasPower(entity, 2) ? 0.2 : 0.0;
     lightningGlow.render();
 
     // Flicker Regen — sharp white flash when healing
-    flickerGlow.opacity = (s3 == 4 && entity.getData("worm:dyn/eidolon_flicker")) ? 0.8 : 0.0;
+    flickerGlow.opacity = (hasPower(entity, 12) && entity.getData("worm:dyn/eidolon_flicker")) ? 0.8 : 0.0;
     flickerGlow.render();
 
     // Crystal Armor overlay — aquamarine with health-based cracks
-    if (s3 == 2) {
+    if (hasPower(entity, 10)) {
         var hp = entity.getHealth() / entity.getMaxHealth();
         if (hp > 0.75) {
             crystalOverlay.texture.set("crystal", null);
