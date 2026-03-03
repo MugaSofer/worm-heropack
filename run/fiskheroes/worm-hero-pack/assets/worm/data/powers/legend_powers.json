@@ -144,32 +144,32 @@
       "chargeTime": 20, "duration": 30, "cooldownTime": 60, "range": 36.0, "radius": 8.0
     },
 
-    "fiskheroes:charged_beam|staccato_concussive": {
+    "fiskheroes:energy_projection|staccato_concussive": {
       "damageProfile": {
         "damage": 5.0,
         "types": { "BLUNT": 1.0 },
         "properties": { "ADD_KNOCKBACK": 5.0 }
       },
       "canDoGriefing": false,
-      "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
+      "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:charged_beam|staccato_cutting": {
+    "fiskheroes:energy_projection|staccato_cutting": {
       "damageProfile": {
         "damage": 10.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
-      "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
+      "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:charged_beam|staccato_heat": {
+    "fiskheroes:energy_projection|staccato_heat": {
       "damageProfile": {
         "damage": 8.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
-      "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
+      "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:charged_beam|staccato_cold": {
+    "fiskheroes:energy_projection|staccato_cold": {
       "damageProfile": {
         "damage": 4.0,
         "types": { "COLD": 1.0 },
@@ -179,16 +179,16 @@
         }
       },
       "canDoGriefing": false,
-      "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
+      "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:charged_beam|staccato_disintegration": {
+    "fiskheroes:energy_projection|staccato_disintegration": {
       "damageProfile": {
         "damage": 14.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
       "canDoGriefing": true,
-      "chargeTime": 2, "duration": 5, "cooldownTime": 3, "range": 40.0, "radius": 0.3
+      "range": 40.0, "radius": 0.3
     },
 
     "fiskheroes:charged_beam|invisible_concussive": {
@@ -335,21 +335,21 @@
       "radius": 6.0, "knockback": 2.0, "cooldownTime": 60, "canDoGriefing": true
     },
 
-    "fiskheroes:energy_projection|bombardment_concussive": {
+    "fiskheroes:heat_vision|bombardment_concussive": {
       "damageProfile": {
         "damage": 2.0,
         "types": { "BLUNT": 1.0 }
       },
       "canDoGriefing": false, "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:energy_projection|bombardment_cutting": {
+    "fiskheroes:heat_vision|bombardment_cutting": {
       "damageProfile": {
         "damage": 3.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false, "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:energy_projection|bombardment_heat": {
+    "fiskheroes:heat_vision|bombardment_heat": {
       "damageProfile": {
         "damage": 2.0,
         "types": { "ENERGY": 1.0 },
@@ -357,14 +357,14 @@
       },
       "canDoGriefing": true, "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:energy_projection|bombardment_cold": {
+    "fiskheroes:heat_vision|bombardment_cold": {
       "damageProfile": {
         "damage": 1.0,
         "types": { "COLD": 1.0 }
       },
       "canDoGriefing": false, "range": 40.0, "radius": 0.3
     },
-    "fiskheroes:energy_projection|bombardment_disintegration": {
+    "fiskheroes:heat_vision|bombardment_disintegration": {
       "damageProfile": {
         "damage": 4.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 }
@@ -375,8 +375,8 @@
     "fiskheroes:transformation|bombardment": {
       "key": "GROUND_SMASH_VISUAL",
       "transformation": {
-        "toggleData": "worm:dyn/ground_smash",
-        "timerData": "worm:dyn/ground_smash_timer",
+        "toggleData": "worm:dyn/bombardment_held",
+        "timerData": "worm:dyn/bombardment_held_timer",
         "time": 5
       },
       "isToggle": false

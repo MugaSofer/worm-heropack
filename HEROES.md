@@ -45,17 +45,18 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 1 | Cycle Method | Cycles beam delivery: Basic > Fat AoE > Staccato > Invisible > Swarm |
 | 2 | Cycle Effect | Cycles damage type: Concussive > Cutting > Heat > Cold > Disintegration |
 | 3 | Fire | Hold to charge and fire the current laser combination. |
-| 4 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
+| 4 | Bombardment | Hold to channel, right-click to fire an extended-range ground slam + beam burst. |
+| 5 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
 
 ### Laser Methods
 
-| Method | Behaviour |
-|--------|-----------|
-| **Basic** | Standard beam. Long range (48), fast charge, long duration. Your bread and butter. |
-| **Fat AoE** | Wide beam (radius 8). Slower charge, shorter duration, long cooldown. Crowd control. |
-| **Staccato** | Rapid-fire bursts. Near-instant charge, very short duration, short cooldown. Tap repeatedly. |
-| **Invisible** | Same as Basic but with no visible beam. Stealth kills. |
-| **Swarm** | Multiple zig-zagging beams (radius 4). Medium charge, medium cooldown.|
+| Method | Charge | Duration | Cooldown | Range | Radius | Behaviour |
+|--------|--------|----------|----------|-------|--------|-----------|
+| **Basic** | 0.25s | 2s | 0.5s | 48 | 0.3 | Standard focused beam. Your bread and butter. |
+| **Fat AoE** | 1s | 1.5s | 3s | 36 | 8.0 | Wide beam. Slow charge, long cooldown. Crowd control. |
+| **Staccato** | 0.1s | 0.25s | 0.15s | 40 | 0.3 | Rapid-fire bursts. Tap repeatedly. |
+| **Invisible** | 0.25s | 2s | 0.5s | 48 | 0.3 | Same as Basic but no visible beam. Stealth kills. |
+| **Swarm** | 0.4s | 1.25s | 1s | 36 | 4.0 | Multiple zig-zagging beams. Medium everything. |
 
 ### Laser Effects
 
@@ -63,9 +64,26 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 |--------|--------|---------|
 | **Concussive** | 5 blunt | Extreme knockback. Sends targets flying. |
 | **Cutting** | 10 sharp | Clean damage, no knockback reduction. |
-| **Heat** | 8 energy | Sets targets on fire, cooks entities. |
+| **Heat** | 8 energy | Sets targets on fire, cooks entities, turns sand to glass. |
 | **Cold** | 4 cold | Applies Slowness VIII for 15 seconds. Near-total immobilization. |
-| **Disintegration** | 14 energy/explosion | Highest damage. Burns and cooks. |
+| **Disintegration** | 14 energy/explosion | Highest damage. Burns, cooks, destroys terrain. |
+
+### Bombardment (Key 4)
+
+Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, hands glow blue. Right-click a distant block to fire a ground slam at that location plus a beam burst. The ground slam is the main damage dealer and destroys terrain. The active laser effect (key 2) determines damage type.
+
+| Effect | Slam Damage | Beam Damage | Special |
+|--------|-------------|-------------|---------|
+| **Concussive** | 12 blunt | 2 blunt | Knockback 3 |
+| **Cutting** | 16 sharp | 3 sharp | — |
+| **Heat** | 14 energy | 2 energy | Ignites, cooks, turns sand to glass |
+| **Cold** | 10 cold | 1 cold | Slowness IV for 10 seconds |
+| **Disintegration** | 20 energy/explosion | 4 energy/explosion | Maximum destruction |
+
+- **Reach**: 40 blocks while channeling (vs normal ~5)
+- **AoE radius**: 6.0 (ground slam)
+- **Cooldown**: 3 seconds
+- **Visual feedback**: Hand glow dims during cooldown, fills back up when ready
 
 ### Passive Abilities
 
@@ -79,7 +97,9 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 
 - Mix methods and effects for 25 combinations (5 x 5). Experiment to find your favourites.
 - Staccato + Concussive is great for juggling targets. AoE + Cold locks down groups. Invisible + Disintegration for silent devastation.
+- Bombardment + Disintegration is Legend's most destructive attack — 20 damage AoE that levels terrain at 40 block range.
 - Legend's flight is noticeably faster than Alexandria's or Eidolon's, with barrel roll capability.
+- Beams fire from the right hand in 3rd person with aim-tracking animation.
 
 ---
 

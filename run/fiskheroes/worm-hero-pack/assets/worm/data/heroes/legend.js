@@ -108,13 +108,14 @@ function init(hero) {
         return true;
     }, "\u00A7fEffect: \u00A74Disintegration \u00A78>", 2);
 
-    // Key 3: Fire laser
+    // Key 3: Fire laser (charged_beam for most methods, energy_projection for staccato)
     hero.addKeyBind("CHARGED_BEAM", "Fire", 3);
+    hero.addKeyBind("ENERGY_PROJECTION", "Fire", 3);
 
-    // Key 4: Bombardment (ground slam + beam VFX)
+    // Key 4: Bombardment (ground slam + heat_vision beam VFX)
     hero.addKeyBind("GROUND_SMASH", "Bombardment", 4);
     hero.addKeyBind("GROUND_SMASH_VISUAL", "Bombardment", 4);
-    hero.addKeyBind("ENERGY_PROJECTION", "Bombardment", 4);
+    hero.addKeyBind("HEAT_VISION", "Bombardment", 4);
 
     hero.setHasProperty(hasProperty);
     hero.setModifierEnabled(isModifierEnabled);
@@ -135,7 +136,7 @@ function init(hero) {
         var isBombarding = entity.getData("worm:dyn/bombardment_active");
         var bombTimer = entity.getData("worm:dyn/bombardment_timer");
 
-        if (!isBombarding && entity.getData("worm:dyn/ground_smash") && entity.getPunchTimer() > 0) {
+        if (!isBombarding && entity.getData("worm:dyn/bombardment_held") && entity.getPunchTimer() > 0) {
             manager.setData(entity, "worm:dyn/bombardment_active", true);
         }
 
@@ -185,20 +186,32 @@ function bombardmentProfile(profile) {
 }
 
 function getAttributeProfile(entity) {
-    return entity.getData("worm:dyn/ground_smash") ? "BOMBARDMENT" : null;
+    return entity.getData("worm:dyn/bombardment_held") ? "BOMBARDMENT" : null;
 }
 
 function isModifierEnabled(entity, modifier) {
     var effect = entity.getData("worm:dyn/laser_effect");
     var effectName = getEffectName(effect);
+    var method = entity.getData("worm:dyn/laser_method");
 
     if (modifier.name() == "fiskheroes:charged_beam") {
-        var method = entity.getData("worm:dyn/laser_method");
+        // Charged beam handles all methods except staccato (which uses energy_projection)
+        if (method == 2) return false;
         var expected = getMethodName(method) + "_" + effectName;
         return modifier.id() == expected;
     }
     if (modifier.name() == "fiskheroes:energy_projection") {
-        return entity.getData("worm:dyn/bombardment_active") && modifier.id() == "bombardment_" + effectName;
+        // Staccato uses energy_projection for continuous fire
+        if (method == 2) {
+            return modifier.id() == "staccato_" + effectName;
+        }
+        return false;
+    }
+    if (modifier.name() == "fiskheroes:heat_vision") {
+        // Bombardment beam VFX — small beam when mining, big beam on right-click burst
+        return entity.getData("worm:dyn/bombardment_held")
+            && (entity.getData("worm:dyn/bombardment_active") || entity.isPunching())
+            && modifier.id() == "bombardment_" + effectName;
     }
     return super_boost.isModifierEnabled(entity, modifier);
 }
@@ -218,10 +231,11 @@ function isKeyBindEnabled(entity, keyBind) {
     case "EFFECT_2": return effect == 2;
     case "EFFECT_3": return effect == 3;
     case "EFFECT_4": return effect == 4;
-    case "CHARGED_BEAM": return true;
+    case "CHARGED_BEAM": return method != 2;
+    case "ENERGY_PROJECTION": return method == 2;
     case "GROUND_SMASH": return true;
     case "GROUND_SMASH_VISUAL": return true;
-    case "ENERGY_PROJECTION": return true;
+    case "HEAT_VISION": return true;
     default:
         return super_boost.isKeyBindEnabled(entity, keyBind);
     }

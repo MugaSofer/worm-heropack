@@ -19,19 +19,20 @@ function initAnimations(renderer) {
     utils.addHoverAnimation(renderer, "legend.HOVER", "fiskheroes:flight/idle/default");
 
     // Single-arm aim tracking — right arm follows where player is looking while firing
+    // High priority to override energy_projection's built-in two-handed pose
     addAnimation(renderer, "legend.BEAM_AIM", "worm:beam_aim")
         .setData(function (entity, data) {
             data.load(entity.getInterpolatedData("fiskheroes:beam_shooting_timer"));
         }).setCondition(function (entity) {
             return entity.getInterpolatedData("fiskheroes:beam_shooting_timer") > 0;
-        }).priority = 10;
+        }).priority = 50;
 
     // Bombardment channeling — arms forward, palms together
     addAnimation(renderer, "legend.BOMBARDMENT_CHARGE", "worm:bombardment_charge")
         .setData(function (entity, data) {
-            data.load(entity.getData("worm:dyn/ground_smash") ? 1.0 : 0.0);
+            data.load(entity.getData("worm:dyn/bombardment_held") ? 1.0 : 0.0);
         }).setCondition(function (entity) {
-            return entity.getData("worm:dyn/ground_smash");
+            return entity.getData("worm:dyn/bombardment_held");
         }).priority = 100;
 }
 
@@ -65,32 +66,33 @@ function createHandCharge(renderer, icon, anchor, mirror) {
 }
 
 // Helper: bind a beam with 4 particle variants (default, cutting, heat, cold)
-function bindMethodBeam(renderer, model, size, methodIndex, impactDefault, impactHeat, impactIce) {
+function bindMethodBeam(renderer, modifierName, model, size, methodIndex, impactDefault, impactHeat, impactIce, fpOverride) {
+    var fp = fpOverride || [0.0, 6.0, 0.0];
     // Default particles (concussive, disintegration)
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
+    utils.bindBeam(renderer, modifierName, model, "rightArm", 0x4488FF, [
+        { "firstPerson": fp, "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         var e = entity.getData("worm:dyn/laser_effect");
         return entity.getData("worm:dyn/laser_method") == methodIndex && e != 1 && e != 2 && e != 3;
     }).setParticles(impactDefault);
 
     // Cutting — no particles
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
+    utils.bindBeam(renderer, modifierName, model, "rightArm", 0x4488FF, [
+        { "firstPerson": fp, "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 1;
     });
 
     // Heat particles (sparks)
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
+    utils.bindBeam(renderer, modifierName, model, "rightArm", 0x4488FF, [
+        { "firstPerson": fp, "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 2;
     }).setParticles(impactHeat);
 
     // Cold particles (cryo smoke)
-    utils.bindBeam(renderer, "fiskheroes:charged_beam", model, "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": size }
+    utils.bindBeam(renderer, modifierName, model, "rightArm", 0x4488FF, [
+        { "firstPerson": fp, "offset": [-0.6, 10.8, 0.0], "size": size }
     ]).setCondition(function (entity) {
         return entity.getData("worm:dyn/laser_method") == methodIndex && entity.getData("worm:dyn/laser_effect") == 3;
     }).setParticles(impactIce);
@@ -102,23 +104,23 @@ function initEffects(renderer) {
     var impactIce = renderer.createResource("PARTICLE_EMITTER", "worm:ice_impact");
 
     // Method 0: Basic — standard focused beam
-    bindMethodBeam(renderer, "fiskheroes:charged_beam", [2.0, 2.0], 0, impactDefault, impactHeat, impactIce);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", [2.0, 2.0], 0, impactDefault, impactHeat, impactIce);
 
     // Method 1: Fat AoE — wide beam
-    bindMethodBeam(renderer, "fiskheroes:charged_beam", [6.0, 6.0], 1, impactDefault, impactHeat, impactIce);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", "fiskheroes:charged_beam", [6.0, 6.0], 1, impactDefault, impactHeat, impactIce);
 
-    // Method 2: Staccato — slightly thinner beam
-    bindMethodBeam(renderer, "fiskheroes:charged_beam", [1.5, 1.5], 2, impactDefault, impactHeat, impactIce);
+    // Method 2: Staccato — continuous pulsing beam (energy_projection, hand stays on screen in 1st person)
+    bindMethodBeam(renderer, "fiskheroes:energy_projection", "worm:legend_staccato", [1.5, 1.5], 2, impactDefault, impactHeat, impactIce, [-2.0, 5.0, -5.0]);
 
     // Method 3: Invisible — no visible beam, but still has impact particles
-    bindMethodBeam(renderer, "worm:invisible", [2.0, 2.0], 3, impactDefault, impactHeat, impactIce);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", "worm:invisible", [2.0, 2.0], 3, impactDefault, impactHeat, impactIce);
 
     // Method 4: Swarm — zig-zagging lightning branches
-    bindMethodBeam(renderer, "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
+    bindMethodBeam(renderer, "fiskheroes:charged_beam", "worm:laser_swarm", [30.0, 30.0], 4, impactDefault, impactHeat, impactIce);
 
-    // Bombardment beam — wide beam from hands
-    utils.bindBeam(renderer, "fiskheroes:energy_projection", "fiskheroes:charged_beam", "rightArm", 0x4488FF, [
-        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": [6.0, 6.0] }
+    // Bombardment beam — small beam that flickers on/off when mining with key 4 held
+    utils.bindBeam(renderer, "fiskheroes:heat_vision", "fiskheroes:charged_beam", "rightArm", 0x4488FF, [
+        { "firstPerson": [0.0, 6.0, 0.0], "offset": [-0.6, 10.8, 0.0], "size": [1.5, 1.5] }
     ]).setParticles(impactDefault);
 
     // Bombardment hand charge glow
@@ -141,7 +143,7 @@ function initEffects(renderer) {
 function render(entity, renderLayer, isFirstPersonArm) {
     if (renderLayer == "CHESTPLATE") {
         // Bombardment mode: mirrored glow while holding key 4
-        var groundSmashTimer = entity.getInterpolatedData("worm:dyn/ground_smash_timer");
+        var groundSmashTimer = entity.getInterpolatedData("worm:dyn/bombardment_held_timer");
         if (groundSmashTimer > 0) {
             // Dim if on cooldown, full if ready
             var cooldown = entity.getData("worm:dyn/bombardment_cooldown");
