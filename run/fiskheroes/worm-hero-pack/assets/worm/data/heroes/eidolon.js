@@ -40,7 +40,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot1");
         manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
         return true;
-    }, "\u00A7aGravity Control \u00A78>", 1);
+    }, "\u00A7aGravity Control \u00A78> (Discard)", 1);
 
     hero.addKeyBindFunc("SLOT1_CYCLE_1", function (entity, manager) {
         if (debounce1) return false;
@@ -48,7 +48,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot1");
         manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
         return true;
-    }, "\u00A7bEnergy Absorb \u00A78>", 1);
+    }, "\u00A7bEnergy Absorb \u00A78> (Discard)", 1);
 
     hero.addKeyBindFunc("SLOT1_CYCLE_2", function (entity, manager) {
         if (debounce1) return false;
@@ -56,7 +56,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot1");
         manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
         return true;
-    }, "\u00A7eLightning Storm \u00A78>", 1);
+    }, "\u00A7eLightning Storm \u00A78> (Discard)", 1);
 
     // Key 2: Cycle slot 2
     hero.addKeyBindFunc("SLOT2_CYCLE_0", function (entity, manager) {
@@ -65,7 +65,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot2");
         manager.setData(entity, "worm:dyn/slot2", (current + 1) % SLOT2_COUNT);
         return true;
-    }, "\u00A7eChronokinesis \u00A78>", 2);
+    }, "\u00A7eChronokinesis \u00A78> (Discard)", 2);
 
     hero.addKeyBindFunc("SLOT2_CYCLE_1", function (entity, manager) {
         if (debounce2) return false;
@@ -73,7 +73,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot2");
         manager.setData(entity, "worm:dyn/slot2", (current + 1) % SLOT2_COUNT);
         return true;
-    }, "\u00A7fAerokinesis \u00A78>", 2);
+    }, "\u00A7fAerokinesis \u00A78> (Discard)", 2);
 
     hero.addKeyBindFunc("SLOT2_CYCLE_2", function (entity, manager) {
         if (debounce2) return false;
@@ -81,7 +81,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot2");
         manager.setData(entity, "worm:dyn/slot2", (current + 1) % SLOT2_COUNT);
         return true;
-    }, "\u00A79Forcefield \u00A78>", 2);
+    }, "\u00A79Bubble \u00A78> (Discard)", 2);
 
     // Key 3: Cycle slot 3
     hero.addKeyBindFunc("SLOT3_CYCLE_0", function (entity, manager) {
@@ -90,7 +90,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot3");
         manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
         return true;
-    }, "\u00A76Dmg Reflect \u00A78>", 3);
+    }, "\u00A76Dmg Reflect \u00A78> (Discard)", 3);
 
     hero.addKeyBindFunc("SLOT3_CYCLE_1", function (entity, manager) {
         if (debounce3) return false;
@@ -98,7 +98,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot3");
         manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
         return true;
-    }, "\u00A7dEnergy Form \u00A78>", 3);
+    }, "\u00A7dEnergy Form \u00A78> (Discard)", 3);
 
     hero.addKeyBindFunc("SLOT3_CYCLE_2", function (entity, manager) {
         if (debounce3) return false;
@@ -106,7 +106,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot3");
         manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
         return true;
-    }, "\u00A73Crystal Armor \u00A78>", 3);
+    }, "\u00A73Crystal Armor \u00A78> (Discard)", 3);
 
     hero.addKeyBindFunc("SLOT3_CYCLE_3", function (entity, manager) {
         if (debounce3) return false;
@@ -114,7 +114,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/slot3");
         manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
         return true;
-    }, "\u00A78Intangibility \u00A78>", 3);
+    }, "\u00A78Intangibility \u00A78> (Discard)", 3);
 
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
@@ -127,7 +127,7 @@ function init(hero) {
     hero.addKeyBind("SLOW_MOTION", "Slow Time", 5);
     hero.addKeyBind("TELEKINESIS", "Tornado", 5);
     hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
-    hero.addKeyBind("SHIELD", "Forcefield", 5);
+    hero.addKeyBind("SHIELD", "Bubble", 5);
 
     hero.setTickHandler(function (entity, manager) {
         debounce1 = false;
@@ -366,5 +366,9 @@ function isKeyBindEnabled(entity, keyBind) {
 }
 
 function hasProperty(entity, property) {
-    return property == "BREATHE_SPACE";
+    var s3 = entity.getData("worm:dyn/slot3");
+    if (property == "BREATHE_SPACE" || property == "BREATHE_WATER") {
+        return s3 == 1 || s3 == 3;
+    }
+    return false;
 }
