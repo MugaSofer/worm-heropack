@@ -122,8 +122,11 @@
         "DISABLE": "fiskheroes:shadowform_disable"
       }
     },
-    "fiskheroes:healing_factor": {
+    "fiskheroes:healing_factor|energy_form": {
       "delay": 180
+    },
+    "fiskheroes:healing_factor|flicker_regen": {
+      "delay": 20
     },
     "fiskheroes:energy_projection": {
       "damageProfile": {

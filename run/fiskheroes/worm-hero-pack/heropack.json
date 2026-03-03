@@ -22,6 +22,7 @@
     "bombardment_held_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "bombardment_active": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "bombardment_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
-    "bombardment_cooldown": {"type": "INTEGER", "resetWithoutSuit": true}
+    "bombardment_cooldown": {"type": "INTEGER", "resetWithoutSuit": true},
+    "eidolon_flicker": {"type": "BOOLEAN", "resetWithoutSuit": true}
   }
 }

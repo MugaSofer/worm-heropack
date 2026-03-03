@@ -6,7 +6,7 @@
 
 var SLOT1_COUNT = 3;
 var SLOT2_COUNT = 3;
-var SLOT3_COUNT = 4;
+var SLOT3_COUNT = 5;
 
 var speedster_base = implement("fiskheroes:external/speedster_base");
 
@@ -14,6 +14,7 @@ var debounce1 = false;
 var debounce2 = false;
 var debounce3 = false;
 var heroRef = null;
+var prevHealth = -1;
 
 function init(hero) {
     heroRef = hero;
@@ -115,6 +116,14 @@ function init(hero) {
         manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
         return true;
     }, "\u00A78Intangibility \u00A78> (Discard)", 3);
+
+    hero.addKeyBindFunc("SLOT3_CYCLE_4", function (entity, manager) {
+        if (debounce3) return false;
+        debounce3 = true;
+        var current = entity.getData("worm:dyn/slot3");
+        manager.setData(entity, "worm:dyn/slot3", (current + 1) % SLOT3_COUNT);
+        return true;
+    }, "\u00A7aFlicker Regen \u00A78> (Discard)", 3);
 
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
@@ -224,6 +233,15 @@ function init(hero) {
             }
         }
 
+        // Flicker Regen: detect healing and trigger flicker visual
+        var currentHealth = entity.getHealth();
+        if (s3 == 4 && prevHealth >= 0 && currentHealth > prevHealth) {
+            manager.setData(entity, "worm:dyn/eidolon_flicker", true);
+        } else if (entity.getData("worm:dyn/eidolon_flicker")) {
+            manager.setData(entity, "worm:dyn/eidolon_flicker", false);
+        }
+        prevHealth = currentHealth;
+
         // Bubble: continuous damage while shield is active
         var shieldTimer = entity.getData("fiskheroes:shield_blocking_timer");
         if (s2 == 2 && shieldTimer > 0) {
@@ -328,7 +346,7 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:shadowform":
         return s3 == 1;
     case "fiskheroes:healing_factor":
-        return s3 == 1;
+        return s3 == 1 ? modifier.id() == "energy_form" : s3 == 4 ? modifier.id() == "flicker_regen" : false;
     case "fiskheroes:metal_skin":
         return s3 == 2;
     case "fiskheroes:projectile_immunity":
@@ -376,6 +394,8 @@ function isKeyBindEnabled(entity, keyBind) {
         return s3 == 2;
     case "SLOT3_CYCLE_3":
         return s3 == 3;
+    case "SLOT3_CYCLE_4":
+        return s3 == 4;
     // Slot 1 active abilities (key 4)
     case "GRAVITY_MANIPULATION":
         return s1 == 0;

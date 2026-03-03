@@ -14,6 +14,7 @@ var energyFormGlow;
 var chargeGlow;
 var lightningGlow;
 var crystalOverlay;
+var flickerGlow;
 
 function init(renderer) {
     parent.init(renderer);
@@ -86,6 +87,10 @@ function initEffects(renderer) {
 
     // Crystal Armor — aquamarine overlay with health-based cracks
     crystalOverlay = renderer.createEffect("fiskheroes:overlay");
+
+    // Flicker Regen — bright white flash when healing
+    flickerGlow = renderer.createEffect("fiskheroes:glowerlay");
+    flickerGlow.color.set(0xFFFFFF);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
@@ -105,6 +110,10 @@ function render(entity, renderLayer, isFirstPersonArm) {
     // Lightning Storm glow (visible in 1st person where trail isn't)
     lightningGlow.opacity = s1 == 2 ? 0.2 : 0.0;
     lightningGlow.render();
+
+    // Flicker Regen — sharp white flash when healing
+    flickerGlow.opacity = (s3 == 4 && entity.getData("worm:dyn/eidolon_flicker")) ? 0.8 : 0.0;
+    flickerGlow.render();
 
     // Crystal Armor overlay — aquamarine with health-based cracks
     if (s3 == 2) {
