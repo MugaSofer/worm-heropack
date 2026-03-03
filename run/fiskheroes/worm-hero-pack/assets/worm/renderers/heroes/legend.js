@@ -8,6 +8,7 @@ var utils = implement("fiskheroes:external/utils");
 
 var handChargeMirrored;
 var handChargeSingle;
+var energyFormGlow;
 
 function init(renderer) {
     parent.init(renderer);
@@ -129,8 +130,14 @@ function initEffects(renderer) {
     handChargeMirrored = createHandCharge(renderer, blueFireIcon, "rightArm", true);
     handChargeSingle = createHandCharge(renderer, blueFireIcon, "rightArm", false);
 
-    // Night vision — always on
-    renderer.bindProperty("fiskheroes:night_vision");
+    // Night vision — on except on the moon (causes black blocks)
+    renderer.bindProperty("fiskheroes:night_vision").setCondition(function (entity) {
+        return entity.world().getDimension() != 2595;
+    });
+
+    // Energy Form — blue glow while flight boosting
+    energyFormGlow = renderer.createEffect("fiskheroes:glowerlay");
+    energyFormGlow.color.set(0xAABBFF);
 
     // Camera shake on beam firing
     var shake = renderer.bindProperty("fiskheroes:camera_shake").setCondition(function (entity) {
@@ -140,6 +147,11 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
+    // Energy Form glow — fades in with flight boost
+    var boostTimer = entity.getInterpolatedData("fiskheroes:flight_boost_timer");
+    energyFormGlow.opacity = boostTimer * 0.9;
+    energyFormGlow.render();
+
     if (renderLayer == "CHESTPLATE") {
         // Bombardment mode: mirrored glow while holding key 4
         var groundSmashTimer = entity.getInterpolatedData("worm:dyn/bombardment_held_timer");

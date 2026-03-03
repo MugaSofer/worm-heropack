@@ -8,6 +8,7 @@ var EFFECT_NAMES = ["concussive", "cutting", "heat", "cold", "disintegration"];
 
 var debounce_method = false;
 var debounce_effect = false;
+var wasTeleporting = false;
 
 function init(hero) {
     hero.setName("Legend");
@@ -128,7 +129,10 @@ function init(hero) {
     });
     hero.setDamageProfile(getDamageProfile);
 
-    falcon_base.init(hero, super_boost, "3", 0.25, function (entity, manager) {
+    // Key 5: Relativistic teleport (energy form only)
+    hero.addKeyBind("TELEPORT", "Relativistic", 5);
+
+    falcon_base.init(hero, super_boost, "4", 0.25, function (entity, manager) {
         debounce_method = false;
         debounce_effect = false;
 
@@ -152,6 +156,17 @@ function init(hero) {
         // Count down bombardment cooldown
         if (cooldown > 0) {
             manager.setData(entity, "worm:dyn/bombardment_cooldown", cooldown - 1);
+        }
+
+        // Re-enable flight after teleporting
+        var teleportDelay = entity.getData("fiskheroes:teleport_delay");
+        if (teleportDelay > 0) {
+            wasTeleporting = true;
+        } else if (wasTeleporting) {
+            wasTeleporting = false;
+            if (!entity.getData("fiskheroes:flying")) {
+                manager.setData(entity, "fiskheroes:flying", true);
+            }
         }
     });
 
@@ -194,7 +209,20 @@ function isModifierEnabled(entity, modifier) {
     var effect = entity.getData("worm:dyn/laser_effect");
     var effectName = getEffectName(effect);
     var method = entity.getData("worm:dyn/laser_method");
+    var isBoosting = entity.isSprinting() && entity.getData("fiskheroes:flying");
 
+    if (modifier.name() == "fiskheroes:healing_factor") {
+        return isBoosting;
+    }
+    if (modifier.name() == "fiskheroes:teleportation") {
+        return isBoosting;
+    }
+    if (modifier.name() == "fiskheroes:damage_immunity") {
+        var id = modifier.id();
+        if (id == "energy_boost" || id == "explosion_boost" || id == "cold_boost") {
+            return isBoosting;
+        }
+    }
     if (modifier.name() == "fiskheroes:charged_beam") {
         // Charged beam handles all methods except staccato (which uses energy_projection)
         if (method == 2) return false;
@@ -220,6 +248,7 @@ function isModifierEnabled(entity, modifier) {
 function isKeyBindEnabled(entity, keyBind) {
     var method = entity.getData("worm:dyn/laser_method");
     var effect = entity.getData("worm:dyn/laser_effect");
+    var isBoosting = entity.isSprinting() && entity.getData("fiskheroes:flying");
 
     switch (keyBind) {
     case "METHOD_0": return method == 0;
@@ -234,14 +263,18 @@ function isKeyBindEnabled(entity, keyBind) {
     case "EFFECT_4": return effect == 4;
     case "CHARGED_BEAM": return method != 2;
     case "ENERGY_PROJECTION": return method == 2;
-    case "GROUND_SMASH": return true;
-    case "GROUND_SMASH_VISUAL": return true;
-    case "HEAT_VISION": return true;
+    case "GROUND_SMASH": return !isBoosting;
+    case "GROUND_SMASH_VISUAL": return !isBoosting;
+    case "HEAT_VISION": return !isBoosting;
+    case "TELEPORT": return isBoosting;
     default:
         return super_boost.isKeyBindEnabled(entity, keyBind);
     }
 }
 
 function hasProperty(entity, property) {
-    return property == "NIGHT_VISION" || property == "BREATHE_SPACE";
+    if (property == "NIGHT_VISION") {
+        return entity.world().getDimension() != 2595;
+    }
+    return property == "BREATHE_SPACE";
 }

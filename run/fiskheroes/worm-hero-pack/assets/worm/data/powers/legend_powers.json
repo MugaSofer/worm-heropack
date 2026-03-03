@@ -382,8 +382,8 @@
       "isToggle": false
     },
 
-    "fiskheroes:regeneration": {
-      "factor": 2.0
+    "fiskheroes:healing_factor|energy_form": {
+      "delay": 30
     },
     "fiskheroes:damage_resistance|blunt": {
       "damageType": "BLUNT",
@@ -395,6 +395,22 @@
     },
     "fiskheroes:fire_immunity": {},
     "fiskheroes:projectile_immunity": {},
+    "fiskheroes:damage_immunity|energy_boost": {
+      "damageType": "ENERGY"
+    },
+    "fiskheroes:damage_immunity|explosion_boost": {
+      "damageType": "EXPLOSION"
+    },
+    "fiskheroes:damage_immunity|cold_boost": {
+      "damageType": "COLD"
+    },
+    "fiskheroes:teleportation": {
+      "canReachMoon": true,
+      "range": 128.0,
+      "soundEvents": {
+        "TELEPORT": "fiskheroes:breach"
+      }
+    },
     "fiskheroes:leaping": {
       "leapAmount": [0.5, 0.3]
     }
