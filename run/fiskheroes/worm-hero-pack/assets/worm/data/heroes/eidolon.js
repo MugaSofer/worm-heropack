@@ -212,6 +212,18 @@ function init(hero) {
             }
         }
 
+        // Lightning Storm: mild electric aura damage
+        if (s1 == 2) {
+            var world = entity.world();
+            var nearby = world.getEntitiesInRangeOf(entity.pos(), 2.0);
+            for (var i = 0; i < nearby.length; i++) {
+                var target = nearby[i];
+                if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
+                    target.hurt(heroRef, "LIGHTNING_AURA", "%1$s was shocked by Eidolon", 1.0);
+                }
+            }
+        }
+
         return false;
     });
 
@@ -227,6 +239,11 @@ function init(hero) {
     hero.addDamageProfile("ENERGY_FORM", {
         "types": {
             "ENERGY": 1.0
+        }
+    });
+    hero.addDamageProfile("LIGHTNING_AURA", {
+        "types": {
+            "ELECTRICITY": 1.0
         }
     });
     hero.setDamageProfile(getDamageProfile);
