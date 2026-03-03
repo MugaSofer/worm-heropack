@@ -8,6 +8,7 @@ var utils = implement("fiskheroes:external/utils");
 
 var energyFormGlow;
 var chargeGlow;
+var lightningGlow;
 
 function init(renderer) {
     parent.init(renderer);
@@ -63,6 +64,13 @@ function initEffects(renderer) {
     // Energy Absorption — orange charge aura (intensity tied to charge level)
     chargeGlow = renderer.createEffect("fiskheroes:glowerlay");
     chargeGlow.color.set(0xFF6622);
+
+    // Lightning Storm — electric flicker aura (3rd person) + glow (1st person)
+    utils.bindTrail(renderer, "worm:eidolon_lightning").setCondition(function (entity) {
+        return entity.getData("worm:dyn/slot1") == 2;
+    });
+    lightningGlow = renderer.createEffect("fiskheroes:glowerlay");
+    lightningGlow.color.set(0xAABBFF);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
@@ -77,4 +85,8 @@ function render(entity, renderLayer, isFirstPersonArm) {
     var charge = s1 == 1 ? entity.getInterpolatedData("worm:dyn/eidolon_charge") : 0.0;
     chargeGlow.opacity = charge * 0.5;
     chargeGlow.render();
+
+    // Lightning Storm glow (visible in 1st person where trail isn't)
+    lightningGlow.opacity = s1 == 2 ? 0.2 : 0.0;
+    lightningGlow.render();
 }
