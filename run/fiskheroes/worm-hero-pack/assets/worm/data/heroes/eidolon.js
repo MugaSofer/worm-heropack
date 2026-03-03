@@ -308,7 +308,7 @@ function isModifierEnabled(entity, modifier) {
         return s3 == 0;
     case "fiskheroes:shadowform":
         return s3 == 1;
-    case "fiskheroes:regeneration":
+    case "fiskheroes:healing_factor":
         return s3 == 1;
     case "fiskheroes:metal_skin":
         return s3 == 2;

@@ -122,8 +122,8 @@
         "DISABLE": "fiskheroes:shadowform_disable"
       }
     },
-    "fiskheroes:regeneration": {
-      "factor": 3.0
+    "fiskheroes:healing_factor": {
+      "delay": 180
     },
     "fiskheroes:energy_projection": {
       "damageProfile": {

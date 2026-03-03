@@ -110,7 +110,7 @@ function render(entity, renderLayer, isFirstPersonArm) {
         } else {
             crystalOverlay.texture.set("crystal_cracked3", null);
         }
-        crystalOverlay.opacity = 1.0;
+        crystalOverlay.opacity = 0.6;
         crystalOverlay.render();
     }
 }
