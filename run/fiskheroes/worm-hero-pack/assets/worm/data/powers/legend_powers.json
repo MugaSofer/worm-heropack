@@ -406,7 +406,7 @@
     },
     "fiskheroes:teleportation": {
       "canReachMoon": true,
-      "range": 128.0,
+      "range": 4096.0,
       "soundEvents": {
         "TELEPORT": "fiskheroes:breach"
       }

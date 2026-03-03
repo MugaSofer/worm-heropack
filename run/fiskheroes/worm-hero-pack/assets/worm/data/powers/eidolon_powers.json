@@ -130,7 +130,7 @@
     },
     "fiskheroes:energy_projection": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 16.0,
         "types": {
           "ENERGY": 1.0
         },

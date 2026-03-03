@@ -45,8 +45,8 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 1 | Cycle Method | Cycles beam delivery: Basic > Fat AoE > Staccato > Invisible > Swarm |
 | 2 | Cycle Effect | Cycles damage type: Concussive > Cutting > Heat > Cold > Disintegration |
 | 3 | Fire | Hold to charge and fire the current laser combination. |
-| 4 | Bombardment | Hold to channel, right-click to fire an extended-range ground slam + beam burst. |
-| 5 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
+| 4 | Bombardment / Super Boost | Hold to channel bombardment, right-click to fire. While flying at boost speed, activates super boost (energy form). |
+| 5 | Relativistic (Teleport) | While in energy form (super boost), teleport to target location. Can reach the moon. Range 4096. |
 
 ### Laser Methods
 
@@ -63,10 +63,10 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | Effect | Damage | Special |
 |--------|--------|---------|
 | **Concussive** | 5 blunt | Extreme knockback. Sends targets flying. |
-| **Cutting** | 10 sharp | Clean damage, no knockback reduction. |
-| **Heat** | 8 energy | Sets targets on fire, cooks entities, turns sand to glass. |
+| **Cutting** | 15 sharp | Clean damage, no knockback reduction. |
+| **Heat** | 12 energy | Sets targets on fire, cooks entities, turns sand to glass. |
 | **Cold** | 4 cold | Applies Slowness VIII for 15 seconds. Near-total immobilization. |
-| **Disintegration** | 14 energy/explosion | Highest damage. Burns, cooks, destroys terrain. |
+| **Disintegration** | 20 energy/explosion | Highest damage. Burns, cooks, destroys terrain. |
 
 ### Bombardment (Key 4)
 
@@ -88,10 +88,20 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 ### Passive Abilities
 
 - **Fastest flight** — Base speed 0.14, boost 0.28, super boost available. Barrel rolls.
-- **Regeneration** — Passive health regen (factor 2).
 - **Durability** — 50% resistance to blunt and sharp damage. Fire and projectile immunity.
-- **Night vision** — Always active. Can see in the dark.
+- **Night vision** — Always active (disabled on the moon to avoid visual glitches).
 - **Space breathing** — Can breathe in space.
+
+### Energy Form (Super Boost)
+
+Sprint while flying at boost speed to enter energy form. While active:
+- **Blue-white glow** envelops your body, intensifying with speed.
+- **Healing factor** — Rapid health regen while boosting.
+- **Additional immunities** — Energy, explosion, and cold damage immunity.
+- Go **Relativistic** (Key 5) — Move almost instantly to target location. Range 4096 blocks. Can reach the moon.
+- **Bombardment disabled** — Can't pause to use bombardment while in energy form.
+
+Note: Bombardment keybind (Key 4) becomes super boost activation while flying at high speed.
 
 ### Notes
 
@@ -105,15 +115,15 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 
 ## Eidolon
 
-**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 10 abilities. The most versatile hero in the pack.
+**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 14 abilities. The most versatile hero in the pack.
 
 ### Keybinds
 
 | Key | Ability | Description |
 |-----|---------|-------------|
-| 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm |
-| 2 | Cycle Slot 2 | Cycles active power: Chronokinesis > Aerokinesis > Forcefield |
-| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility |
+| 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm > Conjuration |
+| 2 | Cycle Slot 2 | Cycles active power: Chronokinesis > Aerokinesis > Forcefield > Illusions |
+| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility > Flicker Regen |
 | 4 | Slot 1 Ability | Activates the current Slot 1 power (see below). |
 | 5 | Slot 2 Ability | Activates the current Slot 2 power (see below). |
 
@@ -121,9 +131,10 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 
 | Power | Key 4 Abilities | Passives | Flight? |
 |-------|----------------|----------|---------|
-| **Gravity Control** | Gravity Manipulation (AoE pull/push, range 20, radius 12), Gravity Blast (8 energy damage, radius 6, knockback 2) | — | Yes |
-| **Energy Absorption** | Expel Energy (7 energy damage eye beams, range 32, cooks entities — requires 10%+ charge) | Frost walking (radius 4); projectile, fire, blunt, explosion immunity; 75% energy resistance | No |
-| **Lightning Storm** | Lightning Storm (8 energy damage beam, range 30) | Electric aura (1 electricity/tick, 2 block range), lightning flicker trail | Yes |
+| **Gravity Control** | Gravity Manipulation (AoE pull/push, range 50, radius 12), Gravity Slam (16 energy damage, radius 6, knockback 2) | — | Yes |
+| **Energy Absorption** | Expel Energy (15 energy damage eye beams, range 32, cooks entities — requires 10%+ charge) | Frost walking (radius 4); projectile, fire, blunt, explosion immunity; 75% energy resistance | No |
+| **Lightning Storm** | Lightning Storm (16 energy damage beam, range 30) | Electric aura (1 electricity/tick, 2 block range), lightning flicker trail | Yes |
+| **Conjuration** | Conjure Tech — opens equipment wheel: Freeze Grenade (24 cold/explosion), Grenade (30 explosion, radius 10), Smoke Pellet | — | No |
 
 ### Slot 2 — Active (Key 2 to change, Key 5 to use)
 
@@ -132,6 +143,7 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 | **Chronokinesis** | Slow Time (toggle slow-motion perception + super speed + arrow catching) | — | No |
 | **Aerokinesis** | Tornado (telekinesis grab + 6 blunt/sound damage wind blast, range 16) | Wind particles while flying | Yes |
 | **Bubble** | Bubble (hold to block — 360-degree energy shield, 400 HP, regenerates 10/tick, deals 1 blunt/tick to entities inside) | — | No |
+| **Illusions** | Illusion Menu — opens spell wheel: Duplication (5 decoy clones), Blindness (24 block range, 20 second duration) | — | No |
 
 ### Slot 3 — Passive (Key 3)
 
@@ -141,6 +153,7 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 | **Energy Form** | Shadowform (translucent azure energy body), passive healing factor (180 tick delay), contact damage (4 energy/tick to all living entities within 3 blocks), azure particle cloud + glow, can breathe in space & underwater. | Yes |
 | **Crystal Armor** | Increased durability. Projectile & Fire immunity. Aquamarine crystal overlay with health-based cracks. | No |
 | **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise), can breathe in space & underwater. | Yes |
+| **Flicker Regen** | Rapid healing factor (20 tick delay). Sharp white flash visual when healing. | No |
 
 ### Energy Absorption Details
 
