@@ -30,7 +30,7 @@
     },
     "fiskheroes:heat_vision": {
       "damageProfile": {
-        "damage": 7.0,
+        "damage": 15.0,
         "types": {
           "ENERGY": 1.0
         },
@@ -71,7 +71,7 @@
     },
     "fiskheroes:ground_smash": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 16.0,
         "types": {
           "ENERGY": 1.0
         }

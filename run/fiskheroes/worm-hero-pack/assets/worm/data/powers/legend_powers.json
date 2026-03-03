@@ -61,7 +61,7 @@
     },
     "fiskheroes:charged_beam|basic_cutting": {
       "damageProfile": {
-        "damage": 10.0,
+        "damage": 15.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
@@ -69,7 +69,7 @@
     },
     "fiskheroes:charged_beam|basic_heat": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 12.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
@@ -89,7 +89,7 @@
     },
     "fiskheroes:charged_beam|basic_disintegration": {
       "damageProfile": {
-        "damage": 14.0,
+        "damage": 20.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
@@ -108,7 +108,7 @@
     },
     "fiskheroes:charged_beam|aoe_cutting": {
       "damageProfile": {
-        "damage": 10.0,
+        "damage": 15.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
@@ -116,7 +116,7 @@
     },
     "fiskheroes:charged_beam|aoe_heat": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 12.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
@@ -136,7 +136,7 @@
     },
     "fiskheroes:charged_beam|aoe_disintegration": {
       "damageProfile": {
-        "damage": 14.0,
+        "damage": 20.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
@@ -155,7 +155,7 @@
     },
     "fiskheroes:energy_projection|staccato_cutting": {
       "damageProfile": {
-        "damage": 10.0,
+        "damage": 15.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
@@ -163,7 +163,7 @@
     },
     "fiskheroes:energy_projection|staccato_heat": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 12.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
@@ -183,7 +183,7 @@
     },
     "fiskheroes:energy_projection|staccato_disintegration": {
       "damageProfile": {
-        "damage": 14.0,
+        "damage": 20.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
@@ -202,7 +202,7 @@
     },
     "fiskheroes:charged_beam|invisible_cutting": {
       "damageProfile": {
-        "damage": 10.0,
+        "damage": 15.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
@@ -210,7 +210,7 @@
     },
     "fiskheroes:charged_beam|invisible_heat": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 12.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
@@ -230,7 +230,7 @@
     },
     "fiskheroes:charged_beam|invisible_disintegration": {
       "damageProfile": {
-        "damage": 14.0,
+        "damage": 20.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
@@ -249,7 +249,7 @@
     },
     "fiskheroes:charged_beam|swarm_cutting": {
       "damageProfile": {
-        "damage": 10.0,
+        "damage": 15.0,
         "types": { "SHARP": 1.0 }
       },
       "canDoGriefing": false,
@@ -257,7 +257,7 @@
     },
     "fiskheroes:charged_beam|swarm_heat": {
       "damageProfile": {
-        "damage": 8.0,
+        "damage": 12.0,
         "types": { "ENERGY": 1.0 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 15, "IGNITE": 3 }
       },
@@ -277,7 +277,7 @@
     },
     "fiskheroes:charged_beam|swarm_disintegration": {
       "damageProfile": {
-        "damage": 14.0,
+        "damage": 20.0,
         "types": { "ENERGY": 0.7, "EXPLOSION": 0.3 },
         "properties": { "COOK_ENTITY": true, "HEAT_TRANSFER": 20 }
       },
