@@ -1051,3 +1051,365 @@ For the "visual homing" impression, renderer-side tricks could help:
 - **Multiple projectile types** (e.g., `repulsor_blast` for single target, `spike_burst` for area saturation) could approximate his versatility
 - **Overlay effects** during aiming could suggest target lock-on visually even though projectiles fly straight
 - The `spread` parameter on `repulsor_blast` could create a shotgun-like spray that visually suggests multiple tracking beams hitting a wide area
+
+---
+
+# Session Research Notes (Ongoing)
+
+## Entity API — Methods Available on Other Entities
+
+Retrieved via `entity.world().getEntitiesInRangeOf(entity.pos(), range)`.
+
+### Identification
+- `getName()` — player name or custom name; "unknown" for invalid entities
+- `getEntityName()` — entity type: "zombie", "skeleton", "creeper" etc.
+- `getUUID()` — unique identifier
+- `is("PLAYER")` / `isPlayer()` — type check
+- `as("PLAYER")` — cast to player type
+- `isLivingEntity()` — living entity check
+- `isAlive()` — health > 0
+
+### Position & Movement
+- `pos()` / `posX()` / `posY()` / `posZ()` — position
+- `eyePos()` — head/eye position
+- `motion()` / `motionX()` / `motionY()` / `motionZ()` — velocity vector
+- `motionInterpolated()` — smoothed velocity
+- `getLookVector()` — direction entity is looking
+- `rotYaw()` / `rotPitch()` / `rotation()` — rotation angles
+
+### State
+- `isSneaking()`, `isSprinting()`, `isInvisible()`, `isOnGround()`, `isInWater()`, `isPunching()`
+- `hasPotionEffect(id)` — check for potion effect
+- `getData(key)` — read data vars (works cross-entity)
+
+### Health & Equipment
+- `getHealth()` / `getMaxHealth()`
+- `getWornHelmet()` / `getWornChestplate()` / `getWornLeggings()` / `getWornBoots()` — armor items
+- `getEquipmentInSlot(slot)` — 0=helmet, 1=chest, 2=legs, 3=boots
+- `getHeldItem()` — held item
+- NBT access: `getWornChestplate().nbt().getString("HeroType")` — reads hero ID from suit
+
+### World & Interaction
+- `world()` — world object
+- `world().getBlock(position)` / `world().getBlockMetadata(position)`
+- `world().isUnobstructed(pos1, pos2)` — line of sight check
+- `world().getDimension()` — dimension ID (0=overworld, 2595=moon)
+- `world().getEntitiesInRangeOf(pos, range)` — entity detection
+- `canSee(other)` — line of sight + visibility check
+- `equals(other)` — identity check
+
+### Actions on Other Entities
+- `other.hurt(heroRef, profileName, deathMsg, damage)` — deal damage
+- `other.playSound(soundId, volume, pitch)` — play sound at their location
+- `entity.as("PLAYER").addChatMessage(text)` — send chat message (to self only)
+
+---
+
+## Rendering Effects on Other Entities (UNSOLVED)
+
+**Problem**: Renderer effects (glowerlay, overlay, booster, model, lines, particles) all anchor to the HERO's body parts. No built-in way to render at another entity's position.
+
+**Hack approach — dynamic offset calculation**:
+In `render()`, calculate world-space delta between hero and target, convert to model space (×16), counter-rotate by hero's yaw to cancel body-part rotation:
+```javascript
+var dx = (other.posX() - entity.posX()) * 16;
+var dz = (other.posZ() - entity.posZ()) * 16;
+var dy = (other.posY() - entity.posY()) * 16;
+var yaw = entity.rotYaw() * Math.PI / 180;
+var rx = dx * Math.cos(yaw) + dz * Math.sin(yaw);
+var rz = -dx * Math.sin(yaw) + dz * Math.cos(yaw);
+effect.setOffset(rx, dy + bodyOffset, rz);
+effect.render();
+```
+
+**Unknowns (need testing)**:
+1. Can renderer call `entity.world().getEntitiesInRangeOf()`? (works in tick handler, untested in renderer)
+2. Can `setOffset()` be called dynamically each frame? (effects created in initEffects, offset set in render)
+3. Does the coordinate math line up? (model space units, anchor rotation, body offset)
+4. Performance with multiple targets?
+
+**Alternative approaches**:
+- Apply Glowing potion effect to targets (server-side, visible to all players)
+- Audio ping only (Daredevil/Spider-Man pattern)
+- Chat readout with entity names/health
+- Radar ring effect on hero pointing toward threats
+
+---
+
+## Detection Patterns (from reference packs)
+
+### Daredevil Radar Sense (hells-kitchen pack)
+- Passive detection: 10 blocks, plays sound on first detection
+- Active detection: 64 blocks with mask open, chat readout of names + health
+- Visual: `fiskheroes:lines` effect with circle shape, expands on detection
+- Data var: `hell:dyn/sensed` (FLOAT_INTERP) drives visual fade
+
+### Spider-Man Spider Sense (hells-kitchen pack)
+- Passive: 8 blocks, detects living entities AND projectiles (arrows)
+- Arrow detection: checks `getEntityName()` contains "arrow"
+- Sound: quiet ping at 0.1 volume
+- Visual: custom model on head
+
+### Common Detection Filter
+```javascript
+var isNull = other.getName() == "unknown" && other.getEntityName() == null;
+if (!entity.equals(other) && other.isLivingEntity() && !isNull) { ... }
+```
+
+---
+
+## Miscellaneous Discoveries
+
+### Dimension IDs
+- 0 = Overworld
+- 2595 = Moon
+- Night vision glitches on moon (permanent darkness → black blocks). Fix: disable via `setCondition` in renderer checking `getDimension() != 2595`.
+
+### Healing Factor vs Regeneration
+- `fiskheroes:regeneration` — multiplies vanilla hunger-gated regen. Useless at low hunger.
+- `fiskheroes:healing_factor` — passive regen independent of hunger. `delay` = ticks after last damage before healing starts (NOT interval between heals).
+- Pipe syntax for variants: `"fiskheroes:healing_factor|energy_form"`, gate with `modifier.id() == "energy_form"`
+
+### Teleportation
+- `fiskheroes:teleportation` modifier with `range` and `canReachMoon` options
+- Cancels flight on teleport. Attempted fix: detect `fiskheroes:teleport_delay` going from >0 to 0 in tick handler, then `manager.setData(entity, "fiskheroes:flying", true)`. STATUS: untested, may not work.
+- Sound: `"fiskheroes:breach"` is the default teleport sound
+
+### Flight State
+- `manager.setData(entity, "fiskheroes:flying", true/false)` — programmatically enable/disable flight from tick handler
+- Used by multiple reference packs (Skayr always-fly, Spider-Man jump kick, Pixie shield-disables-flight)
+
+---
+
+## Dynamic Offset Experiment (Entity Marker Rendering)
+
+### What works
+- `fiskheroes:shield` effect supports `setOffset()` called dynamically every frame in `render()` (confirmed by Agent Liberty reference + our testing)
+- `entity.world().getEntitiesInRangeOf()` WORKS in the renderer context
+- Shield effect renders in 1st person when anchored to "rightArm" (but only when arm is visible / empty hand)
+- `setScale()` works dynamically on `fiskheroes:lines` effects (Daredevil radar)
+
+### What doesn't work
+- `setOffset()` does NOT update dynamically on `fiskheroes:lines` or `fiskheroes:particles`
+- `fiskheroes:glowerlay` cannot be offset at all (tied to hero skin texture, crashes if you try anchor.set)
+- `fiskheroes:booster` with invalid icon resource crashes the whole renderer/pack
+
+### Yaw counter-rotation (UNSOLVED)
+The offset is in model space, rotating with the body anchor's yaw. Counter-rotating by `entity.rotYaw()` partially works but has drift — the marker moves when turning the camera even when the target is stationary. The rotation matrix needs more work, possibly accounting for body vs head yaw, interpolation, or a different coordinate basis.
+
+### Test code (shield marker tracking nearest entity)
+```javascript
+// In initEffects:
+senseMarker = renderer.createEffect("fiskheroes:shield");
+senseMarker.anchor.set("rightArm");
+senseMarker.setRotation(0, 90, 0);
+
+// In render():
+try {
+    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 16);
+    var closest = null;
+    var closestDist = 999;
+    for (var i = 0; i < nearby.length; i++) {
+        var other = nearby[i];
+        if (!entity.equals(other) && other.isLivingEntity()) {
+            var tdx = other.posX() - entity.posX();
+            var tdz = other.posZ() - entity.posZ();
+            var dist = tdx * tdx + tdz * tdz;
+            if (dist < closestDist) {
+                closestDist = dist;
+                closest = other;
+            }
+        }
+    }
+    if (closest != null) {
+        var dx = (closest.posX() - entity.posX()) * 16;
+        var dy = (closest.posY() - entity.posY()) * 16;
+        var dz = (closest.posZ() - entity.posZ()) * 16;
+        var yaw = entity.rotYaw() * Math.PI / 180;
+        var rx = dx * Math.cos(yaw) - dz * Math.sin(yaw);
+        var rz = dx * Math.sin(yaw) + dz * Math.cos(yaw);
+        senseMarker.setOffset(rx, dy + 12, rz);
+        senseMarker.unfold = 1.0;
+    } else {
+        senseMarker.unfold = 0.0;
+    }
+    senseMarker.render();
+} catch (e) {}
+```
+
+---
+
+## Entity Look-At Detection (Crosshair Targeting)
+
+Can identify what entity the player is looking at using dot product of look vector vs direction to entity:
+
+```javascript
+// From Bullseye (hells-kitchen pack) — angle between crosshair and entity
+var angle = Math.acos(Math.max(-1, Math.min(1,
+    entity.getLookVector().dot(
+        other.eyePos().add(0, 0.55, 0).subtract(entity.eyePos()).normalized()
+    )
+))) * (180 / Math.PI);
+// angle < 5 = basically looking right at them
+```
+
+### Available vector methods on pos/lookVector
+- `pos().subtract(other.pos())` — vector subtraction
+- `.normalized()` — unit vector
+- `.dot(other)` — dot product
+- `.x()`, `.y()`, `.z()` — component access
+- `.add(x, y, z)` — vector addition
+
+### Directional helper (from hells-kitchen useful.js)
+```javascript
+function getDirection(playerPos, entityPos, playerLookVector) {
+    var directionToEntity = entityPos.subtract(playerPos).normalized();
+    var dot = playerLookVector.x() * directionToEntity.x()
+            + playerLookVector.y() * directionToEntity.y()
+            + playerLookVector.z() * directionToEntity.z();
+    dot = Math.max(-1, Math.min(dot, 1));
+    var angle = Math.acos(dot) * (180 / Math.PI);
+    var crossProduct = (playerLookVector.x() * directionToEntity.z())
+                     - (playerLookVector.z() * directionToEntity.x());
+    return (crossProduct < 0 ? -angle : angle) / 180;
+    // Returns -1 to 1: 0 = directly ahead, ±1 = behind, ±0.5 = left/right
+}
+```
+
+### Potential uses
+- Danger Sense: detect entity under crosshair, display info via chat/HUD
+- Target lock: identify aimed-at entity for special attacks
+- Skitter's swarm sense: highlight entity being looked at
+
+---
+
+### Remaining issues to solve if revisited
+1. Yaw drift — need correct rotation matrix for body space
+2. 1st person visibility requires rightArm anchor (only visible with empty hand)
+3. Renders a chunk of the hero's own texture — would need a custom texture
+4. No way to render on multiple targets simultaneously (one shield effect = one marker)
+
+### Lines effect (`fiskheroes:lines`) — pointer test
+- `setRotation` DOES update dynamically each frame
+- But rotation axis mapping is unclear — angle applied to Y or Z both produced wrong behavior (vertical spinning, erratic rotation)
+- Color `.color.set()` didn't apply (showed white despite setting green) — unknown why, works in other packs
+- Lines are 3rd-person only (not visible in 1st person)
+- Primarily designed for cosmetic auras (lightning arcs, spell circles, radar pulses), not directional indicators
+- **Verdict**: Not suitable for entity-tracking pointers
+
+### Screen-space effects available
+- `fiskheroes:night_vision` — brightness boost, has `.factor` and `.firstPersonOnly`
+- `fiskheroes:camera_shake` — screen vibration, has `.factor` and `.intensity`
+- `fiskheroes:opacity` — full-body transparency (invisibility)
+- `fiskheroes:shadowdome` — dark dome overlay with custom texture
+- **No general-purpose HUD drawing API exists**
+
+### Forcefield as screen tint (Daredevil "World on Fire" trick)
+Hell's Kitchen pack uses small forcefields colored `0x5a1a1a` (dark red) placed on camera as a first-person-only screen tint. Combined with `night_vision.factor = 1` for the "world on fire" red vision effect. Could be repurposed as a proximity warning tint (flash screen edges when enemies nearby), but no directional info.
+
+### Spider Sense / Danger Sense implementations (Hell's Kitchen pack)
+Best reference: `hells-kitchen-1-4-3/assets/hell/data/heroes/spider_man.js` and `hell/renderers/heroes/spider_man.js`
+
+**Detection (tick handler, hero data side):**
+```javascript
+entity.world().getEntitiesInRangeOf(entity.pos(), 8).forEach((other, index) => {
+    var isNull = other.getName() == "unknown" && other.getEntityName() == null;
+    var main_cond = other.isLivingEntity() && !isNull;
+    var arrow_cond = false;
+    if (String(other.getEntityName()).toLowerCase().indexOf("arrow") > -1) {
+        arrow_cond = other.world().getBlock(other.eyePos().add(other.motion().normalized())) == "minecraft:air";
+    }
+    if (!entity.equals(other) && (main_cond || arrow_cond) && entity.getData("hell:dyn/sensed") == 0) {
+        entity.playSound("hell:spider_man.sense", 0.1, 1.15 - Math.random() * 0.3);
+        manager.setInterpolatedData(entity, "hell:dyn/sensed", 1);
+    }
+});
+manager.incrementData(entity, "hell:dyn/radar", 5, 40, entity.getData("hell:dyn/sensed") > 0.8);
+manager.incrementData(entity, "hell:dyn/sensed", 170, false);
+```
+- Runs in tick handler (hero data JS), not renderer
+- Detects living entities + incoming arrows within 8 blocks
+- Sets `sensed` to 1 on detection, decays over 170 ticks
+- `radar` ramps up to 40 over 5 ticks while `sensed > 0.8`, used for visual fade-in
+
+**Visual (renderer side):**
+- 3D model overlay on head: `renderer.createEffect("fiskheroes:model")` with custom spider sense mesh
+- Fades in/out based on `hell:dyn/radar` interpolated data
+- Only renders in HELMET renderLayer
+
+**Audio:**
+- `entity.playSound(soundName, volume, pitch)` — plays once on first detection
+- Pitch randomized: `1.15 - Math.random() * 0.3`
+
+**Daredevil variant** — also prints entity names + health to chat:
+```javascript
+var getName = other.getName().split('').map(c => "\u00A74" + c).join('');
+// prints red-colored entity list with health values
+if (PackLoader.getSide() == "SERVER") {
+    entity.as("PLAYER").addChatMessage(print);
+}
+```
+
+**Key takeaway**: Detection runs server-side in tick handler, visual is just a model fade. No directional indicators — just "danger nearby" pulse. Daredevil adds info readout via chat. This is the best existing pattern for Eidolon's Danger Sense.
+
+---
+
+## Potion Effects via Beam Damage Profiles
+
+Beams (and any modifier with a `damageProfile`) can apply potion effects on hit via the `EFFECTS` property:
+
+```json
+"damageProfile": {
+    "damage": 4.0,
+    "types": { "COLD": 1.0 },
+    "properties": {
+        "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 8, "chance": 1 }]
+    }
+}
+```
+- `duration` = ticks (20 ticks = 1 second)
+- `amplifier` = level minus 1 (amplifier 8 = Slowness IX)
+- `chance` = 0.0–1.0 probability per hit
+- Multiple effects can be stacked in the array
+
+### All Minecraft 1.7.10 Potion Effects
+
+| ID | Effect | +/- | Notes |
+|----|--------|-----|-------|
+| `minecraft:speed` | Speed | + | Movement speed boost |
+| `minecraft:slowness` | Slowness | - | Used by Legend's ice beams |
+| `minecraft:haste` | Haste | + | Faster mining/attack speed |
+| `minecraft:mining_fatigue` | Mining Fatigue | - | Slower mining/attack |
+| `minecraft:strength` | Strength | + | Melee damage boost |
+| `minecraft:instant_health` | Instant Health | + | Immediate HP restore |
+| `minecraft:instant_damage` | Instant Damage | - | Immediate HP loss |
+| `minecraft:jump_boost` | Jump Boost | + | Higher jumps, less fall damage |
+| `minecraft:nausea` | Nausea | - | Screen wobble/distortion |
+| `minecraft:regeneration` | Regeneration | + | HP over time |
+| `minecraft:resistance` | Resistance | + | Damage reduction |
+| `minecraft:fire_resistance` | Fire Resistance | + | Immunity to fire/lava |
+| `minecraft:water_breathing` | Water Breathing | + | No drowning |
+| `minecraft:invisibility` | Invisibility | + | Transparent player |
+| `minecraft:blindness` | Blindness | - | Reduced vision range |
+| `minecraft:night_vision` | Night Vision | + | Full brightness |
+| `minecraft:hunger` | Hunger | - | Food bar drains faster |
+| `minecraft:weakness` | Weakness | - | Reduced melee damage |
+| `minecraft:poison` | Poison | - | DoT (can't kill, stops at 1 HP) |
+| `minecraft:wither` | Wither | - | DoT (CAN kill) |
+| `minecraft:health_boost` | Health Boost | + | Extra max HP |
+| `minecraft:absorption` | Absorption | + | Yellow bonus hearts |
+| `minecraft:saturation` | Saturation | + | Restores food/saturation |
+
+### Potion Particles
+No way to hide potion particles in 1.7.10 — the `ambient`/`showParticles` flag was added in 1.8. Swirling particles are hardcoded to active potion effects. Untested whether Fisk's mod patches this.
+
+### Applications for Worm Characters
+- **Blindness**: Grue's darkness, Imp's stranger effect on targets
+- **Nausea**: Labyrinth's space warping, psychic attacks
+- **Weakness + Slowness**: Clockblocker's touch (extreme amplifier = near-frozen)
+- **Wither**: Bonesaw's plagues, Crawler's acid
+- **Poison**: Skitter's bug venom
+- **Strength**: Brute powers (Lung ramping up)
+- **Resistance**: Adaptive defenses (Crawler, Lung)
+- **Instant Damage**: Flechette's sting, Foil's power
+- **Mining Fatigue**: Could simulate power-dampening effects

@@ -173,6 +173,21 @@
     "fiskheroes:super_speed": {
       "canUseTreadmill": false,
       "canUseTachyons": false
+    },
+    "fiskheroes:spellcasting": {
+      "spells": {
+        "fiskheroes:duplication": {
+          "sequence": "",
+          "cooldown": 1,
+          "quantity": 5
+        },
+        "fiskheroes:blindness": {
+          "sequence": "",
+          "cooldown": 1,
+          "duration": 400,
+          "range": 24.0
+        }
+      }
     }
   },
   "hud": [

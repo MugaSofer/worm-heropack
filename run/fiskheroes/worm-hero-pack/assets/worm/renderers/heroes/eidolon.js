@@ -91,6 +91,7 @@ function initEffects(renderer) {
     // Flicker Regen — bright white flash when healing
     flickerGlow = renderer.createEffect("fiskheroes:glowerlay");
     flickerGlow.color.set(0xFFFFFF);
+
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {

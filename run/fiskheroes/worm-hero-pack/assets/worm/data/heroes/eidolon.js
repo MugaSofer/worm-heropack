@@ -1,11 +1,11 @@
 // Eidolon — 3 slots with themed powersets
 //
 // Slot 1 → Key 4: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm
-// Slot 2 → Key 5: 0=Chronokinesis, 1=Aerokinesis, 2=Forcefield
+// Slot 2 → Key 5: 0=Chronokinesis, 1=Aerokinesis, 2=Forcefield, 3=Illusions
 // Slot 3 → passive: 0=Damage Reflection, 1=Energy Form, 2=Crystal Armor, 3=Intangibility
 
 var SLOT1_COUNT = 3;
-var SLOT2_COUNT = 3;
+var SLOT2_COUNT = 4;
 var SLOT3_COUNT = 5;
 
 var speedster_base = implement("fiskheroes:external/speedster_base");
@@ -84,6 +84,14 @@ function init(hero) {
         return true;
     }, "\u00A79Bubble \u00A78> (Discard)", 2);
 
+    hero.addKeyBindFunc("SLOT2_CYCLE_3", function (entity, manager) {
+        if (debounce2) return false;
+        debounce2 = true;
+        var current = entity.getData("worm:dyn/slot2");
+        manager.setData(entity, "worm:dyn/slot2", (current + 1) % SLOT2_COUNT);
+        return true;
+    }, "\u00A7dIllusions \u00A78> (Discard)", 2);
+
     // Key 3: Cycle slot 3
     hero.addKeyBindFunc("SLOT3_CYCLE_0", function (entity, manager) {
         if (debounce3) return false;
@@ -125,6 +133,7 @@ function init(hero) {
         return true;
     }, "\u00A7aFlicker Regen \u00A78> (Discard)", 3);
 
+
     // Key 4: Slot 1 active abilities
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
     hero.addKeyBind("GROUND_SMASH", "Gravity Slam \u00A77+ \u00A7eScroll\u00A7f Raise/Lower", 4);
@@ -137,6 +146,7 @@ function init(hero) {
     hero.addKeyBind("TELEKINESIS", "Tornado", 5);
     hero.addKeyBind("SONIC_WAVES", "Tornado", 5);
     hero.addKeyBind("SHIELD", "Bubble", 5);
+    hero.addKeyBind("SPELL_MENU", "key.illusionMenu", 5);
 
     hero.setTickHandler(function (entity, manager) {
         debounce1 = false;
@@ -335,6 +345,8 @@ function isModifierEnabled(entity, modifier) {
         return s2 == 1;
     case "fiskheroes:shield":
         return s2 == 2;
+    case "fiskheroes:spellcasting":
+        return s2 == 3;
 
     // Flight: Gravity Control (s1==0), Lightning Storm (s1==2), Aerokinesis (s2==1), Energy Form (s3==1), Intangibility (s3==3)
     case "fiskheroes:controlled_flight":
@@ -416,6 +428,10 @@ function isKeyBindEnabled(entity, keyBind) {
         return s2 == 1;
     case "SHIELD":
         return s2 == 2;
+    case "SPELL_MENU":
+        return s2 == 3;
+    case "SLOT2_CYCLE_3":
+        return s2 == 3;
     default:
         return true;
     }
