@@ -123,24 +123,24 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 |-------|----------------|----------|---------|
 | **Gravity Control** | Gravity Manipulation (AoE pull/push, range 20, radius 12), Gravity Blast (8 energy damage, radius 6, knockback 2) | — | Yes |
 | **Energy Absorption** | Expel Energy (7 energy damage eye beams, range 32, cooks entities — requires 10%+ charge) | Frost walking (radius 4); projectile, fire, blunt, explosion immunity; 75% energy resistance | No |
-| **Lightning Storm** | Lightning Storm (8 energy damage beam, range 30) | — | Yes |
+| **Lightning Storm** | Lightning Storm (8 energy damage beam, range 30) | Electric aura (1 electricity/tick, 2 block range), lightning flicker trail | Yes |
 
 ### Slot 2 — Active (Key 2 to change, Key 5 to use)
 
 | Power | Key 5 Abilities | Passives | Flight? |
 |-------|----------------|----------|---------|
 | **Chronokinesis** | Slow Time (toggle slow-motion perception + super speed + arrow catching) | — | No |
-| **Aerokinesis** | Tornado (telekinesis grab + 6 blunt/sound damage wind blast, range 16) | — | Yes |
-| **Forcefield** | Forcefield (hold to block — 360-degree energy shield, 400 HP, regenerates 10/tick) | — | No |
+| **Aerokinesis** | Tornado (telekinesis grab + 6 blunt/sound damage wind blast, range 16) | Wind particles while flying | Yes |
+| **Bubble** | Bubble (hold to block — 360-degree energy shield, 400 HP, regenerates 10/tick, deals 1 blunt/tick to entities inside) | — | No |
 
 ### Slot 3 — Passive (Key 3)
 
 | Power | Effect | Flight? |
 |-------|--------|---------|
 | **Damage Reflection** | Reflects 50% of incoming damage back at attacker as energy damage. | No |
-| **Energy Form** | Shadowform (translucent green energy body), passive regeneration (factor 3), contact damage (4 energy/tick to all living entities within 3 blocks), green particle cloud + glow. | Yes |
-| **Crystal Armor** | Increased durability. Projectile & Fire immunity. | No |
-| **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise). | Yes |
+| **Energy Form** | Shadowform (translucent azure energy body), passive healing factor (180 tick delay), contact damage (4 energy/tick to all living entities within 3 blocks), azure particle cloud + glow, can breathe in space & underwater. | Yes |
+| **Crystal Armor** | Increased durability. Projectile & Fire immunity. Aquamarine crystal overlay with health-based cracks. | No |
+| **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise), can breathe in space & underwater. | Yes |
 
 ### Energy Absorption Details
 

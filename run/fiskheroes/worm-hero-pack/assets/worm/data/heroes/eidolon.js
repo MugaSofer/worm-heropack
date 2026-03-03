@@ -224,6 +224,20 @@ function init(hero) {
             }
         }
 
+        // Bubble: continuous damage while shield is active
+        var shieldTimer = entity.getData("fiskheroes:shield_blocking_timer");
+        if (s2 == 2 && shieldTimer > 0) {
+            var world = entity.world();
+            var nearby = world.getEntitiesInRangeOf(entity.pos(), 2.5);
+            for (var i = 0; i < nearby.length; i++) {
+                var target = nearby[i];
+                if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
+                    target.hurt(heroRef, "BUBBLE_PULSE", "%1$s was crushed by Eidolon's forcefield", 1.0);
+                }
+            }
+        }
+
+
         return false;
     });
 
@@ -244,6 +258,11 @@ function init(hero) {
     hero.addDamageProfile("LIGHTNING_AURA", {
         "types": {
             "ELECTRICITY": 1.0
+        }
+    });
+    hero.addDamageProfile("BUBBLE_PULSE", {
+        "types": {
+            "BLUNT": 1.0
         }
     });
     hero.setDamageProfile(getDamageProfile);
