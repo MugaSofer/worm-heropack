@@ -1,7 +1,11 @@
 extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:eidolon_layer1",
-    "layer2": "worm:eidolon_layer1"
+    "layer2": "worm:eidolon_layer1",
+    "crystal": "worm:eidolon_crystal",
+    "crystal_cracked1": "worm:eidolon_crystal_cracked1",
+    "crystal_cracked2": "worm:eidolon_crystal_cracked2",
+    "crystal_cracked3": "worm:eidolon_crystal_cracked3"
 });
 
 var utils = implement("fiskheroes:external/utils");
@@ -9,6 +13,7 @@ var utils = implement("fiskheroes:external/utils");
 var energyFormGlow;
 var chargeGlow;
 var lightningGlow;
+var crystalOverlay;
 
 function init(renderer) {
     parent.init(renderer);
@@ -71,6 +76,9 @@ function initEffects(renderer) {
     });
     lightningGlow = renderer.createEffect("fiskheroes:glowerlay");
     lightningGlow.color.set(0xAABBFF);
+
+    // Crystal Armor — aquamarine overlay with health-based cracks
+    crystalOverlay = renderer.createEffect("fiskheroes:overlay");
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
@@ -89,4 +97,20 @@ function render(entity, renderLayer, isFirstPersonArm) {
     // Lightning Storm glow (visible in 1st person where trail isn't)
     lightningGlow.opacity = s1 == 2 ? 0.2 : 0.0;
     lightningGlow.render();
+
+    // Crystal Armor overlay — aquamarine with health-based cracks
+    if (s3 == 2) {
+        var hp = entity.getHealth() / entity.getMaxHealth();
+        if (hp > 0.75) {
+            crystalOverlay.texture.set("crystal", null);
+        } else if (hp > 0.5) {
+            crystalOverlay.texture.set("crystal_cracked1", null);
+        } else if (hp > 0.25) {
+            crystalOverlay.texture.set("crystal_cracked2", null);
+        } else {
+            crystalOverlay.texture.set("crystal_cracked3", null);
+        }
+        crystalOverlay.opacity = 1.0;
+        crystalOverlay.render();
+    }
 }
