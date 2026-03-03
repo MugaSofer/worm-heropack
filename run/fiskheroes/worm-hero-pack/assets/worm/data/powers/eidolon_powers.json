@@ -174,6 +174,45 @@
       "canUseTreadmill": false,
       "canUseTachyons": false
     },
+    "fiskheroes:equipment": {
+      "equipment": {
+        "fiskheroes:freeze_grenade": {
+          "cooldown": 1,
+          "uses": 1,
+          "damageProfile": {
+            "damage": 24.0,
+            "types": {
+              "COLD": 0.5,
+              "EXPLOSION": 0.6
+            }
+          }
+        },
+        "fiskheroes:grenade": {
+          "cooldown": 1,
+          "uses": 1,
+          "damageProfile": {
+            "damage": 30.0,
+            "types": {
+              "EXPLOSION": 1.0
+            }
+          },
+          "isInstant": false,
+          "affectsUser": false,
+          "fuseTime": 30,
+          "radius": 10.0,
+          "soundEvents": {
+            "USE": "fiskheroes:grenade_throw"
+          }
+        },
+        "fiskheroes:smoke_pellet": {
+          "cooldown": 1,
+          "uses": 1
+        }
+      },
+      "soundEvents": {
+        "SWITCH": "fiskheroes:utility_belt_switch"
+      }
+    },
     "fiskheroes:spellcasting": {
       "spells": {
         "fiskheroes:duplication": {

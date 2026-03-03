@@ -1,10 +1,10 @@
 // Eidolon — 3 slots with themed powersets
 //
-// Slot 1 → Key 4: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm
+// Slot 1 → Key 4: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjuration
 // Slot 2 → Key 5: 0=Chronokinesis, 1=Aerokinesis, 2=Forcefield, 3=Illusions
 // Slot 3 → passive: 0=Damage Reflection, 1=Energy Form, 2=Crystal Armor, 3=Intangibility
 
-var SLOT1_COUNT = 3;
+var SLOT1_COUNT = 4;
 var SLOT2_COUNT = 4;
 var SLOT3_COUNT = 5;
 
@@ -58,6 +58,14 @@ function init(hero) {
         manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
         return true;
     }, "\u00A7eLightning Storm \u00A78> (Discard)", 1);
+
+    hero.addKeyBindFunc("SLOT1_CYCLE_3", function (entity, manager) {
+        if (debounce1) return false;
+        debounce1 = true;
+        var current = entity.getData("worm:dyn/slot1");
+        manager.setData(entity, "worm:dyn/slot1", (current + 1) % SLOT1_COUNT);
+        return true;
+    }, "\u00A7bConjuration \u00A78> (Discard)", 1);
 
     // Key 2: Cycle slot 2
     hero.addKeyBindFunc("SLOT2_CYCLE_0", function (entity, manager) {
@@ -139,6 +147,7 @@ function init(hero) {
     hero.addKeyBind("GROUND_SMASH", "Gravity Slam \u00A77+ \u00A7eScroll\u00A7f Raise/Lower", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
+    hero.addKeyBind("UTILITY_BELT", "Conjure Tech", 4);
 
     // Key 5: Slot 2 active abilities
     hero.addKeyBind("SUPER_SPEED", "Chronokinesis", 5);
@@ -333,6 +342,8 @@ function isModifierEnabled(entity, modifier) {
         return s1 == 1;
     case "fiskheroes:energy_projection":
         return s1 == 2;
+    case "fiskheroes:equipment":
+        return s1 == 3;
 
     // Slot 2: Chronokinesis (0), Aerokinesis (1), Forcefield (2)
     case "fiskheroes:super_speed":
@@ -417,6 +428,10 @@ function isKeyBindEnabled(entity, keyBind) {
         return s1 == 1 && entity.getData("worm:dyn/eidolon_charge") > 0.1;
     case "ENERGY_PROJECTION":
         return s1 == 2;
+    case "UTILITY_BELT":
+        return s1 == 3;
+    case "SLOT1_CYCLE_3":
+        return s1 == 3;
     // Slot 2 active abilities (key 5)
     case "SUPER_SPEED":
         return s2 == 0;
