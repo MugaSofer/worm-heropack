@@ -2,12 +2,63 @@
   "particles": [
     {
       "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
-      "type": "FIREWORK_BACKGROUND",
+      "type": "minecraft:reddust",
       "anchor": "body",
       "amount": 8,
-      "offset": [0.0, 10.0, 0.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randOffset": [3.0, 5.0, 3.0]
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [0.5, 1.0, 0.3],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "rightArm",
+      "amount": 3,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [0.3, 1.0, 0.3],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "leftArm",
+      "amount": 3,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [0.3, 1.0, 0.3],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "rightLeg",
+      "amount": 2,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [0.3, 1.0, 0.3],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "leftLeg",
+      "amount": 2,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [0.3, 1.0, 0.3],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "head",
+      "amount": 3,
+      "offset": [0.0, 2.0, 0.5],
+      "randOffset": [0.5, 0.3, 0.2],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01]
     }
   ]
 }

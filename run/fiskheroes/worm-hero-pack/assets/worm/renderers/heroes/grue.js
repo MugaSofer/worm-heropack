@@ -29,8 +29,15 @@ function initEffects(renderer) {
         { "firstPerson": [-1, 3.0, -8.0], "offset": [-0.5, 12.0, 0.0], "size": [3.5, 3.5] }
     ]).setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:darkness_impact"));
 
-    // Darkness aura - pure black cloud around body when toggled on
-    utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:darkness")
+    // Darkness aura - pure black cloud around body when toggled on (visible in 1st person - disabled for now)
+    // utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:darkness")
+    //     .setCondition(function (entity) {
+    //         return entity.getData("worm:dyn/darkness_aura");
+    //     });
+
+    // Darkness aura - black reddust particles on body parts, hidden in 1st person
+    renderer.bindProperty("fiskheroes:particles")
+        .setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:darkness_aura"))
         .setCondition(function (entity) {
             return entity.getData("worm:dyn/darkness_aura");
         });
