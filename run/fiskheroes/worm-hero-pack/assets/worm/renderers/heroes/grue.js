@@ -51,7 +51,9 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    // Darkness aura overlay — fades in/out with aura timer
-    darknessOverlay.opacity = entity.getInterpolatedData("worm:dyn/darkness_aura_timer");
-    darknessOverlay.render();
+    // Darkness aura overlay — fades in/out with aura timer (hidden in 1st person so arm stays visible)
+    if (!isFirstPersonArm) {
+        darknessOverlay.opacity = entity.getInterpolatedData("worm:dyn/darkness_aura_timer");
+        darknessOverlay.render();
+    }
 }

@@ -4,8 +4,8 @@
       "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
       "type": "minecraft:reddust",
       "anchor": "body",
-      "amount": 8,
-      "offset": [0.0, 3.0, 0.0],
+      "amount": 0,
+      "offset": [0.0, 0.0, 0.0],
       "randOffset": [0.5, 1.0, 0.3],
       "motion": [-1, -1, -1],
       "randMotion": [0.01, 0.01, 0.01]
@@ -59,6 +59,18 @@
       "randOffset": [0.5, 0.3, 0.2],
       "motion": [-1, -1, -1],
       "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "minecraft:reddust",
+      "anchor": "rightArm",
+      "amount": 1,
+      "offset": [0.0, 0.0, 5.0],
+      "randOffset": [0.5, 0.5, 0.5],
+      "motion": [-1, -1, -1],
+      "randMotion": [0.01, 0.01, 0.01],
+      "lockFPYaw": true,
+      "lockFPRot": true
     }
   ]
 }
