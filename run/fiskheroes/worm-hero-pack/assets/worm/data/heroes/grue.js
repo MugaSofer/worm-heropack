@@ -28,9 +28,9 @@ function init(hero) {
     hero.addAttribute("JUMP_HEIGHT", 0.5, 0);
     hero.addAttribute("FALL_RESISTANCE", 2.0, 0);
 
-    hero.addKeyBind("SHADOWDOME", "Darkness Field", 1);
-    hero.addKeyBind("ENERGY_PROJECTION", "Darkness Blast", 2);
-    hero.addKeyBind("ENERGY_PROJECTION_DISABLED", "\u00A7mDarkness Blast", 2);
+    hero.addKeyBind("SHADOWDOME", "Darkness Flood", 1);
+    hero.addKeyBind("ENERGY_PROJECTION", "Blinding Blast", 2);
+    hero.addKeyBind("ENERGY_PROJECTION_DISABLED", "\u00A7mBlinding Blast", 2);
     hero.addKeyBind("DARKNESS_AURA", "Darkness Aura", 3);
     hero.addKeyBind("ROUNDHOUSEKICK", "Kick", 4);
     hero.addKeyBind("ROUNDHOUSEKICK_STOP", "\u00A7mKick", 4);
@@ -105,7 +105,7 @@ function isModifierEnabled(entity, modifier) {
 }
 
 function isKeyBindEnabled(entity, keyBind) {
-    // During shadowdome, only allow dismissing it
+    // During shadowdome charging, only allow the dome keybind
     if (entity.getData("fiskheroes:lightsout")) {
         return keyBind == "SHADOWDOME";
     }

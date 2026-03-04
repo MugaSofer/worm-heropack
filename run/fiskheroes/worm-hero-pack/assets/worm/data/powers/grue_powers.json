@@ -2,7 +2,7 @@
   "name": "Darkness Generation",
   "modifiers": {
     "fiskheroes:shadowdome": {
-      "chargeTime": 10,
+      "chargeTime": 20,
       "duration": 600,
       "radius": 20.0,
       "soundEvents": {
