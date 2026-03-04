@@ -2,7 +2,8 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:grue_layer1",
     "layer2": "worm:grue_layer2",
-    "darkness_overlay": "worm:grue_darkness_overlay"
+    "darkness_overlay": "worm:grue_darkness_overlay",
+    "shadowdome": "worm:grue_shadowdome"
 });
 
 var utils = implement("fiskheroes:external/utils");
@@ -24,8 +25,19 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Night vision - always on, lets Grue see through his own shadowdome
-    renderer.bindProperty("fiskheroes:night_vision");
+    // Night vision - only activates when shadowdome is deployed, lets Grue see through his own darkness
+    var nightVision = renderer.bindProperty("fiskheroes:night_vision");
+    nightVision.setCondition(function (entity) {
+        var domeId = entity.getData("fiskheroes:lightsout_id");
+        var dome = domeId ? entity.world().getEntityById(domeId) : null;
+        var active = dome != null && dome.exists();
+        nightVision.factor = active ? (entity.world().isDaytime() ? 1.0 : 0.05) : 0.0;
+        return true;
+    });
+
+    // Shadowdome - pure black dome texture
+    var shadowdome = renderer.bindProperty("fiskheroes:shadowdome");
+    shadowdome.texture.set("shadowdome", "shadowdome");
 
     // Darkness blast beam - black fire-style beam with dark impact particles
     utils.bindBeam(renderer, "fiskheroes:energy_projection", "worm:darkness_blast", "rightArm", 0x000000, [
