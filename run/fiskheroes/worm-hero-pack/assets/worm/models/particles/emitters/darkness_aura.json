@@ -1,0 +1,13 @@
+{
+  "particles": [
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/darkness_aura')",
+      "type": "FIREWORK_BACKGROUND",
+      "anchor": "body",
+      "amount": 8,
+      "offset": [0.0, 10.0, 0.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randOffset": [3.0, 5.0, 3.0]
+    }
+  ]
+}

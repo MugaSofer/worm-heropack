@@ -1,0 +1,47 @@
+{
+  "name": "Darkness Generation",
+  "modifiers": {
+    "fiskheroes:shadowdome": {
+      "chargeTime": 10,
+      "duration": 600,
+      "radius": 20.0,
+      "soundEvents": {
+        "CAST": "fiskheroes:shadowdome_cast_loop",
+        "DISSOLVE": "fiskheroes:shadowdome_dissolve"
+      }
+    },
+    "fiskheroes:energy_projection": {
+      "damageProfile": {
+        "damage": 0.01,
+        "types": { "BLUNT": 1.0 },
+        "properties": {
+          "ADD_KNOCKBACK": -0.2,
+          "EFFECTS": [{ "id": "minecraft:blindness", "duration": 70, "amplifier": 1, "chance": 1 }]
+        }
+      },
+      "canDoGriefing": false,
+      "range": 16.0,
+      "radius": 0.5
+    },
+    "fiskheroes:transformation|aura": {
+      "key": "DARKNESS_AURA",
+      "transformation": {
+        "toggleData": "worm:dyn/darkness_aura",
+        "timerData": "worm:dyn/darkness_aura_timer",
+        "time": 10
+      },
+      "isToggle": true
+    },
+    "fiskheroes:transformation|kick": {
+      "key": "ROUNDHOUSEKICK",
+      "transformation": {
+        "toggleData": "worm:dyn/kick",
+        "timerData": "worm:dyn/kick_timer",
+        "time": 12
+      }
+    }
+  },
+  "hud": [
+    { "type": "CIRCLE", "color": "0x1A1A2E", "data": "fiskheroes:lightsout_timer" }
+  ]
+}

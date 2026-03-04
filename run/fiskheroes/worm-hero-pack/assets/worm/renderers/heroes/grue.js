@@ -1,0 +1,40 @@
+extend("fiskheroes:hero_basic");
+loadTextures({
+    "layer1": "worm:grue_layer1",
+    "layer2": "worm:grue_layer2"
+});
+
+var utils = implement("fiskheroes:external/utils");
+
+function init(renderer) {
+    parent.init(renderer);
+}
+
+function initAnimations(renderer) {
+    parent.initAnimations(renderer);
+
+    // Roundhouse kick animation (shared with Alexandria)
+    addAnimationWithData(renderer, "grue.KICK", "worm:roundhouse_kick", "worm:dyn/kick_timer")
+        .setCondition(function (entity) {
+            return entity.getData("worm:dyn/kick");
+        });
+}
+
+function initEffects(renderer) {
+    // Night vision - always on, lets Grue see through his own shadowdome
+    renderer.bindProperty("fiskheroes:night_vision");
+
+    // Darkness blast beam - black fire-style beam with dark impact particles
+    utils.bindBeam(renderer, "fiskheroes:energy_projection", "worm:darkness_blast", "rightArm", 0x000000, [
+        { "firstPerson": [-1, 3.0, -8.0], "offset": [-0.5, 12.0, 0.0], "size": [3.5, 3.5] }
+    ]).setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:darkness_impact"));
+
+    // Darkness aura - pure black cloud around body when toggled on
+    utils.bindCloud(renderer, "fiskheroes:particle_cloud", "worm:darkness")
+        .setCondition(function (entity) {
+            return entity.getData("worm:dyn/darkness_aura");
+        });
+}
+
+function render(entity, renderLayer, isFirstPersonArm) {
+}
