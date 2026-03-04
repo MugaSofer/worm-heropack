@@ -1,10 +1,13 @@
 extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:grue_layer1",
-    "layer2": "worm:grue_layer2"
+    "layer2": "worm:grue_layer2",
+    "darkness_overlay": "worm:grue_darkness_overlay"
 });
 
 var utils = implement("fiskheroes:external/utils");
+
+var darknessOverlay;
 
 function init(renderer) {
     parent.init(renderer);
@@ -35,6 +38,10 @@ function initEffects(renderer) {
     //         return entity.getData("worm:dyn/darkness_aura");
     //     });
 
+    // Darkness aura - black body overlay (face stays clear)
+    darknessOverlay = renderer.createEffect("fiskheroes:overlay");
+    darknessOverlay.texture.set("darkness_overlay", null);
+
     // Darkness aura - black reddust particles on body parts, hidden in 1st person
     renderer.bindProperty("fiskheroes:particles")
         .setParticles(renderer.createResource("PARTICLE_EMITTER", "worm:darkness_aura"))
@@ -44,4 +51,7 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
+    // Darkness aura overlay — fades in/out with aura timer
+    darknessOverlay.opacity = entity.getInterpolatedData("worm:dyn/darkness_aura_timer");
+    darknessOverlay.render();
 }
