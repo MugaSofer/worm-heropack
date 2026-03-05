@@ -10,6 +10,10 @@ loadTextures({
 var dogBody, dogLegFL, dogLegFR, dogLegBL, dogLegBR;
 var riderTorso, riderHead, riderArmR, riderArmL;
 
+// Compensate for getDefaultScale(1.8) so models stay the same visual size
+var S = 1.75;
+var DOG_SCALE = 1.7 / S;
+var RIDER_SCALE = 1.0 / S;
 
 function init(renderer) {
     parent.init(renderer);
@@ -33,8 +37,8 @@ function initEffects(renderer) {
     dogBody = renderer.createEffect("fiskheroes:model").setModel(dogBodyModel);
     dogBody.anchor.set("body");
     dogBody.anchor.ignoreAnchor(true);
-    dogBody.setScale(1.7);
-    dogBody.setOffset(0.0, -14.0, 0.0);
+    dogBody.setScale(DOG_SCALE);
+    dogBody.setOffset(0.0, 0.0, 0.0);
 
     var legNames = ["legfrontleft", "legfrontright", "legbackleft", "legbackright"];
     var legEffects = {};
@@ -44,8 +48,8 @@ function initEffects(renderer) {
         var leg = renderer.createEffect("fiskheroes:model").setModel(legModel);
         leg.anchor.set("body");
         leg.anchor.ignoreAnchor(true);
-        leg.setScale(1.7);
-        leg.setOffset(0.0, -14.0, 0.0);
+        leg.setScale(DOG_SCALE);
+        leg.setOffset(0.0, 0.0, 0.0);
         legEffects[legNames[i]] = leg;
     }
     dogLegFL = legEffects["legfrontleft"];
@@ -59,32 +63,32 @@ function initEffects(renderer) {
     riderTorso = renderer.createEffect("fiskheroes:model").setModel(torsoModel);
     riderTorso.anchor.set("body");
     riderTorso.anchor.ignoreAnchor(true);
-    riderTorso.setScale(1.0);
-    riderTorso.setOffset(0.0, -24.0, 0.0);
+    riderTorso.setScale(RIDER_SCALE);
+    riderTorso.setOffset(0.0, -4.0, 0.0);
 
     var headModel = renderer.createResource("MODEL", "worm:rachel_head");
     headModel.texture.set("skin");
     riderHead = renderer.createEffect("fiskheroes:model").setModel(headModel);
     riderHead.anchor.set("body");
     riderHead.anchor.ignoreAnchor(true);
-    riderHead.setScale(1.0);
-    riderHead.setOffset(0.0, -24.0, 0.0);
+    riderHead.setScale(RIDER_SCALE);
+    riderHead.setOffset(0.0, -4.0, 0.0);
 
     var armRModel = renderer.createResource("MODEL", "worm:rachel_right_arm");
     armRModel.texture.set("skin");
     riderArmR = renderer.createEffect("fiskheroes:model").setModel(armRModel);
     riderArmR.anchor.set("body");
     riderArmR.anchor.ignoreAnchor(true);
-    riderArmR.setScale(1.0);
-    riderArmR.setOffset(0.0, -24.0, 0.0);
+    riderArmR.setScale(RIDER_SCALE);
+    riderArmR.setOffset(0.0, -4.0, 0.0);
 
     var armLModel = renderer.createResource("MODEL", "worm:rachel_left_arm");
     armLModel.texture.set("skin");
     riderArmL = renderer.createEffect("fiskheroes:model").setModel(armLModel);
     riderArmL.anchor.set("body");
     riderArmL.anchor.ignoreAnchor(true);
-    riderArmL.setScale(1.0);
-    riderArmL.setOffset(0.0, -24.0, 0.0);
+    riderArmL.setScale(RIDER_SCALE);
+    riderArmL.setOffset(0.0, -4.0, 0.0);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
