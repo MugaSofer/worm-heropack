@@ -10,10 +10,18 @@ loadTextures({
 var dogBody, dogLegFL, dogLegFR, dogLegBL, dogLegBR;
 var riderTorso, riderHead, riderArmR, riderArmL;
 
-// Compensate for getDefaultScale(1.8) so models stay the same visual size
+// Compensate for setDefaultScale(1.75)
 var S = 1.75;
-var DOG_SCALE = 1.7 / S;
+var BASE_DOG_SCALE = 1.7 / S;
 var RIDER_SCALE = 1.0 / S;
+
+// Model space Y values for offset math
+var DOG_FEET_Y = 24.0;  // bottom of legs in model space (tuned)
+var DOG_BACK_Y = 6.0;   // top of body in model space
+// Rider offset at G=1 (calibrated by eye)
+var BASE_RIDER_OFFSET = -4.0;
+// How deep Rachel "sits" into the back
+var SITTING_DEPTH = BASE_RIDER_OFFSET - DOG_BACK_Y * BASE_DOG_SCALE;
 
 function init(renderer) {
     parent.init(renderer);
@@ -37,8 +45,6 @@ function initEffects(renderer) {
     dogBody = renderer.createEffect("fiskheroes:model").setModel(dogBodyModel);
     dogBody.anchor.set("body");
     dogBody.anchor.ignoreAnchor(true);
-    dogBody.setScale(DOG_SCALE);
-    dogBody.setOffset(0.0, 0.0, 0.0);
 
     var legNames = ["legfrontleft", "legfrontright", "legbackleft", "legbackright"];
     var legEffects = {};
@@ -48,8 +54,6 @@ function initEffects(renderer) {
         var leg = renderer.createEffect("fiskheroes:model").setModel(legModel);
         leg.anchor.set("body");
         leg.anchor.ignoreAnchor(true);
-        leg.setScale(DOG_SCALE);
-        leg.setOffset(0.0, 0.0, 0.0);
         legEffects[legNames[i]] = leg;
     }
     dogLegFL = legEffects["legfrontleft"];
@@ -64,7 +68,6 @@ function initEffects(renderer) {
     riderTorso.anchor.set("body");
     riderTorso.anchor.ignoreAnchor(true);
     riderTorso.setScale(RIDER_SCALE);
-    riderTorso.setOffset(0.0, -4.0, 0.0);
 
     var headModel = renderer.createResource("MODEL", "worm:rachel_head");
     headModel.texture.set("skin");
@@ -72,7 +75,6 @@ function initEffects(renderer) {
     riderHead.anchor.set("body");
     riderHead.anchor.ignoreAnchor(true);
     riderHead.setScale(RIDER_SCALE);
-    riderHead.setOffset(0.0, -4.0, 0.0);
 
     var armRModel = renderer.createResource("MODEL", "worm:rachel_right_arm");
     armRModel.texture.set("skin");
@@ -80,7 +82,6 @@ function initEffects(renderer) {
     riderArmR.anchor.set("body");
     riderArmR.anchor.ignoreAnchor(true);
     riderArmR.setScale(RIDER_SCALE);
-    riderArmR.setOffset(0.0, -4.0, 0.0);
 
     var armLModel = renderer.createResource("MODEL", "worm:rachel_left_arm");
     armLModel.texture.set("skin");
@@ -88,41 +89,63 @@ function initEffects(renderer) {
     riderArmL.anchor.set("body");
     riderArmL.anchor.ignoreAnchor(true);
     riderArmL.setScale(RIDER_SCALE);
-    riderArmL.setOffset(0.0, -4.0, 0.0);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
     if (renderLayer == "CHESTPLATE" && !isFirstPersonArm) {
+        var G = entity.getInterpolatedData("worm:dyn/dog_size_timer");
+        if (G <= 0) G = 1.0;
+
+        var dogScale = BASE_DOG_SCALE * G;
+        // Keep dog feet on ground as it grows
+        var dogOffsetY = -DOG_FEET_Y * BASE_DOG_SCALE * (G - 1);
+        // Keep Rachel on dog's back
+        var riderOffsetY = dogOffsetY + DOG_BACK_Y * BASE_DOG_SCALE * G + SITTING_DEPTH;
+
         var speed = Math.min(entity.motion().length() * 8.0, 1.0);
         var walkCycle = entity.loop(10) * Math.PI * 2;
 
-        // Dog body (static)
+        // Dog body
+        dogBody.setScale(dogScale);
+        dogBody.setOffset(0.0, dogOffsetY, 0.0);
         dogBody.render();
 
-        // Dog legs (walk cycle: front/back pairs alternate)
+        // Dog legs (walk cycle)
         var frontSwing = Math.sin(walkCycle) * 25.0 * speed;
         var backSwing = Math.sin(walkCycle + Math.PI) * 25.0 * speed;
+        dogLegFL.setScale(dogScale);
+        dogLegFL.setOffset(0.0, dogOffsetY, 0.0);
         dogLegFL.setRotation(frontSwing, 0.0, 0.0);
         dogLegFL.render();
+        dogLegFR.setScale(dogScale);
+        dogLegFR.setOffset(0.0, dogOffsetY, 0.0);
         dogLegFR.setRotation(-frontSwing, 0.0, 0.0);
         dogLegFR.render();
+        dogLegBL.setScale(dogScale);
+        dogLegBL.setOffset(0.0, dogOffsetY, 0.0);
         dogLegBL.setRotation(backSwing, 0.0, 0.0);
         dogLegBL.render();
+        dogLegBR.setScale(dogScale);
+        dogLegBR.setOffset(0.0, dogOffsetY, 0.0);
         dogLegBR.setRotation(-backSwing, 0.0, 0.0);
         dogLegBR.render();
 
-        // Rachel torso (static)
+        // Rachel torso
+        riderTorso.setOffset(0.0, riderOffsetY, 0.0);
         riderTorso.render();
 
-        // Rachel head (tracks look direction: pitch + yaw relative to body)
+        // Rachel head (tracks look direction)
         var headYaw = entity.rotYaw() - entity.rotBodyYawInterpolated();
+        riderHead.setOffset(0.0, riderOffsetY, 0.0);
         riderHead.setRotation(entity.rotPitch(), headYaw, 0.0);
         riderHead.render();
 
         // Rachel arms (swing with movement)
         var armSwing = Math.sin(walkCycle) * 30.0 * speed;
+        riderArmR.setOffset(0.0, riderOffsetY, 0.0);
         riderArmR.setRotation(armSwing, 0.0, 0.0);
         riderArmR.render();
+        riderArmL.setOffset(0.0, riderOffsetY, 0.0);
         riderArmL.setRotation(-armSwing, 0.0, 0.0);
         riderArmL.render();
     }
