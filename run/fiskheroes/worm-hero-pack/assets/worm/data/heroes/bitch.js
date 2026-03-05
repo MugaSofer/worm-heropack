@@ -23,6 +23,27 @@ function init(hero) {
     hero.addAttribute("STEP_HEIGHT", 0.5, 0);
     hero.addAttribute("SPRINT_JUMP_FACTOR", 1.5, 0);
 
+    // Generate size profiles at each 0.25 step
+    // Speed, damage, knockback all scale linearly with dog size
+    for (var s = MIN_DOG_SIZE; s <= MAX_DOG_SIZE + 0.01; s += GROW_STEP) {
+        var size = Math.round(s * 100) / 100;
+        var name = "SIZE_" + Math.round(size * 100);
+        (function (sz) {
+            hero.addAttributeProfile(name, function (profile) {
+                profile.inheritDefaults();
+                profile.addAttribute("BASE_SPEED", (sz - 1) * 0.5, 1);
+                profile.addAttribute("SPRINT_SPEED", (sz - 1) * 0.5, 1);
+                profile.addAttribute("PUNCH_DAMAGE", 10.0 * sz, 0);
+                profile.addAttribute("KNOCKBACK", 1.0 * sz, 0);
+                profile.addAttribute("STEP_HEIGHT", 0.5 * sz, 0);
+                profile.addAttribute("JUMP_HEIGHT", 3.0 * sz, 0);
+            });
+        })(size);
+    }
+
+    hero.setAttributeProfile(getProfile);
+    hero.setDamageProfile(getProfile);
+
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
         if (size < MAX_DOG_SIZE) {
@@ -60,4 +81,13 @@ function init(hero) {
             manager.setData(entity, "worm:dyn/dog_size_timer", target);
         }
     });
+}
+
+function getProfile(entity) {
+    var size = entity.getData("worm:dyn/dog_size");
+    if (size <= 0) size = 1.0;
+    var rounded = Math.round(size * 4) / 4; // snap to nearest 0.25
+    rounded = Math.max(MIN_DOG_SIZE, Math.min(MAX_DOG_SIZE, rounded));
+    var name = "SIZE_" + Math.round(rounded * 100);
+    return rounded == 1.0 ? null : name;
 }
