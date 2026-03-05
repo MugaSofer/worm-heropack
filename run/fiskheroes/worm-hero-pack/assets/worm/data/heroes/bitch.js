@@ -31,8 +31,8 @@ function init(hero) {
         (function (sz) {
             hero.addAttributeProfile(name, function (profile) {
                 profile.inheritDefaults();
-                profile.addAttribute("BASE_SPEED", (sz - 1) * 0.5, 1);
-                profile.addAttribute("SPRINT_SPEED", (sz - 1) * 0.5, 1);
+                profile.addAttribute("BASE_SPEED", (Math.pow(sz, 1.5) - 1) * 0.5, 1);
+                profile.addAttribute("SPRINT_SPEED", (Math.pow(sz, 1.5) - 1) * 0.5, 1);
                 profile.addAttribute("PUNCH_DAMAGE", 10.0 * sz, 0);
                 profile.addAttribute("KNOCKBACK", 1.0 * sz, 0);
                 profile.addAttribute("STEP_HEIGHT", 0.5 * sz, 0);
