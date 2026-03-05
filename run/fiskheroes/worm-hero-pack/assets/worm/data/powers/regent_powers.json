@@ -30,14 +30,20 @@
           "EFFECTS": [
             {
               "id": "minecraft:nausea",
-              "duration": 80,
-              "amplifier": 0,
+              "duration": 20,
+              "amplifier": 3,
               "chance": 1
             },
             {
               "id": "minecraft:slowness",
-              "duration": 60,
-              "amplifier": 0,
+              "duration": 20,
+              "amplifier": 5,
+              "chance": 1
+            },
+            {
+              "id": "minecraft:weakness",
+              "duration": 20,
+              "amplifier": 5,
               "chance": 1
             }
           ]

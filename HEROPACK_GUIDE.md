@@ -411,6 +411,81 @@ Multiple `bindCloud` and `bindTrail` calls with different conditions work — th
 - `entity.isPunching()` — true during punch animation
 - `entity.getData("fiskheroes:flying")` — flight state
 
+### Custom 3D Models (Tabula .tbl)
+
+You can attach custom 3D models to body parts using `renderer.createEffect("fiskheroes:model")`. Models are `.tbl` files (Tabula format) placed in `models/tabula/`.
+
+```javascript
+// In initEffects():
+var myModel = renderer.createResource("MODEL", "domain:model_name");  // loads models/tabula/model_name.tbl
+myModel.texture.set("texture_key");  // from loadTextures
+var effect = renderer.createEffect("fiskheroes:model").setModel(myModel);
+effect.anchor.set("rightArm");  // body part: head, body, rightArm, leftArm, rightLeg, leftLeg
+effect.setOffset(x, y, z);      // fine-tune position
+effect.setScale(1.0);           // optional scale
+effect.setRotation(x, y, z);   // optional rotation
+
+// In render():
+effect.render();
+```
+
+Model effects also support:
+- `effect.opacity = 0.5` — set transparency per-frame before render()
+- `model.bindAnimation("domain:anim_name")` — bind an .fsk animation to the model
+- `model.texture.set("tex", "lights")` — second arg is emissive/lights texture
+
+### Slim (Alex) Arms
+
+To replace the default 4px Steve arms with 3px Alex-style slim arms:
+
+1. **Get Alex arm model files** — `alex_arm_r.tbl` and `alex_arm_l.tbl` (Tabula format, available in dcuniverse and other packs). Place in `models/tabula/`.
+
+2. **Create a "noarms" skin texture** — copy of the hero skin with arm UV regions made fully transparent:
+   - Right arm main: x=40-55, y=16-31
+   - Right arm overlay: x=40-55, y=32-47
+   - Left arm main: x=32-47, y=48-63
+   - Left arm overlay: x=48-63, y=48-63
+
+3. **Set opacity below 1.0** — this enables transparency rendering so the blank arm regions become invisible. Without this, transparent pixels render as black.
+
+4. **Overlay the alex arm models** textured with the original (arms-intact) skin.
+
+```javascript
+loadTextures({
+    "layer1": "domain:hero_layer1_noarms",    // transparent arm regions
+    "layer2": "domain:hero_layer1_noarms",
+    "arm_tex": "domain:hero_layer1"           // original skin with arms
+});
+
+function initEffects(renderer) {
+    // CRITICAL: opacity < 1.0 enables transparency rendering
+    renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
+        return 0.9999;
+    });
+
+    // Slim right arm
+    var armRModel = renderer.createResource("MODEL", "domain:alex_arm_r");
+    armRModel.texture.set("arm_tex");
+    alexArmR = renderer.createEffect("fiskheroes:model").setModel(armRModel);
+    alexArmR.anchor.set("rightArm");
+    alexArmR.setOffset(-6.0, -2.05, 0.0);
+
+    // Slim left arm
+    var armLModel = renderer.createResource("MODEL", "domain:alex_arm_l");
+    armLModel.texture.set("arm_tex");
+    alexArmL = renderer.createEffect("fiskheroes:model").setModel(armLModel);
+    alexArmL.anchor.set("leftArm");
+    alexArmL.setOffset(5.0, -2.05, 0.0);
+}
+
+function render(entity, renderLayer, isFirstPersonArm) {
+    if (renderLayer == "CHESTPLATE") {
+        alexArmR.render();
+        alexArmL.render();
+    }
+}
+```
+
 ---
 
 ## 6. Model JSON
