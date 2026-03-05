@@ -46,5 +46,12 @@
       "range": 10.0,
       "radius": 0.0
     }
-  }
+  },
+  "hud": [
+    {
+      "type": "CHARGE",
+      "texture": "worm:textures/gui/bars/regent_control.png",
+      "data": "worm:dyn/tk_control_display"
+    }
+  ]
 }

@@ -28,6 +28,9 @@
     "darkness_aura_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "imp_visible": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "imp_visible_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
-    "tk_cooldown": {"type": "INTEGER", "resetWithoutSuit": true}
+    "tk_cooldown": {"type": "INTEGER", "resetWithoutSuit": true},
+    "tk_grab_ticks": {"type": "INTEGER", "resetWithoutSuit": true},
+    "tk_control": {"type": "FLOAT", "resetWithoutSuit": true},
+    "tk_control_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }
