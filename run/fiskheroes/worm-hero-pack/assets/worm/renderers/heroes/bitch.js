@@ -7,6 +7,8 @@ loadTextures({
     "dog_tex": "worm:monster_dog"
 });
 
+var utils = implement("fiskheroes:external/utils");
+
 var dogBody, dogLegFL, dogLegFR, dogLegBL, dogLegBR;
 var riderTorso, riderHead, riderArmR, riderArmL;
 
@@ -25,12 +27,21 @@ var SITTING_DEPTH = BASE_RIDER_OFFSET - DOG_BACK_Y * BASE_DOG_SCALE;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
+        if (dismount > 0.5) {
+            return "skin";
+        }
+        if (renderLayer == "SKIN") return "layer1";
+        return "layer2";
+    });
 }
 
 function initAnimations(renderer) {
     // Hide real player arms (and held items)
     addAnimation(renderer, "bitch.REMOVE_ARM", "worm:remove_arm").setData(function (entity, data) {
-        data.load(0, 1);
+        var mounted = 1.0 - entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
+        data.load(0, mounted);
     });
 }
 
@@ -89,20 +100,40 @@ function initEffects(renderer) {
     riderArmL.anchor.set("body");
     riderArmL.anchor.ignoreAnchor(true);
     riderArmL.setScale(RIDER_SCALE);
+
+    // --- Companion dog (tentacle system) ---
+    var companionModel = utils.createModel(renderer, "worm:monster_dog_companion", "dog_tex");
+    companionModel.bindAnimation("worm:dog_walk").setData(function (entity, data) {
+        var caster = entity.as("TENTACLE").getCaster();
+        var dogSpeed = Math.min(entity.motion().length() * 8.0, 1.0);
+        var casterSpeed = Math.min(caster.motion().length() * 8.0, 1.0);
+        var speed = Math.max(dogSpeed, casterSpeed);
+        var walkCycle = caster.loop(10) * Math.PI * 2;
+        data.load(0, walkCycle);
+        data.load(1, speed);
+    });
+
+    var tentacles = renderer.bindProperty("fiskheroes:tentacles").setTentacles([
+        { "offset": [8.0, -4.5, -2.0], "direction": [10.0, 0.0, -12.0] }
+    ]);
+    tentacles.anchor.set("body");
+    tentacles.setHeadModel(companionModel);
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    if (renderLayer == "CHESTPLATE" && !isFirstPersonArm) {
+    if (renderLayer != "CHESTPLATE" || isFirstPersonArm) return;
+
+    var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
+
+    if (dismount < 0.5) {
+        // --- MOUNTED: dog + Rachel on back ---
         var G = entity.getInterpolatedData("worm:dyn/dog_size_timer");
         if (G <= 0) G = 1.0;
 
         var dogScale = BASE_DOG_SCALE * G;
-        // Keep dog feet on ground as it grows
         var dogOffsetY = -DOG_FEET_Y * BASE_DOG_SCALE * (G - 1);
-        // Keep Rachel on dog's back
         var riderOffsetY = dogOffsetY + DOG_BACK_Y * BASE_DOG_SCALE * G + SITTING_DEPTH;
 
-        // Crouch animation
         var crouch = entity.getInterpolatedData("worm:dyn/dog_crouch_timer");
         var crouchDrop = crouch * 4.0 * dogScale;
         dogOffsetY += crouchDrop;
@@ -111,12 +142,10 @@ function render(entity, renderLayer, isFirstPersonArm) {
         var speed = Math.min(entity.motion().length() * 8.0, 1.0);
         var walkCycle = entity.loop(10) * Math.PI * 2;
 
-        // Dog body
         dogBody.setScale(dogScale);
         dogBody.setOffset(0.0, dogOffsetY, 0.0);
         dogBody.render();
 
-        // Dog legs (walk cycle + crouch splay)
         var frontSwing = Math.sin(walkCycle) * 25.0 * speed;
         var backSwing = Math.sin(walkCycle + Math.PI) * 25.0 * speed;
         var crouchSplay = crouch * 20.0;
@@ -137,17 +166,14 @@ function render(entity, renderLayer, isFirstPersonArm) {
         dogLegBR.setRotation(-backSwing - crouchSplay, 0.0, 0.0);
         dogLegBR.render();
 
-        // Rachel torso
         riderTorso.setOffset(0.0, riderOffsetY, 0.0);
         riderTorso.render();
 
-        // Rachel head (tracks look direction)
         var headYaw = entity.rotYaw() - entity.rotBodyYawInterpolated();
         riderHead.setOffset(0.0, riderOffsetY, 0.0);
         riderHead.setRotation(entity.rotPitch(), headYaw, 0.0);
         riderHead.render();
 
-        // Rachel arms (swing with movement)
         var armSwing = Math.sin(walkCycle) * 30.0 * speed;
         riderArmR.setOffset(0.0, riderOffsetY, 0.0);
         riderArmR.setRotation(armSwing, 0.0, 0.0);
@@ -156,4 +182,5 @@ function render(entity, renderLayer, isFirstPersonArm) {
         riderArmL.setRotation(-armSwing, 0.0, 0.0);
         riderArmL.render();
     }
+    // DISMOUNTED: real player model shows Rachel skin via setTexture()
 }

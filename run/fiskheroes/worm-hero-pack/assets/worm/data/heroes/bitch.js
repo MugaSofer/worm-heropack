@@ -53,6 +53,8 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
+    hero.addKeyBind("TENTACLES", "Dismount / Summon Dog", 4);
+
     hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
         manager.setData(entity, "worm:dyn/dog_crouch", !entity.getData("worm:dyn/dog_crouch"));
         return true;
@@ -75,9 +77,15 @@ function init(hero) {
     }, "Shrink Dog", 2);
 
     hero.setTickHandler(function (entity, manager) {
-        if (entity.getData("fiskheroes:scale") != 1.75) {
-            manager.setData(entity, "fiskheroes:scale", 1.75);
+        // Tentacles extending = dismounted from dog
+        var dismounted = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
+        var targetScale = dismounted ? 1.0 : 1.75;
+        if (entity.getData("fiskheroes:scale") != targetScale) {
+            manager.setData(entity, "fiskheroes:scale", targetScale);
         }
+
+        // Animate dismount timer
+        manager.incrementData(entity, "worm:dyn/dog_dismounted_timer", 10, dismounted);
 
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");

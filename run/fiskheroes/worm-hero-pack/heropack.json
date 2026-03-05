@@ -37,6 +37,8 @@
     "dog_crouch": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "dog_crouch_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "dog_crouch_air": {"type": "BYTE", "resetWithoutSuit": true},
-    "dog_crouch_charged": {"type": "BYTE", "resetWithoutSuit": true}
+    "dog_crouch_charged": {"type": "BYTE", "resetWithoutSuit": true},
+    "dog_dismounted": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "dog_dismounted_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }

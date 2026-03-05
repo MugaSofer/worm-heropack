@@ -1,0 +1,11 @@
+; Dog companion walk animation
+; data_0 = walk cycle (0 to 2pi)
+; data_1 = speed (0 to 1)
+{swing} = sin({data_0})
+{s} = 25'{data_1}
+
+; Front legs swing opposite to back legs
+{LegFrontRight_rotX} += {s}{swing}
+{LegFrontLeft_rotX} -= {s}{swing}
+{LegBackRight_rotX} -= {s}{swing}
+{LegBackLeft_rotX} += {s}{swing}

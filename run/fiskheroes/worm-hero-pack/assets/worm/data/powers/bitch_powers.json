@@ -1,6 +1,14 @@
 {
   "name": "Master Power",
-  "modifiers": {},
+  "modifiers": {
+    "fiskheroes:tentacles": {
+      "tentacles": [
+        [3.0, 0, 0.4]
+      ],
+      "canBreakGlass": false,
+      "soundEvents": {}
+    }
+  },
   "hud": [
     {
       "type": "CIRCLE",
