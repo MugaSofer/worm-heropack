@@ -1,0 +1,50 @@
+{
+  "name": "Master Power",
+  "modifiers": {
+    "fiskheroes:telekinesis": {
+      "telekinesis": {
+        "crushMelons": false,
+        "crushThrowables": false,
+        "squeezeChickens": false,
+        "explodeCreepers": false,
+        "destroyInanimates": false
+      },
+      "canGrab": {
+        "mobs": true,
+        "items": false,
+        "projectiles": false,
+        "inanimates": false
+      },
+      "range": 12.0,
+      "soundEvents": {
+        "GRAB": "fiskheroes:shadowchain_start"
+      }
+    },
+    "fiskheroes:heat_vision": {
+      "damageProfile": {
+        "damage": 0.01,
+        "types": {
+          "BLUNT": 1.0
+        },
+        "properties": {
+          "EFFECTS": [
+            {
+              "id": "minecraft:nausea",
+              "duration": 80,
+              "amplifier": 0,
+              "chance": 1
+            },
+            {
+              "id": "minecraft:slowness",
+              "duration": 60,
+              "amplifier": 0,
+              "chance": 1
+            }
+          ]
+        }
+      },
+      "range": 10.0,
+      "radius": 0.0
+    }
+  }
+}

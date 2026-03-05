@@ -27,6 +27,7 @@
     "darkness_aura": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "darkness_aura_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "imp_visible": {"type": "BOOLEAN", "resetWithoutSuit": true},
-    "imp_visible_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "imp_visible_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "tk_cooldown": {"type": "INTEGER", "resetWithoutSuit": true}
   }
 }
