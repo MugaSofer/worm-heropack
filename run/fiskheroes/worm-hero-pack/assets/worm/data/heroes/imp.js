@@ -12,7 +12,7 @@ function init(hero) {
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);
 
-    hero.addKeyBind("REVEAL", "Reveal Self", 1);
+    hero.addKeyBind("HEAT_VISION", "Reveal Self", 1);
 
     hero.addDamageProfile("PUNCH", {
         "types": {
@@ -22,10 +22,10 @@ function init(hero) {
     hero.setDamageProfile(getDamageProfile);
 
     hero.setTickHandler(function (entity, manager) {
-        // Invisible when not revealed and not punching
-        var revealed = entity.getData("worm:dyn/imp_visible_timer") > 0;
+        // Visible when holding reveal (heat_vision active) or punching
+        var revealing = entity.getData("fiskheroes:heat_vision");
         var punching = entity.isPunching();
-        manager.setDataWithNotify(entity, "fiskheroes:invisible", !revealed && !punching);
+        manager.setDataWithNotify(entity, "fiskheroes:invisible", !revealing && !punching);
         return false;
     });
 }

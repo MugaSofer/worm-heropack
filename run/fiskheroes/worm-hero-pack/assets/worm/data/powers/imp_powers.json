@@ -2,14 +2,13 @@
   "name": "Stranger Power",
   "modifiers": {
     "fiskheroes:invisibility": {},
-    "fiskheroes:transformation|reveal": {
-      "key": "REVEAL",
-      "transformation": {
-        "toggleData": "worm:dyn/imp_visible",
-        "timerData": "worm:dyn/imp_visible_timer",
-        "time": 5
+    "fiskheroes:heat_vision": {
+      "damageProfile": {
+        "damage": 0.0,
+        "types": {}
       },
-      "isToggle": true
+      "range": 0.0,
+      "radius": 0.0
     }
   }
 }
