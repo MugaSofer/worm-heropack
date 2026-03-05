@@ -1835,6 +1835,53 @@ var angle = Math.acos(Math.max(-1, Math.min(1,
 // angle < 5 = looking right at them
 ```
 
+### Entity Accessor Types (`.as()` / `.is()`)
+Tested via direct probing. Valid type strings for `entity.is()` and `entity.as()`:
+
+| Type | Returns | Available On |
+|------|---------|-------------|
+| `"LIVING"` | `JSEntityLiving` | Any living entity (mobs, players) |
+| `"PLAYER"` | `JSPlayer` | Players only |
+| `"DISPLAY"` | Display wrapper | Book preview entities — `.getDisplayType()`, `.isStatic()` |
+| `"TENTACLE"` | Tentacle wrapper | Tentacle entities — `.getCaster()`, `.getIndex()`, `.getGrabTimer()` |
+| `"SHADOWDOME"` | Dome wrapper | Shadowdome entities — `.getContainedEntities()`, `.getCaster()` |
+
+Invalid type strings ("MOB", "CREATURE", "MONSTER", "ZOMBIE", "ENTITY") throw `IllegalArgumentException`.
+
+### JSEntityLiving — Confirmed Methods (via live testing)
+When you get mob entities from `getEntitiesInRangeOf()`, they are `JSEntityLiving` wrappers. Only a subset of methods actually work — the wrapper returns `null` for any unknown property (proxy pattern), so `null` results don't mean the method exists.
+
+**Confirmed working (tested directly on mobs):**
+- `is(type)`, `getHealth()`, `getMaxHealth()`, `getName()` — real methods that return values
+- `pos()`, `eyePos()`, `isLivingEntity()`, `canSee(other)`, `equals(other)` — inherited from base
+- `hurtByAttacker(hero, profile, deathMsg, damage, attacker)` — deal damage
+- `playSound(id, volume, pitch)` — play sounds
+
+**Confirmed NOT available (throw "has no such function"):**
+- Targeting: `getAttackTarget`, `setAttackTarget`, `getAITarget`, `getRevengeTarget`, `setRevengeTarget`, `getLastAttacker`
+- AI: `getNavigator`, `getTasks`, `getTargetTasks`
+- Effects: `addPotionEffect`, `removePotionEffect`, `clearActivePotionEffects`
+- Lifecycle: `setDead`, `isEntityAlive`, `getEntityId`, `kill`
+- Movement: `setPosition`, `teleport`, `setVelocity`, `addVelocity`
+- NBT: `nbt()` — not available on mob entities (only on the player `entity` parameter)
+
+### JSPlayer — Confirmed Methods (via live testing)
+**Confirmed working:**
+- `addChatMessage(text)` — sends text to player's chat. Accepts strings and numbers. **Best debugging tool.**
+- `isUsingItem()` — whether player is using an item
+
+**Confirmed NOT available:**
+- `isCreative`, `getGameType`, `setGameType`, `setGameMode` — no game mode access
+- `sendChatMessage`, `performCommand`, `runCommand` — no command execution
+
+### JSWorld — Confirmed Unavailable Methods
+- `isRemote`, `getServer`, `getMinecraftServer`, `removeEntity`, `runCommand` — none of these exist
+
+### Testing Methodology
+The wrapper objects use a proxy pattern: unknown properties return `null` (type `"object"`) rather than `undefined`. This means you cannot discover methods by checking `typeof obj.method === "function"` or enumerating with `for...in`. To test if a method exists, call it directly — real Java methods throw `"has no such function"` errors when they don't exist, while proxy-null properties silently return `null` even with `()` appended.
+
+**Important:** Java-backed methods don't support `.apply()` or `.call()`. Always invoke directly: `living.getHealth()`, not `living.getHealth.apply(living)`.
+
 ### API Limitations
 - **No block placement** — world is read-only
 - **No entity spawning** — duplication spell spawns entities but that's hardcoded Java
@@ -1844,3 +1891,6 @@ var angle = Math.acos(Math.max(-1, Math.min(1,
 - **No inventory manipulation** — can read items but not modify
 - **No homing projectiles** — all projectiles are straight-line
 - **No custom shaders** — no GLSL, post-processing, or screen distortion
+- **No mob aggro clearing** — targeting/AI methods not exposed. Vanilla Minecraft mob aggro persists through `fiskheroes:invisible`
+- **No command execution** — no way to run `/gamemode` or any server command from scripts
+- **No entity removal** — cannot despawn or kill mob entities programmatically
