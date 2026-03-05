@@ -13,11 +13,12 @@ function init(hero) {
     hero.setBoots("Boots");
 
     hero.setDefaultScale(1.75);
+    hero.addPowers("worm:bitch_powers");
 
     hero.addAttribute("PUNCH_DAMAGE", 10.0, 0);
     hero.addAttribute("KNOCKBACK", 1.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.3, 1);
-    hero.addAttribute("JUMP_HEIGHT", 3.0, 0);
+    hero.addAttribute("JUMP_HEIGHT", 1.0, 0);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 1);
     hero.addAttribute("MAX_HEALTH", 20.0, 0);
     hero.addAttribute("STEP_HEIGHT", 0.5, 0);
@@ -36,13 +37,26 @@ function init(hero) {
                 profile.addAttribute("PUNCH_DAMAGE", 10.0 * sz, 0);
                 profile.addAttribute("KNOCKBACK", 1.0 * sz, 0);
                 profile.addAttribute("STEP_HEIGHT", 0.5 * sz, 0);
-                profile.addAttribute("JUMP_HEIGHT", 3.0 * sz, 0);
+                profile.addAttribute("JUMP_HEIGHT", 1.0 * sz, 0);
             });
         })(size);
     }
 
+    hero.addAttributeProfile("CROUCHING", function (profile) {
+        profile.inheritDefaults();
+        profile.addAttribute("JUMP_HEIGHT", 10.0, 0);
+        profile.addAttribute("SPRINT_JUMP_FACTOR", 5.0, 0);
+        profile.addAttribute("BASE_SPEED", 2.0, 1);
+        profile.addAttribute("SPRINT_SPEED", 2.0, 1);
+    });
+
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
+
+    hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/dog_crouch", !entity.getData("worm:dyn/dog_crouch"));
+        return true;
+    }, "Crouch Leap", 3);
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
@@ -80,10 +94,49 @@ function init(hero) {
         } else {
             manager.setData(entity, "worm:dyn/dog_size_timer", target);
         }
+
+        // Auto-clear crouch if moving or airborne
+        if (entity.getData("worm:dyn/dog_crouch")) {
+            var moving = entity.motion().length() > 0.05;
+            if (!entity.isOnGround()) {
+                var airTicks = entity.getData("worm:dyn/dog_crouch_air") + 1;
+                manager.setData(entity, "worm:dyn/dog_crouch_air", airTicks);
+                if (airTicks > 3) {
+                    manager.setData(entity, "worm:dyn/dog_crouch", false);
+                    manager.setData(entity, "worm:dyn/dog_crouch_air", 0);
+                    manager.setData(entity, "worm:dyn/dog_crouch_charged", 0);
+                }
+            } else if (moving) {
+                // Movement cancels crouch; only grant boost if fully charged
+                manager.setData(entity, "worm:dyn/dog_crouch", false);
+                if (entity.getData("worm:dyn/dog_crouch_timer") >= 0.9) {
+                    manager.setData(entity, "worm:dyn/dog_crouch_charged", 20);
+                }
+            } else {
+                manager.setData(entity, "worm:dyn/dog_crouch_air", 0);
+            }
+        }
+
+        // Tick down charged window
+        var charged = entity.getData("worm:dyn/dog_crouch_charged");
+        if (charged > 0) {
+            if (!entity.isOnGround()) {
+                // Used the leap, clear immediately
+                manager.setData(entity, "worm:dyn/dog_crouch_charged", 0);
+            } else {
+                manager.setData(entity, "worm:dyn/dog_crouch_charged", charged - 1);
+            }
+        }
+
+        // Animate crouch timer
+        manager.incrementData(entity, "worm:dyn/dog_crouch_timer", 60, entity.getData("worm:dyn/dog_crouch"));
     });
 }
 
 function getProfile(entity) {
+    if (entity.getData("worm:dyn/dog_crouch") || entity.getData("worm:dyn/dog_crouch_charged") > 0) {
+        return "CROUCHING";
+    }
     var size = entity.getData("worm:dyn/dog_size");
     if (size <= 0) size = 1.0;
     var rounded = Math.round(size * 4) / 4; // snap to nearest 0.25

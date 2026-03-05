@@ -33,6 +33,10 @@
     "tk_control": {"type": "FLOAT", "resetWithoutSuit": true},
     "tk_control_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "dog_size": {"type": "FLOAT", "resetWithoutSuit": true},
-    "dog_size_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "dog_size_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "dog_crouch": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "dog_crouch_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "dog_crouch_air": {"type": "BYTE", "resetWithoutSuit": true},
+    "dog_crouch_charged": {"type": "BYTE", "resetWithoutSuit": true}
   }
 }

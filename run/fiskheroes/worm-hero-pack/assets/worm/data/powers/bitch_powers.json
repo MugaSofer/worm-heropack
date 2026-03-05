@@ -1,0 +1,12 @@
+{
+  "name": "Master Power",
+  "modifiers": {},
+  "hud": [
+    {
+      "type": "CIRCLE",
+      "color": "0x8B4513",
+      "data": "worm:dyn/dog_crouch_timer",
+      "condition": "worm:dyn/dog_crouch"
+    }
+  ]
+}

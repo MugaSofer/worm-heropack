@@ -102,6 +102,12 @@ function render(entity, renderLayer, isFirstPersonArm) {
         // Keep Rachel on dog's back
         var riderOffsetY = dogOffsetY + DOG_BACK_Y * BASE_DOG_SCALE * G + SITTING_DEPTH;
 
+        // Crouch animation
+        var crouch = entity.getInterpolatedData("worm:dyn/dog_crouch_timer");
+        var crouchDrop = crouch * 4.0 * dogScale;
+        dogOffsetY += crouchDrop;
+        riderOffsetY += crouchDrop;
+
         var speed = Math.min(entity.motion().length() * 8.0, 1.0);
         var walkCycle = entity.loop(10) * Math.PI * 2;
 
@@ -110,24 +116,25 @@ function render(entity, renderLayer, isFirstPersonArm) {
         dogBody.setOffset(0.0, dogOffsetY, 0.0);
         dogBody.render();
 
-        // Dog legs (walk cycle)
+        // Dog legs (walk cycle + crouch splay)
         var frontSwing = Math.sin(walkCycle) * 25.0 * speed;
         var backSwing = Math.sin(walkCycle + Math.PI) * 25.0 * speed;
+        var crouchSplay = crouch * 20.0;
         dogLegFL.setScale(dogScale);
-        dogLegFL.setOffset(0.0, dogOffsetY, 0.0);
-        dogLegFL.setRotation(frontSwing, 0.0, 0.0);
+        dogLegFL.setOffset(0.0, dogOffsetY - crouchDrop, 0.0);
+        dogLegFL.setRotation(frontSwing - crouchSplay, 0.0, 0.0);
         dogLegFL.render();
         dogLegFR.setScale(dogScale);
-        dogLegFR.setOffset(0.0, dogOffsetY, 0.0);
-        dogLegFR.setRotation(-frontSwing, 0.0, 0.0);
+        dogLegFR.setOffset(0.0, dogOffsetY - crouchDrop, 0.0);
+        dogLegFR.setRotation(-frontSwing - crouchSplay, 0.0, 0.0);
         dogLegFR.render();
         dogLegBL.setScale(dogScale);
-        dogLegBL.setOffset(0.0, dogOffsetY, 0.0);
-        dogLegBL.setRotation(backSwing, 0.0, 0.0);
+        dogLegBL.setOffset(0.0, dogOffsetY - crouchDrop, 0.0);
+        dogLegBL.setRotation(backSwing - crouchSplay, 0.0, 0.0);
         dogLegBL.render();
         dogLegBR.setScale(dogScale);
-        dogLegBR.setOffset(0.0, dogOffsetY, 0.0);
-        dogLegBR.setRotation(-backSwing, 0.0, 0.0);
+        dogLegBR.setOffset(0.0, dogOffsetY - crouchDrop, 0.0);
+        dogLegBR.setRotation(-backSwing - crouchSplay, 0.0, 0.0);
         dogLegBR.render();
 
         // Rachel torso
