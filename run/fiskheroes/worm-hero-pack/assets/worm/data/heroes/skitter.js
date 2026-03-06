@@ -32,8 +32,15 @@ function init(hero) {
     // Key 1: Summon Swarm (charged beam — hold to build density, click to dismiss)
     hero.addKeyBind("CHARGED_BEAM", "Summon Swarm", 1);
 
-    // Key 2: Targeted beam (hold to direct swarm)
+    // Key 2: Targeted beam (hold to direct swarm) / dismiss-only at low density
     hero.addKeyBind("HEAT_VISION", "Direct Swarm \u00A77+ \u00A7eSneak\u00A7f Dismiss", 2);
+    hero.addKeyBindFunc("DISMISS_ONLY", function (entity, manager) {
+        if (entity.isSneaking()) {
+            manager.setData(entity, "worm:dyn/swarm_density", 0);
+            manager.setData(entity, "worm:dyn/swarm_density_display", 0);
+        }
+        return false;
+    }, "Dismiss Swarm \u00A77(\u00A7eSneak\u00A77)", 2);
 
     // Key 3: Cycle method (0 = Targeted, 1 = Entire Area)
     hero.addKeyBindFunc("METHOD_0", function (entity, manager) {
@@ -207,7 +214,6 @@ function init(hero) {
             // Targeted mode (method 0): heat_vision beam handles damage
             // Drain for targeted: small constant drain while beam is firing
             if (method == 0 && entity.getData("fiskheroes:heat_vision")) {
-                // Sneak while holding Direct Swarm = dismiss
                 if (entity.isSneaking()) {
                     density = 0;
                     manager.setData(entity, "worm:dyn/swarm_density", 0);
@@ -230,7 +236,7 @@ function isModifierEnabled(entity, modifier) {
         return modifier.id() == "swarm";
     }
     if (modifier.name() == "fiskheroes:heat_vision") {
-        if (!hasSwarm || method != 0) return false;
+        if (entity.getData("worm:dyn/swarm_density") < 0.25 || method != 0) return false;
         var expected = effect == 0 ? "swarm_biting" : "swarm_stinging";
         return modifier.id() == expected;
     }
@@ -241,13 +247,15 @@ function isKeyBindEnabled(entity, keyBind) {
     var method = entity.getData("worm:dyn/swarm_method");
     var effect = entity.getData("worm:dyn/swarm_effect");
     var hasSwarm = entity.getData("worm:dyn/swarm_density") > 0.01;
+    var canAttack = entity.getData("worm:dyn/swarm_density") >= 0.25;
 
     switch (keyBind) {
-    case "METHOD_0": return hasSwarm && method == 0;
-    case "METHOD_1": return hasSwarm && method == 1;
-    case "EFFECT_0": return hasSwarm && effect == 0;
-    case "EFFECT_1": return hasSwarm && effect == 1;
-    case "HEAT_VISION": return hasSwarm && method == 0;
+    case "METHOD_0": return canAttack && method == 0;
+    case "METHOD_1": return canAttack && method == 1;
+    case "EFFECT_0": return canAttack && effect == 0;
+    case "EFFECT_1": return canAttack && effect == 1;
+    case "HEAT_VISION": return canAttack;
+    case "DISMISS_ONLY": return hasSwarm && !canAttack;
     case "SWARM_SENSE": return hasSwarm;
     default: return true;
     }
