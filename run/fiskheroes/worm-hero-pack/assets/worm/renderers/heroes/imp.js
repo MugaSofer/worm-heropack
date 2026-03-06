@@ -14,8 +14,8 @@ function init(renderer) {
     parent.init(renderer);
     renderer.setTexture(function (entity, renderLayer) {
         var fullSuit = entity.isWearingFullSuit();
-        // Partial suit: combined texture. Full suit: body as base (overlay adds costume)
-        return fullSuit ? "body" : "layer1";
+        // Partial suit: costume only. Full suit: body as base (overlay adds costume)
+        return fullSuit ? "body" : "costume";
     });
 }
 
