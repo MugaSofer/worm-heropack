@@ -1,4 +1,4 @@
-var SWARM_RADIUS = 8.0;
+var SWARM_RADIUS = 100.0;
 var SWARM_DAMAGE = 1.0;
 var heroRef = null;
 
