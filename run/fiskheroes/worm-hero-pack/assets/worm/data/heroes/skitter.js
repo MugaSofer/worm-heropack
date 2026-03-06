@@ -27,17 +27,20 @@ function init(hero) {
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);
 
-    // Key 1: Summon Swarm (charged beam — hold to build density)
+    // Key 1: Summon Swarm (charged beam — hold to build density, click to dismiss)
     hero.addKeyBind("CHARGED_BEAM", "Summon Swarm", 1);
 
-    // Key 2: Cycle method (0 = Targeted, 1 = Entire Area)
+    // Key 2: Targeted beam (hold to direct swarm)
+    hero.addKeyBind("HEAT_VISION", "Direct Swarm \u00A77+ \u00A7eClick\u00A7f Dismiss", 2);
+
+    // Key 3: Cycle method (0 = Targeted, 1 = Entire Area)
     hero.addKeyBindFunc("METHOD_0", function (entity, manager) {
         if (debounce_method) return false;
         debounce_method = true;
         var current = entity.getData("worm:dyn/swarm_method");
         manager.setData(entity, "worm:dyn/swarm_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A7fMethod: \u00A7aTargeted \u00A78>", 2);
+    }, "\u00A7fMethod: \u00A7aTargeted \u00A78>", 3);
 
     hero.addKeyBindFunc("METHOD_1", function (entity, manager) {
         if (debounce_method) return false;
@@ -45,16 +48,16 @@ function init(hero) {
         var current = entity.getData("worm:dyn/swarm_method");
         manager.setData(entity, "worm:dyn/swarm_method", (current + 1) % METHOD_COUNT);
         return true;
-    }, "\u00A7fMethod: \u00A7cEntire Area \u00A78>", 2);
+    }, "\u00A7fMethod: \u00A7cEntire Area \u00A78>", 3);
 
-    // Key 3: Cycle effect (Biting / Stinging)
+    // Key 4: Cycle effect (Biting / Stinging)
     hero.addKeyBindFunc("EFFECT_0", function (entity, manager) {
         if (debounce_effect) return false;
         debounce_effect = true;
         var current = entity.getData("worm:dyn/swarm_effect");
         manager.setData(entity, "worm:dyn/swarm_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A7fEffect: \u00A76Biting \u00A78>", 3);
+    }, "\u00A7fEffect: \u00A76Biting \u00A78>", 4);
 
     hero.addKeyBindFunc("EFFECT_1", function (entity, manager) {
         if (debounce_effect) return false;
@@ -62,19 +65,7 @@ function init(hero) {
         var current = entity.getData("worm:dyn/swarm_effect");
         manager.setData(entity, "worm:dyn/swarm_effect", (current + 1) % EFFECT_COUNT);
         return true;
-    }, "\u00A7fEffect: \u00A7aStinging \u00A78>", 3);
-
-    // Key 4: Targeted beam (hold to direct swarm)
-    hero.addKeyBind("HEAT_VISION", "Direct Swarm", 4);
-
-    // Key 5: Dismiss swarm
-    hero.addKeyBindFunc("DISMISS", function (entity, manager) {
-        manager.setData(entity, "worm:dyn/swarm_density", 0);
-        manager.setData(entity, "worm:dyn/swarm_density_display", 0);
-        manager.setData(entity, "worm:dyn/swarm_active", false);
-        manager.setData(entity, "worm:dyn/swarm_timer", 0);
-        return true;
-    }, "Dismiss Swarm", 5);
+    }, "\u00A7fEffect: \u00A7aStinging \u00A78>", 4);
 
     hero.setKeyBindEnabled(isKeyBindEnabled);
     hero.setModifierEnabled(isModifierEnabled);
@@ -123,6 +114,7 @@ function init(hero) {
                 density = newDensity;
                 manager.setData(entity, "worm:dyn/swarm_density", density);
             }
+
         }
 
         var hasSwarm = density > 0.01;
@@ -136,19 +128,17 @@ function init(hero) {
             var effect = Number(entity.getData("worm:dyn/swarm_effect"));
 
             if (method == 1) {
-                // AoE: damage everything in range, drain per hit
+                // AoE: damage everything in range, flat drain
                 var profileName = effect == 0 ? "SWARM_BITING" : "SWARM_STINGING";
                 var deathMsg = effect == 0
                     ? "%1$s was devoured by Skitter's swarm"
                     : "%1$s succumbed to Skitter's venom";
 
                 var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
-                var hitCount = 0;
                 for (var i = 0; i < nearby.length; i++) {
                     var target = nearby[i];
                     if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
                         target.hurtByAttacker(heroRef, profileName, deathMsg, SWARM_DAMAGE, entity);
-                        hitCount++;
                     }
                 }
 
@@ -158,8 +148,15 @@ function init(hero) {
             // Targeted mode (method 0): heat_vision beam handles damage
             // Drain for targeted: small constant drain while beam is firing
             if (method == 0 && entity.getData("fiskheroes:heat_vision")) {
-                density = Math.max(0, density - DRAIN_PER_HIT);
-                manager.setData(entity, "worm:dyn/swarm_density", density);
+                // Click while holding Direct Swarm = dismiss
+                if (entity.getPunchTimer() > 0) {
+                    density = 0;
+                    manager.setData(entity, "worm:dyn/swarm_density", 0);
+                    manager.setData(entity, "worm:dyn/swarm_density_display", 0);
+                } else {
+                    density = Math.max(0, density - DRAIN_PER_HIT);
+                    manager.setData(entity, "worm:dyn/swarm_density", density);
+                }
             }
         }
     });
@@ -192,7 +189,6 @@ function isKeyBindEnabled(entity, keyBind) {
     case "EFFECT_0": return hasSwarm && effect == 0;
     case "EFFECT_1": return hasSwarm && effect == 1;
     case "HEAT_VISION": return hasSwarm && method == 0;
-    case "DISMISS": return hasSwarm;
     default: return true;
     }
 }

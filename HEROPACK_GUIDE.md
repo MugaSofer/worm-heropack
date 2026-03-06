@@ -1679,7 +1679,7 @@ Multiple effects can be stacked in the array. Legend's cold beams use this for S
 | `minecraft:night_vision` | Full brightness | |
 | `minecraft:hunger` | Food drains faster | |
 | `minecraft:weakness` | Reduced melee damage | |
-| `minecraft:poison` | DoT, can't kill (stops at 1 HP) | |
+| `minecraft:poison` | DoT, can't kill (stops at 1 HP) | **BROKEN** — does not apply in Fisk Heroes. Use `minecraft:wither` instead. |
 | `minecraft:wither` | DoT, CAN kill | |
 | `minecraft:health_boost` | Extra max HP | |
 | `minecraft:absorption` | Yellow bonus hearts | |
