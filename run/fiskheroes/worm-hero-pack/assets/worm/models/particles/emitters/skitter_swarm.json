@@ -1,0 +1,34 @@
+{
+  "particles": [
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 20,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [8.0, 3.0, 8.0],
+      "motion": [0.05, 0.05, 0.05],
+      "randMotion": [0.08, 0.04, 0.08]
+    },
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 10,
+      "offset": [0.0, 2.0, 0.0],
+      "randOffset": [6.0, 2.0, 6.0],
+      "motion": [0.1, 0.1, 0.1],
+      "randMotion": [0.06, 0.03, 0.06]
+    },
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 8,
+      "offset": [0.0, 6.0, 0.0],
+      "randOffset": [5.0, 2.0, 5.0],
+      "motion": [0.15, 0.1, 0.1],
+      "randMotion": [0.05, 0.05, 0.05]
+    }
+  ]
+}

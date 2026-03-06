@@ -2,10 +2,10 @@
 
 An unofficial guide compiled through extensive trial, error, and reverse-engineering. The official mod documentation is sparse, so this fills the gaps.
 
-**Mod version**: Fisk Heroes for Minecraft 1.12.2 (Forge)
+**Mod version**: Fisk Heroes 2.4.0 for Minecraft 1.7.10 (Forge)
 **Scripting engine**: Nashorn (Java 8 JavaScript)
 **Reload command**: `/fiskheroes reload` (renderer changes require a full game restart)
-**Equip command**: `/fiskheroes equip domain:hero_name`
+**Equip command**: `/suit domain:hero_name`
 
 ---
 
@@ -588,7 +588,7 @@ Etc. - this is not an exhaustive list, just some known useful ones.
 ### Three systems for items:
 
 #### 1. Utility Belt (consumable gadget radial menu)
-Built-in grenade/gadget selector. Available items are configured in the powers JSON `fiskheroes:equipment` modifier. Known items: `fiskheroes:grenade`, `fiskheroes:freeze_grenade`, `fiskheroes:smoke_pellet`, `fiskheroes:batarang`.
+Built-in grenade/gadget selector. Available items are configured in the powers JSON `fiskheroes:equipment` modifier. Known items: `fiskheroes:grenade`, `fiskheroes:freeze_grenade`, `fiskheroes:smoke_pellet`, `fiskheroes:batarang`, `fiskheroes:throwing_star`.
 
 ```javascript
 // In hero data JS:
@@ -602,6 +602,41 @@ Gate with `isModifierEnabled`:
 ```javascript
 case "fiskheroes:equipment":
     return someCondition;
+```
+
+**Multiple equipment loadouts** — use pipe suffixes to define variants, then cycle between them with a keybind and `modifier.id()`:
+```json
+// In powers JSON:
+"fiskheroes:equipment|basic": {
+    "equipment": { "fiskheroes:batarang": { "cooldown": 40, "uses": 8, "damageProfile": { ... } } }
+},
+"fiskheroes:equipment|fire": {
+    "equipment": { "fiskheroes:batarang": { "cooldown": 60, "uses": 3, "damageProfile": { ... } } }
+},
+"fiskheroes:equipment|electro": {
+    "equipment": { "fiskheroes:batarang": { "cooldown": 60, "uses": 3, "damageProfile": { ... } } }
+}
+```
+```javascript
+// In hero JS — cycle with a keybind:
+hero.addKeyBindFunc("func_CHANGE_BATARANG", function (entity, manager) {
+    var type = entity.getData("domain:dyn/batarang_type");
+    manager.setData(entity, "domain:dyn/batarang_type", type >= 3 ? 1 : type + 1);
+    return true;
+}, "Change Batarang", 1);
+
+// Gate so only the active variant fires:
+function isModifierEnabled(entity, modifier) {
+    var type = entity.getData("domain:dyn/batarang_type");
+    switch (modifier.name()) {
+    case "fiskheroes:equipment":
+        return modifier.id() == "basic" && type == 1
+            || modifier.id() == "fire" && type == 2
+            || modifier.id() == "electro" && type == 3;
+    default:
+        return true;
+    }
+}
 ```
 
 #### 2. addPrimaryEquipment (weapon radial menu)
@@ -1062,7 +1097,7 @@ Beam of sonic-wave rings.
 - Used for Eidolon's Aerokinesis alongside telekinesis for tornado + wind damage.
 
 #### `fiskheroes:thorns`
-Reflects incoming damage back at the attacker.
+Reflects incoming damage back at the attacker. **Note:** This only reflects damage — it does NOT proactively damage nearby entities. For passive contact damage auras (hurting nearby mobs on tick), use `getEntitiesInRangeOf` + `hurtByAttacker` in a tick handler (see Eidolon's Energy Form for a working example).
 
 ```json
 "fiskheroes:thorns": {
@@ -1262,6 +1297,11 @@ Gadget radial menu (utility belt). Configure available items and their propertie
             "cooldown": 13, "uses": 3,
             "damageProfile": { ... },
             "properties": { "DAMAGE_DROPOFF": 0.6 }
+        },
+        "fiskheroes:throwing_star": {
+            "cooldown": 15, "uses": 3,
+            "damageProfile": { "damage": 4.0, "types": { "SHURIKEN": 1.0 } },
+            "properties": { "DAMAGE_DROPOFF": 0.6 }
         }
     },
     "soundEvents": { "SWITCH": "fiskheroes:utility_belt_switch" }
@@ -1297,6 +1337,12 @@ Spell menu with directional input sequences.
 ```
 
 Requires `hero.addKeyBind("SPELL_MENU", "key.illusionMenu", keySlot)`. Eidolon uses duplication + blindness for Illusions.
+
+**Duplication limitations:**
+- Clones use the player's model/skin — cannot be reskinned to look different
+- Clones do NOT inherit particle effects from the hero
+- On despawn, clones play a hologram-esque colour-smear dissolve effect (not customisable)
+- Still useful for decoy/distraction mechanics despite visual limitations
 
 #### `fiskheroes:cooldown`
 Ties a toggle data var to a cooldown timer — automatically manages charge/discharge.
@@ -1366,6 +1412,34 @@ Breathe underwater. No parameters. Alternative to `hasProperty` returning true f
 
 #### `fiskheroes:night_vision`
 Built-in night vision modifier. We use `hasProperty` with `"NIGHT_VISION"` instead (see Legend), but this exists as a modifier too.
+
+**Tinted/coloured vision overlays** — Night vision itself has no colour options, but you can fake coloured vision using first-person-only forcefields. Bind a `fiskheroes:forcefield`, set its colour, and toggle opacity based on `isFirstPersonArm`:
+
+```javascript
+// Daredevil (hells-kitchen pack) — red-tinted FP vision:
+var blind = renderer.bindProperty("fiskheroes:forcefield");
+blind.color.set(0x5a1a1a);
+blind.setShape(4, 8).setScale(0.6, 0.5, 0.6);
+
+// In render():
+blind.opacity = Number(isFirstPersonArm);  // visible only in first person
+```
+
+```javascript
+// Wildmutt (tmf pack) — multi-layer pulsing sonar vision:
+var ff1 = renderer.bindProperty("fiskheroes:forcefield");
+ff1.color.set(0xBF7167);
+ff1.setShape(20, 10).setOffset(0.0, 6.0, 0.0);
+
+// In render():
+if (isFirstPersonArm) {
+    ff1.opacity = 0.5 + 0.2 * Math.sin(Math.PI * entity.loop(20));
+} else {
+    ff1.opacity = 0;
+}
+```
+
+Multiple forcefields with different colours, scales, and pulse rates can create complex vision effects (thermal, sonar, etc.).
 
 #### `fiskheroes:invisibility`
 Turn invisible. No parameters. Visual handled by the mod.

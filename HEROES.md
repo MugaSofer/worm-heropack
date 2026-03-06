@@ -2,6 +2,8 @@
 
 A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 
+**Equip command**: `/suit worm:<hero_name>` (e.g. `/suit worm:alexandria`)
+
 ---
 
 ## Alexandria

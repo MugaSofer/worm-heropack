@@ -1,0 +1,11 @@
+{
+  "name": "Swarm Control",
+  "hud": [
+    {
+      "type": "CIRCLE",
+      "color": "0x3D2B1F",
+      "data": "worm:dyn/swarm_timer",
+      "condition": "worm:dyn/swarm_active"
+    }
+  ]
+}
