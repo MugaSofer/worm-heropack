@@ -555,17 +555,74 @@ JSON files in `models/particles/emitters/`. Referenced as `domain:emitter_name`.
 ```
 
 ### Particle types:
+
+**Mod-defined types:**
+| Type | Appearance |
+|------|------------|
+| `SMOKE` | Standard smoke |
+| `SMOKE_SMALL` | Tiny smoke puffs |
+| `THICK_SMOKE` | Dense smoke |
+| `BIG_SMOKE` | Large smoke puffs |
+| `SHADOW_SMOKE` | Dark shadow particles |
+| `CRYO_SMOKE` | Icy blue particles |
+| `ENERGY_SMOKE` | Energy-coloured smoke |
+| `MYSTERIO_SMOKE` | Green mystical smoke |
+| `FLAME` | Fire |
+| `FLAME_BALL` | Larger fire |
+| `SHORT_FLAME` | Brief fire |
+| `BLUE_FLAME` | Blue fire |
+| `SPARK` | Small sparks |
+| `BULLET_SPARK` | Bullet impact sparks |
+| `FIREWORK_BACKGROUND` | Backdrop glow — `motion` field = RGB color (0-1 range) |
+| `FREEZE_RAY` | Freeze beam particles |
+| `FREEZE_SMOKE` | Cold fog |
+| `ICICLE_BREAK` | Ice shard fragments |
+| `QUANTUM_PARTICLE` | Quantum effect |
+| `DWARF_STAR_ENERGY` | Dwarf star energy |
+| `ETERNIUM_AURA` | Eternium glow |
+| `SUBATOMIC_CHARGE` | Subatomic effect |
+
+**Vanilla Minecraft types:**
 | Type | Appearance |
 |------|------------|
 | `minecraft:cloud` | White smoke |
-| `THICK_SMOKE` | Dense smoke |
-| `BIG_SMOKE` | Large smoke puffs |
-| `CRYO_SMOKE` | Icy blue particles |
-| `FLAME` | Fire |
-| `FLAME_BALL` | Larger fire |
-| `FIREWORK_BACKGROUND` | Backdrop glow — `motion` field = RGB color (0-1 range) |
+| `minecraft:reddust` | Coloured puffs — `motion` = RGB color |
+| `minecraft:flame` | Fire particle |
+| `minecraft:lava` | Lava drip |
+| `minecraft:largesmoke` | Large smoke |
+| `minecraft:explode` | Explosion puff |
+| `minecraft:largeexplode` | Large explosion |
+| `minecraft:crit` | Critical hit sparkle |
+| `minecraft:portal` | Purple portal swirl |
+| `minecraft:enchantmenttable` | Enchanting glyphs |
+| `minecraft:heart` | Heart |
+| `minecraft:bubble` | Underwater bubble |
+| `minecraft:splash` | Water splash |
+| `minecraft:snowshovel` | Snow fragments |
+| `minecraft:depthsuspend` | Underwater depth particles |
+| `minecraft:dripWater` | Water drip |
+| `minecraft:angryVillager` | Angry villager cloud |
+| `minecraft:happyVillager` | Happy villager sparkle |
 
-Etc. - this is not an exhaustive list, just some known useful ones.
+**Item/block fragment particles:**
+| Type | Appearance |
+|------|------------|
+| `minecraft:iconcrack_ID_META` | Fragments of item texture (e.g. `iconcrack_264_0` = diamond shards) |
+| `minecraft:blockcrack_ID_META` | Fragments of block texture (e.g. `blockcrack_1_0` = stone fragments) |
+
+`iconcrack` and `blockcrack` use vanilla item/block IDs. Useful examples: `iconcrack_375_0` (spider eye), `iconcrack_351_0` (ink sac), `blockcrack_3_0` (dirt), `blockcrack_12_0` (sand), `blockcrack_152_0` (redstone block).
+
+### Particle visual notes (tested):
+- **`minecraft:reddust`** — Tiny coloured dots. `motion` = RGB. Very low values (0.05) = near-black. Good for generic dark particles.
+- **`iconcrack_375_0`** (spider eye) — Chunky red-brown viscera raining down. Good for gore/transformation effects (e.g. Bitch's dog growth).
+- **`iconcrack_376_0`** (fermented spider eye) — Similar to spider eye but pinkish.
+- **`iconcrack_287_0`** (string) — White wisps. Too light for dark effects.
+- **`blockcrack_30_0`** (cobweb) — Wispy grey-white fragments. Works well in a mix for swarm/web effects.
+- **`iconcrack_263_0`** (coal) — Black chunks falling. Heavy, not floaty.
+- **`iconcrack_351_0`** (ink sac) — Black chunks falling. Similar to coal.
+- **`SHADOW_SMOKE`** — Like dark reddust but slower, more lingering. Good atmosphere.
+- **`SMOKE_SMALL`** — Surprisingly effective — tiny dark puffs, natural-looking.
+- **`minecraft:depthsuspend`** — Tiny, floaty, ambient. Good as background filler.
 
 ### Particle fields:
 | Field | Purpose |

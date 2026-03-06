@@ -2,6 +2,7 @@ var SWARM_RADIUS = 8.0;
 var SWARM_DAMAGE = 1.0;
 var heroRef = null;
 
+
 function init(hero) {
     heroRef = hero;
     hero.setName("Skitter");
@@ -21,6 +22,8 @@ function init(hero) {
         manager.setData(entity, "worm:dyn/swarm_active", !entity.getData("worm:dyn/swarm_active"));
         return true;
     }, "Swarm", 1);
+
+
 
     hero.addDamageProfile("SWARM", {
         "types": {
