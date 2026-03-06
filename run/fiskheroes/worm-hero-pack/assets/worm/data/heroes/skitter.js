@@ -33,7 +33,7 @@ function init(hero) {
     hero.addKeyBind("CHARGED_BEAM", "Summon Swarm", 1);
 
     // Key 2: Targeted beam (hold to direct swarm)
-    hero.addKeyBind("HEAT_VISION", "Direct Swarm \u00A77+ \u00A7eClick\u00A7f Dismiss", 2);
+    hero.addKeyBind("HEAT_VISION", "Direct Swarm \u00A77+ \u00A7eSneak\u00A7f Dismiss", 2);
 
     // Key 3: Cycle method (0 = Targeted, 1 = Entire Area)
     hero.addKeyBindFunc("METHOD_0", function (entity, manager) {
@@ -207,8 +207,8 @@ function init(hero) {
             // Targeted mode (method 0): heat_vision beam handles damage
             // Drain for targeted: small constant drain while beam is firing
             if (method == 0 && entity.getData("fiskheroes:heat_vision")) {
-                // Click while holding Direct Swarm = dismiss
-                if (entity.getPunchTimer() > 0) {
+                // Sneak while holding Direct Swarm = dismiss
+                if (entity.isSneaking()) {
                     density = 0;
                     manager.setData(entity, "worm:dyn/swarm_density", 0);
                     manager.setData(entity, "worm:dyn/swarm_density_display", 0);
