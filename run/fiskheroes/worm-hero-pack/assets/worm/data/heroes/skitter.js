@@ -67,6 +67,12 @@ function init(hero) {
         return true;
     }, "\u00A7fEffect: \u00A7aStinging \u00A78>", 4);
 
+    // Key 5: Swarm Sense toggle
+    hero.addKeyBindFunc("SWARM_SENSE", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/swarm_sense", !entity.getData("worm:dyn/swarm_sense"));
+        return true;
+    }, "Swarm Sense", 5);
+
     hero.setKeyBindEnabled(isKeyBindEnabled);
     hero.setModifierEnabled(isModifierEnabled);
 
@@ -116,6 +122,10 @@ function init(hero) {
             }
 
         }
+
+        // Swarm sense: only works with active swarm
+        var senseOn = entity.getData("worm:dyn/swarm_sense") && density > 0.01;
+        manager.incrementData(entity, "worm:dyn/swarm_sense_timer", 10, senseOn);
 
         var hasSwarm = density > 0.01;
         manager.setData(entity, "worm:dyn/swarm_density_display", density);
@@ -189,6 +199,7 @@ function isKeyBindEnabled(entity, keyBind) {
     case "EFFECT_0": return hasSwarm && effect == 0;
     case "EFFECT_1": return hasSwarm && effect == 1;
     case "HEAT_VISION": return hasSwarm && method == 0;
+    case "SWARM_SENSE": return hasSwarm;
     default: return true;
     }
 }

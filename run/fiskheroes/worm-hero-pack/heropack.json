@@ -45,6 +45,8 @@
     "swarm_method": {"type": "BYTE", "resetWithoutSuit": true},
     "swarm_effect": {"type": "BYTE", "resetWithoutSuit": true},
     "swarm_density": {"type": "FLOAT", "resetWithoutSuit": true},
-    "swarm_density_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "swarm_density_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "swarm_sense": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "swarm_sense_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }
