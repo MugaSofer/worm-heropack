@@ -12,10 +12,13 @@ var costumeOverlay;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.fixHatLayer("HELMET", "CHESTPLATE");
     renderer.setTexture(function (entity, renderLayer) {
         var fullSuit = entity.isWearingFullSuit();
-        // Partial suit: costume only. Full suit: body as base (overlay adds costume)
-        return fullSuit ? "body" : "costume";
+        if (fullSuit) return "body";
+        // Partial suit: use no-mask texture for helmet (shows scarf, not mask)
+        if (renderLayer == "HELMET") return "costume_nomask";
+        return "costume";
     });
 }
 
