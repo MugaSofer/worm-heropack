@@ -1,20 +1,41 @@
 extend("fiskheroes:hero_basic");
 
 loadTextures({
-    "layer1": "worm:imp_layer1",
-    "layer2": "worm:imp_layer1"
+    "costume": "worm:imp_costume",
+    "costume_nomask": "worm:imp_costume_nomask",
+    "body": "worm:imp_body"
 });
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        var fullSuit = entity.isWearingFullSuit();
+        var maskOff = entity.is("DISPLAY") && entity.as("DISPLAY").isStatic()
+            ? entity.getData("fiskheroes:mask_open")
+            : entity.getData("fiskheroes:mask_open_timer2") > 0.35;
+
+        if (renderLayer == "LEGGINGS") {
+            // Layer2 slot: body underneath (only when full suit)
+            return fullSuit ? "body" : "costume";
+        }
+        if (renderLayer == "HELMET" && maskOff) {
+            return fullSuit ? "costume_nomask" : "costume";
+        }
+        return fullSuit && maskOff ? "costume_nomask" : "costume";
+    });
 }
 
 function initAnimations(renderer) {
-    // Manually add only the animations we need, skipping HEAT_VISION
     var flightAnim = renderer.createResource("ANIMATION", "fiskheroes:flight_lean");
     renderer.addCustomAnimation("basic.PROP_FLIGHT", flightAnim);
     flightAnim.setData(function (entity, data) { data.load(entity.getData("fiskheroes:flight_animation")); });
     flightAnim.priority = -10;
+
+    addAnimation(renderer, "imp.MASK", "fiskheroes:remove_cowl")
+        .setData(function (entity, data) {
+            var f = entity.getInterpolatedData("fiskheroes:mask_open_timer2");
+            data.load(f < 1 ? f : 0);
+        });
 }
 
 function initEffects(renderer) {

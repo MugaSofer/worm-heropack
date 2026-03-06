@@ -7,6 +7,8 @@ function init(hero) {
     hero.setLeggings("Pants");
     hero.setBoots("Boots");
 
+    hero.setHasProperty(function (entity, property) { return property == "MASK_TOGGLE"; });
+
     hero.addPowers("worm:imp_powers");
     hero.addAttribute("PUNCH_DAMAGE", 2.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
