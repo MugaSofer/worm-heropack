@@ -46,6 +46,8 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
+    utils.bindParticles(renderer, "worm:dog_mount");
+
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
         return 0.9999;
     });

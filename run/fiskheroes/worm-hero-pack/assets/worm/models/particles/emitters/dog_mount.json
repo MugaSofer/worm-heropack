@@ -1,0 +1,44 @@
+{
+  "particles": [
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') > 0.01 && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') < 0.99 && !entity.getData('worm:dyn/dog_dismounted')",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 25,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [0.6, 0.8, 0.6],
+      "motion": [0.8, 0.0, 0.0],
+      "randMotion": [0.02, 0.02, 0.02]
+    },
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') > 0.01 && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') < 0.99 && !entity.getData('worm:dyn/dog_dismounted')",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 12,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [0.6, 0.8, 0.6],
+      "motion": [0.9, 0.6, 0.6],
+      "randMotion": [0.02, 0.02, 0.02]
+    },
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') > 0.01 && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') < 0.99 && !entity.getData('worm:dyn/dog_dismounted')",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 8,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [0.4, 0.6, 0.4],
+      "motion": [0.9, 0.9, 0.9],
+      "randMotion": [0.01, 0.01, 0.01]
+    },
+    {
+      "condition": "!firstPerson && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') > 0.01 && entity.getInterpolatedData('worm:dyn/dog_dismounted_timer') < 0.99 && !entity.getData('worm:dyn/dog_dismounted')",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 10,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [1.0, 1.5, 1.0],
+      "motion": [0.6, 0.0, 0.0],
+      "randMotion": [0.04, 0.04, 0.04]
+    }
+  ]
+}
