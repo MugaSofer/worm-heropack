@@ -54,7 +54,7 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
-    hero.addKeyBind("TENTACLES", "Summon Dog", 3);
+    hero.addKeyBind("TENTACLES", "Summon Dog", 1);
 
     hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
         if (entity.getData("worm:dyn/dog_dismounted")) return false;
