@@ -12,7 +12,7 @@ var debounce_effect = false;
 var densityAtChargeStart = 0;
 var wasCharging = false;
 var senseTicks = 0;
-var SENSE_INTERVAL = 60;  // ticks between scans (3 seconds)
+var SENSE_INTERVAL = 100;  // ticks between scans (5 seconds)
 
 function init(hero) {
     heroRef = hero;
@@ -135,19 +135,38 @@ function init(hero) {
             if (senseTicks >= SENSE_INTERVAL) {
                 senseTicks = 0;
                 try {
-                    var senseRange = SWARM_RADIUS * density;
-                    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), senseRange);
+                    // Max HP threshold: high density detects smaller mobs
+                    var hpThreshold = 30 - 25 * density; // density 1 → 5hp, density 0.1 → 27.5hp
+                    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
+                    var look = entity.getLookVector();
                     var detected = [];
                     for (var i = 0; i < nearby.length; i++) {
                         var other = nearby[i];
-                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
-                            var dist = Math.round(other.pos().distanceTo(entity.pos()));
-                            var hp = Math.round(other.getHealth());
-                            detected.push("\u00A76" + other.getName() + " \u00A78[\u00A7c" + hp + "\u2764\u00A78] \u00A77" + dist + "m");
+                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID() && other.getMaxHealth() >= hpThreshold) {
+                            var toOther = other.pos().subtract(entity.pos());
+                            var dist = other.pos().distanceTo(entity.pos());
+                            // Relative direction: forward/back from dot, left/right from cross Y
+                            var dot = look.x * toOther.x + look.z * toOther.z;
+                            var cross = look.x * toOther.z - look.z * toOther.x;
+                            var dir;
+                            if (Math.abs(dot) > Math.abs(cross)) {
+                                dir = dot > 0 ? "ahead" : "behind";
+                            } else {
+                                dir = cross > 0 ? "left" : "right";
+                            }
+                            detected.push({ name: other.getName(), dist: dist, dir: dir });
                         }
                     }
+                    // Sort by distance, cap at 5 closest
+                    detected.sort(function (a, b) { return a.dist - b.dist; });
+                    if (detected.length > 5) detected = detected.slice(0, 5);
                     if (detected.length > 0) {
-                        entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Swarm Sense] \u00A77" + detected.join("\u00A78, "));
+                        var parts = [];
+                        for (var j = 0; j < detected.length; j++) {
+                            var d = detected[j];
+                            parts.push("\u00A76" + d.name + " \u00A77" + Math.round(d.dist) + "m " + d.dir);
+                        }
+                        entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Swarm Sense] \u00A77" + parts.join("\u00A78, "));
                     }
                 } catch (e) {
                     // Silently ignore errors
