@@ -23,8 +23,14 @@
         "properties": {
           "EFFECTS": [
             {
-              "id": "minecraft:poison",
-              "duration": 100,
+              "id": "minecraft:wither",
+              "duration": 60,
+              "amplifier": 0,
+              "chance": 1
+            },
+            {
+              "id": "minecraft:weakness",
+              "duration": 80,
               "amplifier": 1,
               "chance": 1
             }

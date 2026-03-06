@@ -1,5 +1,7 @@
 var SWARM_RADIUS = 100.0;
 var SWARM_DAMAGE = 1.0;
+var DRAIN_PER_HIT = 0.001;  // drain per tick for targeted
+var DRAIN_AOE = 0.002;      // flat drain per tick for AoE
 var heroRef = null;
 
 var METHOD_COUNT = 2;
@@ -65,6 +67,15 @@ function init(hero) {
     // Key 4: Targeted beam (hold to direct swarm)
     hero.addKeyBind("HEAT_VISION", "Direct Swarm", 4);
 
+    // Key 5: Dismiss swarm
+    hero.addKeyBindFunc("DISMISS", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/swarm_density", 0);
+        manager.setData(entity, "worm:dyn/swarm_density_display", 0);
+        manager.setData(entity, "worm:dyn/swarm_active", false);
+        manager.setData(entity, "worm:dyn/swarm_timer", 0);
+        return true;
+    }, "Dismiss Swarm", 5);
+
     hero.setKeyBindEnabled(isKeyBindEnabled);
     hero.setModifierEnabled(isModifierEnabled);
 
@@ -83,9 +94,9 @@ function init(hero) {
         "properties": {
             "EFFECTS": [
                 {
-                    "id": "minecraft:poison",
-                    "duration": 100,
-                    "amplifier": 1,
+                    "id": "minecraft:wither",
+                    "duration": 60,
+                    "amplifier": 0,
                     "chance": 1
                 }
             ]
@@ -113,32 +124,43 @@ function init(hero) {
                 manager.setData(entity, "worm:dyn/swarm_density", density);
             }
         }
-        manager.setData(entity, "worm:dyn/swarm_density_display", density);
 
-        var swarmActive = density > 0.9;
-        manager.setData(entity, "worm:dyn/swarm_active", swarmActive);
+        var hasSwarm = density > 0.01;
+        manager.setData(entity, "worm:dyn/swarm_density_display", density);
+        manager.setData(entity, "worm:dyn/swarm_active", hasSwarm);
         manager.setData(entity, "worm:dyn/swarm_timer", density);
 
-        // AoE mode (method 1): deal damage when swarm is fully summoned
-        if (swarmActive) {
+        // Deal damage and drain swarm when active
+        if (hasSwarm) {
             var method = Number(entity.getData("worm:dyn/swarm_method"));
             var effect = Number(entity.getData("worm:dyn/swarm_effect"));
 
             if (method == 1) {
+                // AoE: damage everything in range, drain per hit
                 var profileName = effect == 0 ? "SWARM_BITING" : "SWARM_STINGING";
                 var deathMsg = effect == 0
                     ? "%1$s was devoured by Skitter's swarm"
                     : "%1$s succumbed to Skitter's venom";
 
                 var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
+                var hitCount = 0;
                 for (var i = 0; i < nearby.length; i++) {
                     var target = nearby[i];
                     if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
                         target.hurtByAttacker(heroRef, profileName, deathMsg, SWARM_DAMAGE, entity);
+                        hitCount++;
                     }
                 }
+
+                density = Math.max(0, density - DRAIN_AOE);
+                manager.setData(entity, "worm:dyn/swarm_density", density);
             }
             // Targeted mode (method 0): heat_vision beam handles damage
+            // Drain for targeted: small constant drain while beam is firing
+            if (method == 0 && entity.getData("fiskheroes:heat_vision")) {
+                density = Math.max(0, density - DRAIN_PER_HIT);
+                manager.setData(entity, "worm:dyn/swarm_density", density);
+            }
         }
     });
 }
@@ -146,13 +168,13 @@ function init(hero) {
 function isModifierEnabled(entity, modifier) {
     var method = Number(entity.getData("worm:dyn/swarm_method"));
     var effect = Number(entity.getData("worm:dyn/swarm_effect"));
-    var swarmActive = entity.getData("worm:dyn/swarm_active");
+    var hasSwarm = entity.getData("worm:dyn/swarm_density") > 0.01;
 
     if (modifier.name() == "fiskheroes:charged_beam") {
         return modifier.id() == "swarm";
     }
     if (modifier.name() == "fiskheroes:heat_vision") {
-        if (!swarmActive || method != 0) return false;
+        if (!hasSwarm || method != 0) return false;
         var expected = effect == 0 ? "swarm_biting" : "swarm_stinging";
         return modifier.id() == expected;
     }
@@ -162,14 +184,15 @@ function isModifierEnabled(entity, modifier) {
 function isKeyBindEnabled(entity, keyBind) {
     var method = entity.getData("worm:dyn/swarm_method");
     var effect = entity.getData("worm:dyn/swarm_effect");
-    var swarmActive = entity.getData("worm:dyn/swarm_active");
+    var hasSwarm = entity.getData("worm:dyn/swarm_density") > 0.01;
 
     switch (keyBind) {
-    case "METHOD_0": return method == 0;
-    case "METHOD_1": return method == 1;
-    case "EFFECT_0": return effect == 0;
-    case "EFFECT_1": return effect == 1;
-    case "HEAT_VISION": return swarmActive && method == 0;
+    case "METHOD_0": return hasSwarm && method == 0;
+    case "METHOD_1": return hasSwarm && method == 1;
+    case "EFFECT_0": return hasSwarm && effect == 0;
+    case "EFFECT_1": return hasSwarm && effect == 1;
+    case "HEAT_VISION": return hasSwarm && method == 0;
+    case "DISMISS": return hasSwarm;
     default: return true;
     }
 }
