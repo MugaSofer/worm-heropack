@@ -1,27 +1,21 @@
 extend("fiskheroes:hero_basic");
 
 loadTextures({
+    "layer1": "worm:imp_layer1",
+    "layer2": "worm:imp_layer1",
     "costume": "worm:imp_costume",
     "costume_nomask": "worm:imp_costume_nomask",
     "body": "worm:imp_body"
 });
 
+var costumeOverlay;
+
 function init(renderer) {
     parent.init(renderer);
     renderer.setTexture(function (entity, renderLayer) {
         var fullSuit = entity.isWearingFullSuit();
-        var maskOff = entity.is("DISPLAY") && entity.as("DISPLAY").isStatic()
-            ? entity.getData("fiskheroes:mask_open")
-            : entity.getData("fiskheroes:mask_open_timer2") > 0.35;
-
-        if (renderLayer == "LEGGINGS") {
-            // Layer2 slot: body underneath (only when full suit)
-            return fullSuit ? "body" : "costume";
-        }
-        if (renderLayer == "HELMET" && maskOff) {
-            return fullSuit ? "costume_nomask" : "costume";
-        }
-        return fullSuit && maskOff ? "costume_nomask" : "costume";
+        // Partial suit: combined texture. Full suit: body as base (overlay adds costume)
+        return fullSuit ? "body" : "layer1";
     });
 }
 
@@ -39,8 +33,13 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Opacity: invisible by default, fades in when holding reveal or punching
+    // Costume overlay — renders costume texture on top of body base
+    costumeOverlay = renderer.createEffect("fiskheroes:overlay");
+    costumeOverlay.texture.set(null, "costume");
+
+    // Opacity: invisible when full suit, normal when partial
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
+        if (!entity.isWearingFullSuit()) return 1.0;
         var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
         var punching = entity.isPunching() ? 1.0 : 0.0;
         return Math.max(reveal, punching) * 0.995 + 0.005;
@@ -53,4 +52,15 @@ function initEffects(renderer) {
     constln.bindBeam({ "offset": [0, 0, 0], "size": [0, 0] });
     prop.setConstellation(constln);
     prop.setRenderer(beam);
+}
+
+function render(entity, renderLayer, isFirstPersonArm) {
+    var fullSuit = entity.isWearingFullSuit();
+    if (fullSuit) {
+        var maskOff = entity.is("DISPLAY") && entity.as("DISPLAY").isStatic()
+            ? entity.getData("fiskheroes:mask_open")
+            : entity.getData("fiskheroes:mask_open_timer2") > 0.35;
+        costumeOverlay.texture.set(null, maskOff ? "costume_nomask" : "costume");
+        costumeOverlay.render();
+    }
 }
