@@ -54,66 +54,60 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
-    hero.addKeyBind("TENTACLES", "Summon Dog", 1);
-
-    hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
-        if (entity.getData("worm:dyn/dog_dismounted")) return false;
-        manager.setData(entity, "worm:dyn/dog_crouch", !entity.getData("worm:dyn/dog_crouch"));
-        return true;
-    }, "Crouch Leap", 4);
+    hero.addKeyBind("TENTACLES", "Call / Mount Dog", 1);
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
         if (size < MAX_DOG_SIZE) {
-            var newSize = Math.min(size + GROW_STEP, MAX_DOG_SIZE);
-            manager.setData(entity, "worm:dyn/dog_size", newSize);
+            manager.setData(entity, "worm:dyn/dog_size", Math.min(size + GROW_STEP, MAX_DOG_SIZE));
         }
         return true;
-    }, "Grow Dog", 1);
+    }, "Grow Dog", 2);
 
     hero.addKeyBindFunc("SHRINK_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
         if (size > MIN_DOG_SIZE) {
-            var newSize = Math.max(size - GROW_STEP, MIN_DOG_SIZE);
-            manager.setData(entity, "worm:dyn/dog_size", newSize);
+            manager.setData(entity, "worm:dyn/dog_size", Math.max(size - GROW_STEP, MIN_DOG_SIZE));
         }
         return true;
-    }, "Shrink Dog", 2);
+    }, "Shrink Dog", 3);
+
+    hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/dog_crouch", !entity.getData("worm:dyn/dog_crouch"));
+        return true;
+    }, "Crouch Leap", 4);
 
     hero.setKeyBindEnabled(function (entity, keyBind) {
-        var dismounted = entity.getData("worm:dyn/dog_dismounted");
-        var hasDog = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
-        if (keyBind == "TENTACLES") return !hasDog;
-        if (keyBind == "GROW_DOG") return hasDog;
-        if (keyBind == "SHRINK_DOG") return !dismounted;
-        if (keyBind == "CROUCH_LEAP") return !dismounted;
+        var mounted = !entity.getData("worm:dyn/dog_dismounted");
+        var size = entity.getData("worm:dyn/dog_size");
+        if (keyBind == "GROW_DOG") return mounted && size < MAX_DOG_SIZE;
+        if (keyBind == "SHRINK_DOG") return mounted && size > MIN_DOG_SIZE;
+        if (keyBind == "CROUCH_LEAP") return mounted;
         return true;
     });
 
     hero.setTickHandler(function (entity, manager) {
-        var dismounted = entity.getData("worm:dyn/dog_dismounted");
+        // Tentacle state drives mount/dismount
+        var tentaclesOut = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
+        var dismounted = tentaclesOut;
+        if (entity.getData("worm:dyn/dog_dismounted") != dismounted) {
+            manager.setData(entity, "worm:dyn/dog_dismounted", dismounted);
+        }
+
         var targetScale = dismounted ? 1.0 : 1.75;
         if (entity.getData("fiskheroes:scale") != targetScale) {
             manager.setData(entity, "fiskheroes:scale", targetScale);
         }
 
         // Animate dismount timer
-        manager.incrementData(entity, "worm:dyn/dog_dismounted_timer", 10, dismounted);
+        manager.incrementData(entity, "worm:dyn/dog_dismounted_timer", 20, dismounted);
 
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");
         if (target == 0) {
-            manager.setData(entity, "worm:dyn/dog_size", 1.5);
-            manager.setData(entity, "worm:dyn/dog_size_timer", 1.5);
-            manager.setData(entity, "worm:dyn/dog_dismounted", true);
+            manager.setData(entity, "worm:dyn/dog_size", 1.75);
+            manager.setData(entity, "worm:dyn/dog_size_timer", 1.75);
             return;
-        }
-
-        // Auto-mount/dismount based on size threshold
-        if (target >= BASELINE_SIZE && dismounted) {
-            manager.setData(entity, "worm:dyn/dog_dismounted", false);
-        } else if (target < BASELINE_SIZE && !dismounted) {
-            manager.setData(entity, "worm:dyn/dog_dismounted", true);
         }
 
         // Smoothly animate toward target size

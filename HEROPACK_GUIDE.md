@@ -851,11 +851,11 @@ hero.addAttribute("BASE_SPEED_LEVELS", 3.0, 0);
 Without `speedster_base.tick()` in the tick handler, super speed will not work at all. `canUseTreadmill` and `canUseTachyons` are feature gates for Flash-specific interactables.
 
 #### `fiskheroes:leaping`
-Passive jump boost.
+Passive jump boost. **Only fires while sprinting** — will not activate from a standing jump.
 
 ```json
 "fiskheroes:leaping": {
-    "leapAmount": [1.0, 0.5]    // [horizontal, vertical]
+    "leapAmount": [1.0, 0.5]    // [vertical, horizontal]
 }
 ```
 
@@ -1764,8 +1764,8 @@ entity.getData("domain:dyn/var")                          // Read data var
 entity.getInterpolatedData("domain:dyn/var")               // Smoothly interpolated (for timers)
 manager.setData(entity, "domain:dyn/var", val)             // Write data var
 manager.setDataWithNotify(entity, "domain:dyn/var", val)   // Write + trigger listeners
-manager.incrementData(entity, "domain:dyn/var", speed, condition)           // Ramp 0→1
-manager.incrementData(entity, "domain:dyn/var", upSpeed, downSpeed, cond)  // Asymmetric ramp
+manager.incrementData(entity, "domain:dyn/var", duration, condition)           // Ramp 0→1 over `duration` ticks
+manager.incrementData(entity, "domain:dyn/var", upDuration, downDuration, cond)  // Asymmetric ramp
 manager.setInterpolatedData(entity, "domain:dyn/var", val) // Set interpolated directly
 ```
 

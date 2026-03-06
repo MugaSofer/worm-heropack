@@ -1,12 +1,8 @@
 ; Dog companion walk animation
 ; data_0 = walk cycle (0 to 2pi)
 ; data_1 = speed (0 to 1)
-; data_2 = hide (1 = mounted/hidden, 0 = dismounted/visible)
 {swing} = sin({data_0})
 {s} = 25'{data_1}
-
-; Hide off-screen when mounted
-{Root_posY} += 9000{data_2}
 
 ; Front legs swing opposite to back legs
 {LegFrontRight_rotX} += {s}{swing}
