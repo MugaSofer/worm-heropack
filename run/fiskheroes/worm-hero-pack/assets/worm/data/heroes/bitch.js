@@ -1,5 +1,6 @@
 var MIN_DOG_SIZE = 0.5;
 var MAX_DOG_SIZE = 3.0;
+var BASELINE_SIZE = 1.75;
 var GROW_STEP = 0.25;
 var ANIM_SPEED = 0.05;
 
@@ -53,17 +54,19 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
-    hero.addKeyBind("TENTACLES", "Dismount / Summon Dog", 4);
+    hero.addKeyBind("TENTACLES", "Summon Dog", 3);
 
     hero.addKeyBindFunc("CROUCH_LEAP", function (entity, manager) {
+        if (entity.getData("worm:dyn/dog_dismounted")) return false;
         manager.setData(entity, "worm:dyn/dog_crouch", !entity.getData("worm:dyn/dog_crouch"));
         return true;
-    }, "Crouch Leap", 3);
+    }, "Crouch Leap", 4);
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
         if (size < MAX_DOG_SIZE) {
-            manager.setData(entity, "worm:dyn/dog_size", Math.min(size + GROW_STEP, MAX_DOG_SIZE));
+            var newSize = Math.min(size + GROW_STEP, MAX_DOG_SIZE);
+            manager.setData(entity, "worm:dyn/dog_size", newSize);
         }
         return true;
     }, "Grow Dog", 1);
@@ -71,14 +74,24 @@ function init(hero) {
     hero.addKeyBindFunc("SHRINK_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
         if (size > MIN_DOG_SIZE) {
-            manager.setData(entity, "worm:dyn/dog_size", Math.max(size - GROW_STEP, MIN_DOG_SIZE));
+            var newSize = Math.max(size - GROW_STEP, MIN_DOG_SIZE);
+            manager.setData(entity, "worm:dyn/dog_size", newSize);
         }
         return true;
     }, "Shrink Dog", 2);
 
+    hero.setKeyBindEnabled(function (entity, keyBind) {
+        var dismounted = entity.getData("worm:dyn/dog_dismounted");
+        var hasDog = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
+        if (keyBind == "TENTACLES") return !hasDog;
+        if (keyBind == "GROW_DOG") return hasDog;
+        if (keyBind == "SHRINK_DOG") return !dismounted;
+        if (keyBind == "CROUCH_LEAP") return !dismounted;
+        return true;
+    });
+
     hero.setTickHandler(function (entity, manager) {
-        // Tentacles extending = dismounted from dog
-        var dismounted = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
+        var dismounted = entity.getData("worm:dyn/dog_dismounted");
         var targetScale = dismounted ? 1.0 : 1.75;
         if (entity.getData("fiskheroes:scale") != targetScale) {
             manager.setData(entity, "fiskheroes:scale", targetScale);
@@ -90,9 +103,17 @@ function init(hero) {
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");
         if (target == 0) {
-            manager.setData(entity, "worm:dyn/dog_size", 1.75);
-            manager.setData(entity, "worm:dyn/dog_size_timer", 1.75);
+            manager.setData(entity, "worm:dyn/dog_size", 1.0);
+            manager.setData(entity, "worm:dyn/dog_size_timer", 1.0);
+            manager.setData(entity, "worm:dyn/dog_dismounted", true);
             return;
+        }
+
+        // Auto-mount/dismount based on size threshold
+        if (target >= BASELINE_SIZE && dismounted) {
+            manager.setData(entity, "worm:dyn/dog_dismounted", false);
+        } else if (target < BASELINE_SIZE && !dismounted) {
+            manager.setData(entity, "worm:dyn/dog_dismounted", true);
         }
 
         // Smoothly animate toward target size
@@ -142,6 +163,7 @@ function init(hero) {
 }
 
 function getProfile(entity) {
+    if (entity.getData("worm:dyn/dog_dismounted")) return null;
     if (entity.getData("worm:dyn/dog_crouch") || entity.getData("worm:dyn/dog_crouch_charged") > 0) {
         return "CROUCHING";
     }

@@ -110,8 +110,10 @@ function initEffects(renderer) {
         var casterSpeed = Math.min(caster.motion().length() * 8.0, 1.0);
         var speed = Math.max(dogSpeed, casterSpeed);
         var walkCycle = caster.loop(10) * Math.PI * 2;
+        var dismounted = caster.getInterpolatedData("worm:dyn/dog_dismounted_timer");
         data.load(0, walkCycle);
         data.load(1, speed);
+        data.load(2, 1.0 - dismounted);
     });
 
     var tentacles = renderer.bindProperty("fiskheroes:tentacles").setTentacles([
