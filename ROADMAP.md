@@ -96,7 +96,7 @@ Skitter
 - Tricks: spells
 	- Swarm decoys
 	- Blinding
-	- Capsaicin Wasps (homing drones? reskinned whip?)
+	- Capsaicin Wasps (reskinned whip)?
 - Swarm sense - toggle
 	- Ideally highlight every creature in area w/ white glow (for her only)
 	- Copy from Daredevil?
@@ -141,7 +141,33 @@ Optional: Brutus
 GENERAL:
 - Add general "Undersider" package. Immune/resistant to Imp's confusion, Skitter's bugs; benefit from Tattletale's buffs.
 
+#Phase X - UNDERSIDERS B
+
+Parian
+- Sentry mode
+- Craft costume - primary item. Grants various costumes, including spare costume (standard but 1 item). Canon options include:
+	- bear, gorilla, goat, humanoid tiger, rabbit with boxing gloves (large + tough)
+	- octopus (tentacles)
+	- When holding spider silk - spider, scorpion
+	- True Power: only available when holding lots of leather or rotten meat. Crafts a giant leather costume. Enormous size + Endbringer-tier stats.
+- Needles - TK? Projectile? Tentacles? 
+
+Foil
+- Massively increased arrow damage
+- Shurikens?
+- Dodge? Auto-dodge?
+- Grappling hook? Crossbow?
+- Sword?
+- Seperate Flechette costume (see below)
+
 #Phase X - WARDS
+
+Flechette
+- Massively increased arrow damage
+- Shurikens?
+- Dodge? Auto-dodge?
+- Grappling hook? Special Tinkertech Arbalest item?
+- Seperate Foil costume (see above)
 
 Clockblocker
  - Melee attack that applies slow + protection

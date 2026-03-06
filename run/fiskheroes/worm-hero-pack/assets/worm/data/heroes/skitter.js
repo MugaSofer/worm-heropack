@@ -11,6 +11,8 @@ var debounce_method = false;
 var debounce_effect = false;
 var densityAtChargeStart = 0;
 var wasCharging = false;
+var senseTicks = 0;
+var SENSE_INTERVAL = 60;  // ticks between scans (3 seconds)
 
 function init(hero) {
     heroRef = hero;
@@ -126,6 +128,34 @@ function init(hero) {
         // Swarm sense: only works with active swarm
         var senseOn = !entity.getData("worm:dyn/swarm_sense") && density > 0.01;
         manager.incrementData(entity, "worm:dyn/swarm_sense_timer", 10, senseOn);
+
+        // Swarm sense: periodic entity scan via chat
+        if (senseOn) {
+            senseTicks++;
+            if (senseTicks >= SENSE_INTERVAL) {
+                senseTicks = 0;
+                try {
+                    var senseRange = SWARM_RADIUS * density;
+                    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), senseRange);
+                    var detected = [];
+                    for (var i = 0; i < nearby.length; i++) {
+                        var other = nearby[i];
+                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
+                            var dist = Math.round(other.pos().distanceTo(entity.pos()));
+                            var hp = Math.round(other.getHealth());
+                            detected.push("\u00A76" + other.getName() + " \u00A78[\u00A7c" + hp + "\u2764\u00A78] \u00A77" + dist + "m");
+                        }
+                    }
+                    if (detected.length > 0) {
+                        entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Swarm Sense] \u00A77" + detected.join("\u00A78, "));
+                    }
+                } catch (e) {
+                    // Silently ignore errors
+                }
+            }
+        } else {
+            senseTicks = 0;
+        }
 
         var hasSwarm = density > 0.01;
         manager.setData(entity, "worm:dyn/swarm_density_display", density);

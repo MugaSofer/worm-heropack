@@ -1,1 +1,3 @@
-{rightArm_posY} -=  99999
+; data_0 = amount (0 = normal, 1 = hidden)
+{rightArm_posY} -= 99999'{data_0}
+{leftArm_posY} -= 99999'{data_0}
