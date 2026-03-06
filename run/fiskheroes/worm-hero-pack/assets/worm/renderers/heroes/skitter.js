@@ -11,8 +11,8 @@ var utils = implement("fiskheroes:external/utils");
 var alexArmR;
 var alexArmL;
 var senseField1;
-var senseField2;
-var senseField3;
+var swarmPulses = [];
+var sonarRing;
 
 function init(renderer) {
     parent.init(renderer);
@@ -43,21 +43,24 @@ function initEffects(renderer) {
         return entity.getInterpolatedData("worm:dyn/swarm_sense_timer") > 0.1;
     });
 
-    // Swarm Sense — FP vision overlay (3 layers, B&W, expanding circles)
-    // Layer 1: static grey pulse
+    // Swarm Sense — FP close-up overlay
     senseField1 = renderer.bindProperty("fiskheroes:forcefield");
     senseField1.color.set(0x999999);
     senseField1.setShape(20, 10).setOffset(0.0, 6.0, 0.0);
 
-    // Layer 2: mid-range grey pulse
-    senseField2 = renderer.bindProperty("fiskheroes:forcefield");
-    senseField2.color.set(0x777777);
-    senseField2.setShape(17, 7).setOffset(0.0, 6.0, 0.0).setScale(16);
+    // Swarm Sense — wandering pulses from swarm (4 instances at different positions)
+    var pulseColors = [0x777777, 0x888888, 0x666666, 0x999999];
+    for (var i = 0; i < 4; i++) {
+        var p = renderer.bindProperty("fiskheroes:forcefield");
+        p.color.set(pulseColors[i]);
+        p.setShape(17, 7).setScale(10 + i * 3);
+        swarmPulses.push(p);
+    }
 
-    // Layer 3: expanding sonar ring
-    senseField3 = renderer.bindProperty("fiskheroes:forcefield");
-    senseField3.color.set(0xBBBBBB);
-    senseField3.setShape(17, 7).setOffset(0.0, 6.0, 0.0);
+    // Swarm Sense — expanding sonar ring (also wanders)
+    sonarRing = renderer.bindProperty("fiskheroes:forcefield");
+    sonarRing.color.set(0xBBBBBB);
+    sonarRing.setShape(17, 7);
 
     // Slim right arm model
     var armRModel = renderer.createResource("MODEL", "worm:alex_arm_r");
@@ -77,18 +80,45 @@ function initEffects(renderer) {
 function render(entity, renderLayer, isFirstPersonArm) {
     var senseTimer = entity.getInterpolatedData("worm:dyn/swarm_sense_timer");
 
-    if (isFirstPersonArm && senseTimer > 0) {
-        var pulse = Math.sin(Math.PI * entity.loop(20));
-        var ring = entity.loop(60);
+    // Pulse cycle lengths (primes) and position seeds (irrational-ish multipliers)
+    var pulsePeriods = [31, 43, 53, 67];
+    var posSeeds = [2.399, 3.761, 5.183, 7.529];
+    var wanderRadius = 250;
 
-        senseField1.opacity = senseTimer * (0.15 + 0.08 * pulse);
-        senseField2.opacity = senseTimer * (0.2 - 0.1 * pulse);
-        senseField3.opacity = senseTimer * 0.25 * (1 - ring);
-        senseField3.setScale(30 * ring);
+    if (senseTimer > 0) {
+        var pulse = Math.sin(Math.PI * entity.loop(20));
+
+        // Close-up overlay — FP only
+        senseField1.opacity = isFirstPersonArm ? senseTimer * (0.15 + 0.08 * pulse) : 0;
+
+        // Swarm pulses — expand from random points, like the sonar ring
+        for (var i = 0; i < swarmPulses.length; i++) {
+            var t = entity.loop(pulsePeriods[i]);
+            var totalCycles = pulsePeriods[i] * 11;
+            var cycle = Math.floor(entity.loop(totalCycles) * 11);
+            var seed = (cycle + i) * posSeeds[i];
+            var px = wanderRadius * Math.sin(seed);
+            var pz = wanderRadius * Math.cos(seed * 1.347);
+            swarmPulses[i].setOffset(px, 6.0, pz);
+            swarmPulses[i].opacity = senseTimer * 0.25 * (1 - t);
+            swarmPulses[i].setScale(30 * t);
+        }
+
+        // Sonar ring — snaps to new origin each cycle, expands from there
+        var ring = entity.loop(60);
+        var ringCycles = 60 * 7;
+        var ringCycle = Math.floor(entity.loop(ringCycles) * 7);
+        var rx = wanderRadius * 0.7 * Math.sin(ringCycle * 4.159);
+        var rz = wanderRadius * 0.7 * Math.cos(ringCycle * 2.871);
+        sonarRing.setOffset(rx, 6.0, rz);
+        sonarRing.opacity = senseTimer * 0.25 * (1 - ring);
+        sonarRing.setScale(30 * ring);
     } else {
         senseField1.opacity = 0;
-        senseField2.opacity = 0;
-        senseField3.opacity = 0;
+        for (var i = 0; i < swarmPulses.length; i++) {
+            swarmPulses[i].opacity = 0;
+        }
+        sonarRing.opacity = 0;
     }
 
     if (renderLayer == "CHESTPLATE") {

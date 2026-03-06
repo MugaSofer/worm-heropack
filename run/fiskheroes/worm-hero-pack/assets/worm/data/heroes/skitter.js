@@ -124,7 +124,7 @@ function init(hero) {
         }
 
         // Swarm sense: only works with active swarm
-        var senseOn = entity.getData("worm:dyn/swarm_sense") && density > 0.01;
+        var senseOn = !entity.getData("worm:dyn/swarm_sense") && density > 0.01;
         manager.incrementData(entity, "worm:dyn/swarm_sense_timer", 10, senseOn);
 
         var hasSwarm = density > 0.01;
