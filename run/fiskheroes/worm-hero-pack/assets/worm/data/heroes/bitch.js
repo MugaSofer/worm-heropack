@@ -90,8 +90,8 @@ function init(hero) {
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");
         if (target == 0) {
-            manager.setData(entity, "worm:dyn/dog_size", 1.0);
-            manager.setData(entity, "worm:dyn/dog_size_timer", 1.0);
+            manager.setData(entity, "worm:dyn/dog_size", 1.75);
+            manager.setData(entity, "worm:dyn/dog_size_timer", 1.75);
             return;
         }
 

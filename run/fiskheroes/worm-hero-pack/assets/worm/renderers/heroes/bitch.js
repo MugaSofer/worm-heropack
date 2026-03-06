@@ -12,16 +12,15 @@ var utils = implement("fiskheroes:external/utils");
 var dogBody, dogLegFL, dogLegFR, dogLegBL, dogLegBR;
 var riderTorso, riderHead, riderArmR, riderArmL;
 
-// Compensate for setDefaultScale(1.75)
 var S = 1.75;
 var BASE_DOG_SCALE = 1.7 / S;
-var RIDER_SCALE = 1.0 / S;
+var RIDER_SCALE = 1.0;
 
 // Model space Y values for offset math
 var DOG_FEET_Y = 24.0;  // bottom of legs in model space (tuned)
 var DOG_BACK_Y = 6.0;   // top of body in model space
 // Rider offset at G=1 (calibrated by eye)
-var BASE_RIDER_OFFSET = -4.0;
+var BASE_RIDER_OFFSET = -7.0;
 // How deep Rachel "sits" into the back
 var SITTING_DEPTH = BASE_RIDER_OFFSET - DOG_BACK_Y * BASE_DOG_SCALE;
 
