@@ -1,0 +1,29 @@
+{
+  "particles": [
+    {
+      "type": "minecraft:reddust",
+      "amount": 12,
+      "randOffset": [1.5, 1.5, 1.5],
+      "motion": [0.15, 0.1, 0.05],
+      "randMotion": [0.15, 0.1, 0.15]
+    },
+    {
+      "type": "SHADOW_SMOKE",
+      "amount": 8,
+      "randOffset": [1.2, 1.2, 1.2],
+      "randMotion": [0.1, 0.06, 0.1]
+    },
+    {
+      "type": "SMOKE_SMALL",
+      "amount": 8,
+      "randOffset": [1.5, 1.5, 1.5],
+      "randMotion": [0.12, 0.08, 0.12]
+    },
+    {
+      "type": "minecraft:depthsuspend",
+      "amount": 30,
+      "randOffset": [2.0, 2.0, 2.0],
+      "randMotion": [0.05, 0.03, 0.05]
+    }
+  ]
+}

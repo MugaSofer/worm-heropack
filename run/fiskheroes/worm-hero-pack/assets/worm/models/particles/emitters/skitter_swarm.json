@@ -1,78 +1,120 @@
 {
   "particles": [
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.05",
       "type": "minecraft:reddust",
       "anchor": "body",
-      "amount": 90,
+      "amount": 20,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [6.0, 2.0, 6.0],
+      "motion": [0.15, 0.1, 0.05],
+      "randMotion": [0.08, 0.04, 0.08]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.05",
+      "type": "SMOKE_SMALL",
+      "anchor": "body",
+      "amount": 15,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [6.0, 2.0, 6.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.06, 0.03, 0.06]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.05",
+      "type": "minecraft:depthsuspend",
+      "anchor": "body",
+      "amount": 40,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [8.0, 3.0, 8.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.03, 0.02, 0.03]
+    },
+
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.25",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 30,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [12.0, 3.0, 12.0],
+      "motion": [0.15, 0.1, 0.05],
+      "randMotion": [0.08, 0.04, 0.08]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.25",
+      "type": "SHADOW_SMOKE",
+      "anchor": "body",
+      "amount": 20,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [12.0, 2.0, 12.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.04, 0.02, 0.04]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.25",
+      "type": "minecraft:depthsuspend",
+      "anchor": "body",
+      "amount": 50,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [14.0, 4.0, 14.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.03, 0.02, 0.03]
+    },
+
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.5",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 40,
       "offset": [0.0, 4.0, 0.0],
       "randOffset": [16.0, 3.0, 16.0],
       "motion": [0.15, 0.1, 0.05],
       "randMotion": [0.08, 0.04, 0.08]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.5",
       "type": "minecraft:reddust",
       "anchor": "body",
-      "amount": 65,
+      "amount": 30,
       "offset": [0.0, 3.0, 0.0],
       "randOffset": [16.0, 2.5, 16.0],
       "motion": [0.05, 0.05, 0.05],
       "randMotion": [0.06, 0.03, 0.06]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "minecraft:blockcrack_49_0",
-      "anchor": "body",
-      "amount": 11,
-      "offset": [0.0, 4.0, 0.0],
-      "randOffset": [16.0, 3.0, 16.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.06, 0.03, 0.06]
-    },
-    {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "minecraft:blockcrack_162_1",
-      "anchor": "body",
-      "amount": 11,
-      "offset": [0.0, 4.0, 0.0],
-      "randOffset": [16.0, 3.0, 16.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.06, 0.03, 0.06]
-    },
-    {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "SHADOW_SMOKE",
-      "anchor": "body",
-      "amount": 45,
-      "offset": [0.0, 3.0, 0.0],
-      "randOffset": [16.0, 2.0, 16.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.04, 0.02, 0.04]
-    },
-    {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.5",
       "type": "SMOKE_SMALL",
       "anchor": "body",
-      "amount": 65,
+      "amount": 30,
       "offset": [0.0, 4.0, 0.0],
       "randOffset": [16.0, 3.0, 16.0],
       "motion": [0.0, 0.0, 0.0],
       "randMotion": [0.08, 0.04, 0.08]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "minecraft:depthsuspend",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.5",
+      "type": "minecraft:blockcrack_49_0",
       "anchor": "body",
-      "amount": 170,
+      "amount": 6,
       "offset": [0.0, 4.0, 0.0],
-      "randOffset": [16.0, 4.0, 16.0],
+      "randOffset": [16.0, 3.0, 16.0],
       "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.03, 0.02, 0.03]
+      "randMotion": [0.06, 0.03, 0.06]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.5",
+      "type": "minecraft:blockcrack_162_1",
+      "anchor": "body",
+      "amount": 6,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [16.0, 3.0, 16.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.06, 0.03, 0.06]
     },
 
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
       "type": "minecraft:reddust",
       "anchor": "body",
       "amount": 20,
@@ -82,7 +124,7 @@
       "randMotion": [0.08, 0.04, 0.08]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
       "type": "minecraft:reddust",
       "anchor": "body",
       "amount": 15,
@@ -92,27 +134,7 @@
       "randMotion": [0.06, 0.03, 0.06]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "minecraft:blockcrack_49_0",
-      "anchor": "body",
-      "amount": 3,
-      "offset": [0.0, 4.0, 0.0],
-      "randOffset": [100.0, 3.0, 100.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.06, 0.03, 0.06]
-    },
-    {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
-      "type": "minecraft:blockcrack_162_1",
-      "anchor": "body",
-      "amount": 3,
-      "offset": [0.0, 4.0, 0.0],
-      "randOffset": [100.0, 3.0, 100.0],
-      "motion": [0.0, 0.0, 0.0],
-      "randMotion": [0.06, 0.03, 0.06]
-    },
-    {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
       "type": "SHADOW_SMOKE",
       "anchor": "body",
       "amount": 10,
@@ -122,7 +144,7 @@
       "randMotion": [0.04, 0.02, 0.04]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
       "type": "SMOKE_SMALL",
       "anchor": "body",
       "amount": 15,
@@ -132,14 +154,34 @@
       "randMotion": [0.08, 0.04, 0.08]
     },
     {
-      "condition": "entity.getInterpolatedData('worm:dyn/swarm_timer') > 0.1",
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
       "type": "minecraft:depthsuspend",
       "anchor": "body",
-      "amount": 38,
+      "amount": 80,
       "offset": [0.0, 4.0, 0.0],
       "randOffset": [100.0, 4.0, 100.0],
       "motion": [0.0, 0.0, 0.0],
       "randMotion": [0.03, 0.02, 0.03]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
+      "type": "minecraft:blockcrack_49_0",
+      "anchor": "body",
+      "amount": 3,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [100.0, 3.0, 100.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.06, 0.03, 0.06]
+    },
+    {
+      "condition": "entity.getInterpolatedData('worm:dyn/swarm_density_display') > 0.75",
+      "type": "minecraft:blockcrack_162_1",
+      "anchor": "body",
+      "amount": 3,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [100.0, 3.0, 100.0],
+      "motion": [0.0, 0.0, 0.0],
+      "randMotion": [0.06, 0.03, 0.06]
     }
   ]
 }

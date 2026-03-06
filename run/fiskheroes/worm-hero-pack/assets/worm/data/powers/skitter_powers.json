@@ -1,11 +1,44 @@
 {
   "name": "Swarm Control",
+  "modifiers": {
+    "fiskheroes:charged_beam|swarm": {
+      "damageProfile": {
+        "damage": 0.01,
+        "types": { "BLUNT": 1.0 }
+      },
+      "canDoGriefing": false,
+      "chargeTime": 100, "duration": 1200, "cooldownTime": 20, "range": 2.0, "radius": 0.0
+    },
+    "fiskheroes:heat_vision|swarm_biting": {
+      "damageProfile": {
+        "damage": 3.0,
+        "types": { "PIERCING": 0.6, "SHARP": 0.4 }
+      },
+      "canDoGriefing": false, "range": 100.0, "radius": 0.3
+    },
+    "fiskheroes:heat_vision|swarm_stinging": {
+      "damageProfile": {
+        "damage": 3.0,
+        "types": { "PIERCING": 1.0 },
+        "properties": {
+          "EFFECTS": [
+            {
+              "id": "minecraft:poison",
+              "duration": 100,
+              "amplifier": 1,
+              "chance": 1
+            }
+          ]
+        }
+      },
+      "canDoGriefing": false, "range": 100.0, "radius": 0.3
+    }
+  },
   "hud": [
     {
-      "type": "CIRCLE",
-      "color": "0x3D2B1F",
-      "data": "worm:dyn/swarm_timer",
-      "condition": "worm:dyn/swarm_active"
+      "type": "CHARGE",
+      "texture": "worm:textures/gui/bars/swarm_charge.png",
+      "data": "worm:dyn/swarm_density_display"
     }
   ]
 }

@@ -24,6 +24,17 @@ function initEffects(renderer) {
     // Swarm particles
     utils.bindParticles(renderer, "worm:skitter_swarm");
 
+    // Swarm summon beam — invisible (no visible beam while charging/firing)
+    utils.bindBeam(renderer, "fiskheroes:charged_beam", "worm:invisible", "body", 0x000000, [
+        { "firstPerson": [0.0, 0.0, 0.0], "offset": [0.0, 0.0, 0.0], "size": [0.1, 0.1] }
+    ]);
+
+    // Targeted swarm beam — invisible beam with bug particles at impact
+    var swarmImpact = renderer.createResource("PARTICLE_EMITTER", "worm:swarm_impact");
+    utils.bindBeam(renderer, "fiskheroes:heat_vision", "worm:invisible", "head", 0x000000, [
+        { "firstPerson": [0.0, 0.0, 0.0], "offset": [0.0, 0.0, 0.0], "size": [0.1, 0.1] }
+    ]).setParticles(swarmImpact);
+
     // Slim right arm model
     var armRModel = renderer.createResource("MODEL", "worm:alex_arm_r");
     armRModel.texture.set("arm_tex");
