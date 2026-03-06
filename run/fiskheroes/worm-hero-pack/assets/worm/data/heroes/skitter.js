@@ -135,14 +135,12 @@ function init(hero) {
             if (senseTicks >= SENSE_INTERVAL) {
                 senseTicks = 0;
                 try {
-                    // Max HP threshold: high density detects smaller mobs
-                    var hpThreshold = 30 - 25 * density; // density 1 → 5hp, density 0.1 → 27.5hp
                     var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
                     var look = entity.getLookVector();
                     var detected = [];
                     for (var i = 0; i < nearby.length; i++) {
                         var other = nearby[i];
-                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID() && other.getMaxHealth() >= hpThreshold) {
+                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
                             var toOther = other.pos().subtract(entity.pos());
                             var dist = other.pos().distanceTo(entity.pos());
                             // Relative direction: forward/back from dot, left/right from cross Y
@@ -154,11 +152,13 @@ function init(hero) {
                             } else {
                                 dir = cross > 0 ? "left" : "right";
                             }
-                            detected.push({ name: other.getName(), dist: dist, dir: dir });
+                            // Score: nearby big mobs rank first (low score = high threat)
+                            var score = dist / Math.max(other.getMaxHealth(), 1);
+                            detected.push({ name: other.getName(), dist: dist, dir: dir, score: score });
                         }
                     }
-                    // Sort by distance, cap at 5 closest
-                    detected.sort(function (a, b) { return a.dist - b.dist; });
+                    // Sort by score (distance * maxHP), cap at 5
+                    detected.sort(function (a, b) { return a.score - b.score; });
                     if (detected.length > 5) detected = detected.slice(0, 5);
                     if (detected.length > 0) {
                         var parts = [];
@@ -181,8 +181,8 @@ function init(hero) {
         manager.setData(entity, "worm:dyn/swarm_active", hasSwarm);
         manager.setData(entity, "worm:dyn/swarm_timer", density);
 
-        // Deal damage and drain swarm when active
-        if (hasSwarm) {
+        // Deal damage and drain swarm when dense enough
+        if (density >= 0.25) {
             var method = Number(entity.getData("worm:dyn/swarm_method"));
             var effect = Number(entity.getData("worm:dyn/swarm_effect"));
 
