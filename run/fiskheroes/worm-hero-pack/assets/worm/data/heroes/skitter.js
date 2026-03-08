@@ -88,14 +88,14 @@ function init(hero) {
     // Damage profiles for AoE mode
     hero.addDamageProfile("SWARM_BITING", {
         "types": {
-            "PIERCING": 0.6,
+            "SHARP": 0.6,
             "SHARP": 0.4
         }
     });
 
     hero.addDamageProfile("SWARM_STINGING", {
         "types": {
-            "PIERCING": 1.0
+            "SHARP": 1.0
         },
         "properties": {
             "EFFECTS": [

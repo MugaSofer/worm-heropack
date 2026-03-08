@@ -10,6 +10,10 @@ var utils = implement("fiskheroes:external/utils");
 
 var alexArmR;
 var alexArmL;
+var sensePulses = [];
+var sonarRing;
+var pulsePeriods = [31, 43, 53, 67];
+var wanderRadius = 250;
 
 function init(renderer) {
     parent.init(renderer);
@@ -35,15 +39,14 @@ function initEffects(renderer) {
         return entity.getInterpolatedData("worm:dyn/swarm_sense_timer") > 0.1;
     });
 
-    // Swarm Sense — wandering pulses using setCondition pattern
-    var pulsePeriods = [31, 43, 53, 67];
+    // Swarm Sense — wandering pulses (opacity controlled in render() for 1P-only)
     var posSeeds = [2.399, 3.761, 5.183, 7.529];
-    var wanderRadius = 250;
     var pulseColors = [0x777777, 0x888888, 0x666666, 0x999999];
 
     for (var i = 0; i < 4; i++) {
         (function (idx) {
             var p = renderer.bindProperty("fiskheroes:forcefield");
+            sensePulses.push(p);
             p.color.set(pulseColors[idx]);
             p.setShape(17, 7);
             p.setCondition(function (entity) {
@@ -53,36 +56,26 @@ function initEffects(renderer) {
                     var totalCycles = pulsePeriods[idx] * 11;
                     var cycle = Math.floor(entity.loop(totalCycles) * 11);
                     var seed = (cycle + idx) * posSeeds[idx];
-                    var px = wanderRadius * Math.sin(seed);
-                    var pz = wanderRadius * Math.cos(seed * 1.347);
-                    p.setOffset(px, 6.0, pz);
-                    p.opacity = senseTimer * 0.15 * (1 - t);
+                    p.setOffset(wanderRadius * Math.sin(seed), 6.0, wanderRadius * Math.cos(seed * 1.347));
                     p.setScale(30 * t);
-                } else {
-                    p.opacity = 0;
                 }
                 return true;
             });
         })(i);
     }
 
-    // Sonar ring
-    var sonar = renderer.bindProperty("fiskheroes:forcefield");
-    sonar.color.set(0xBBBBBB);
-    sonar.setShape(17, 7);
-    sonar.setCondition(function (entity) {
+    // Sonar ring (opacity controlled in render() for 1P-only)
+    sonarRing = renderer.bindProperty("fiskheroes:forcefield");
+    sonarRing.color.set(0xBBBBBB);
+    sonarRing.setShape(17, 7);
+    sonarRing.setCondition(function (entity) {
         var senseTimer = entity.getInterpolatedData("worm:dyn/swarm_sense_timer");
         if (senseTimer > 0) {
             var ring = entity.loop(60);
             var ringCycles = 60 * 7;
             var ringCycle = Math.floor(entity.loop(ringCycles) * 7);
-            var rx = wanderRadius * 0.7 * Math.sin(ringCycle * 4.159);
-            var rz = wanderRadius * 0.7 * Math.cos(ringCycle * 2.871);
-            sonar.setOffset(rx, 6.0, rz);
-            sonar.opacity = senseTimer * 0.15 * (1 - ring);
-            sonar.setScale(30 * ring);
-        } else {
-            sonar.opacity = 0;
+            sonarRing.setOffset(wanderRadius * 0.7 * Math.sin(ringCycle * 4.159), 6.0, wanderRadius * 0.7 * Math.cos(ringCycle * 2.871));
+            sonarRing.setScale(30 * ring);
         }
         return true;
     });
@@ -106,5 +99,20 @@ function render(entity, renderLayer, isFirstPersonArm) {
     if (renderLayer == "CHESTPLATE") {
         alexArmR.render();
         alexArmL.render();
+    }
+    // Swarm sense forcefields: 1st person only
+    if (isFirstPersonArm) {
+        var senseTimer = entity.getInterpolatedData("worm:dyn/swarm_sense_timer");
+        for (var i = 0; i < sensePulses.length; i++) {
+            var t = entity.loop(pulsePeriods[i]);
+            sensePulses[i].opacity = senseTimer > 0 ? senseTimer * 0.15 * (1 - t) : 0;
+        }
+        var ring = entity.loop(60);
+        sonarRing.opacity = senseTimer > 0 ? senseTimer * 0.15 * (1 - ring) : 0;
+    } else {
+        for (var i = 0; i < sensePulses.length; i++) {
+            sensePulses[i].opacity = 0;
+        }
+        sonarRing.opacity = 0;
     }
 }

@@ -19,11 +19,10 @@ function init(hero) {
     hero.addAttribute("PUNCH_DAMAGE", 10.0, 0);
     hero.addAttribute("KNOCKBACK", 1.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.3, 1);
-    hero.addAttribute("JUMP_HEIGHT", 1.0, 0);
+    hero.addAttribute("JUMP_HEIGHT", 1.5, 0);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 1);
     hero.addAttribute("MAX_HEALTH", 20.0, 0);
     hero.addAttribute("STEP_HEIGHT", 0.5, 0);
-    hero.addAttribute("SPRINT_JUMP_FACTOR", 1.5, 0);
 
     // Generate size profiles at each 0.25 step
     // Speed, damage, knockback all scale linearly with dog size
@@ -46,7 +45,6 @@ function init(hero) {
     hero.addAttributeProfile("CROUCHING", function (profile) {
         profile.inheritDefaults();
         profile.addAttribute("JUMP_HEIGHT", 10.0, 0);
-        profile.addAttribute("SPRINT_JUMP_FACTOR", 5.0, 0);
         profile.addAttribute("BASE_SPEED", 2.0, 1);
         profile.addAttribute("SPRINT_SPEED", 2.0, 1);
     });
