@@ -2,7 +2,7 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:alexandria_layer1",
     "layer2": "worm:alexandria_layer2",
-    "cape": "fiskheroes:batman_dceu_cape"
+    "cape": "worm:alexandria_cape"
 });
 
 var utils = implement("fiskheroes:external/utils");
