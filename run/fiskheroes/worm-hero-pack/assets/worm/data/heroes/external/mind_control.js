@@ -50,6 +50,41 @@ var ROBOTS = {
     "harpack:springtrap": true         // animatronic
 };
 
+// ── ELECTRONIC VISION — Sees through cameras/HUDs, not biological eyes ──
+var ELECTRONIC_VISION = {
+    "fiskheroes:iron_man": true,
+    "fiskheroes:iron_man_mk50": true,
+    "fiskheroes:iron_man_mk85": true,
+    "fiskrework:iron_man_rework": true,
+    "fiskrework:iron_man_mk50_rework": true,
+    "emo:ironman_omega": true,
+    "tmf:iron_man_mk1_aa": true,
+    "tmf:iron_man_mk1_aa_backpack": true,
+    "tmf:iron_man_space_aa": true,
+    "tmf:iron_man_stealth_aa": true,
+    "tmf:iron_man_silver_centurion_aa": true,
+    "jmctheroes:war_machine_mk1": true,
+    "jmctheroes:war_machine_mk2": true,
+    "jmctheroes:war_machine_mk3": true,
+    "hom:spider_man_iron": true,
+    "emo:spider": true,
+    "loriatpack:cyborg": true,
+    "tmhp:cyborg": true,
+    "loriatpack:bat_beyond": true,
+    "soulhp:batman_beyond": true,
+    "loriatpack:batwing": true,
+    "jmctheroes:arkham_knight": true,
+    "tgheroes:doctor_doom": true,
+    "sabri:doctor_doom_comics": true,
+    "sabri:doctor_doom_f4": true,
+    "soulhp:doctor_doom": true,
+    "diabolical:doctor_doom": true,
+    "emo:lexo": true,
+    "sl:steel": true,
+    "fiskheroes:black_manta_dceu": true,
+    "fiskrework:black_manta_dceu_rework": true
+};
+
 // ── IMMUNE — Hard telepathic shielding ───────────────────────────────
 // These have specific, reliable protection that blocks neural interference outright.
 // Magic artifacts, cosmic-tier beings, literal gods.
@@ -362,6 +397,21 @@ var TELEPATHY_TRAINED = {
 };
 
 // ── Main API ─────────────────────────────────────────────────────────
+
+// Check if entity is wearing a robot hero suit (no nervous system).
+// Used by Imp's visibility system — robots can detect her.
+function seesElectronically(entity) {
+    try {
+        var helm = entity.getEquipmentInSlot(4);
+        if (helm != null && !helm.isEmpty()) {
+            var heroType = helm.nbt().getString("HeroType");
+            if (heroType != null && heroType != "") {
+                return ROBOTS[heroType] === true || ELECTRONIC_VISION[heroType] === true;
+            }
+        }
+    } catch (e) {}
+    return false;
+}
 
 // Returns false if the entity can be controlled, or a category string.
 // Priority order: mindless > robot > immune > resistant > anatomy > trained

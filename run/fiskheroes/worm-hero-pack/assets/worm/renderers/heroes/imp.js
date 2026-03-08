@@ -1,10 +1,12 @@
 extend("fiskheroes:hero_basic");
 
 loadTextures({
-    "layer1": "worm:imp_layer1",
-    "layer2": "worm:imp_layer1",
+    "layer1": "worm:imp_costume_noscarf",
+    "layer2": "worm:imp_costume_noscarf",
     "costume": "worm:imp_costume",
     "costume_nomask": "worm:imp_costume_nomask",
+    "costume_notop": "worm:imp_costume_notop",
+    "costume_noscarf": "worm:imp_costume_noscarf",
     "body": "worm:imp_body"
 });
 
@@ -12,13 +14,12 @@ var costumeOverlay;
 
 function init(renderer) {
     parent.init(renderer);
-    renderer.fixHatLayer("HELMET", "CHESTPLATE");
     renderer.setTexture(function (entity, renderLayer) {
         var fullSuit = entity.isWearingFullSuit();
         if (fullSuit) return "body";
-        // Partial suit: use no-mask texture for helmet (shows scarf, not mask)
-        if (renderLayer == "HELMET") return "costume_nomask";
-        return "costume";
+        // Partial suit: helmet shows mask+scarf, others show costume without scarf
+        if (renderLayer == "HELMET") return "costume_notop";
+        return "costume_noscarf";
     });
 }
 
@@ -41,11 +42,13 @@ function initEffects(renderer) {
     costumeOverlay.texture.set(null, "costume");
 
     // Opacity: invisible when full suit, normal when partial
+    // Three visibility sources: reveal keybind, punching, electronic detection
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
         if (!entity.isWearingFullSuit()) return 1.0;
         var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
         var punching = entity.isPunching() ? 1.0 : 0.0;
-        return Math.max(reveal, punching) * 0.995 + 0.005;
+        var detected = entity.getInterpolatedData("worm:dyn/imp_visible_timer");
+        return Math.max(reveal, punching, detected) * 0.995 + 0.005;
     });
 
     // Suppress default heat vision beam by binding an invisible beam renderer

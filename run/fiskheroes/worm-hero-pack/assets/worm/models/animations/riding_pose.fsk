@@ -1,0 +1,258 @@
+
+{cancel} = min(1, {data}*4)
+
+{head_posX} @ {cancel} -> 0
+{head_posY} @ {cancel} -> 0
+{head_posZ} @ {cancel} -> 0
+
+{rightArm_rotX} @ {cancel} -> 0
+{rightArm_rotY} @ {cancel} -> 0
+{rightArm_rotZ} @ {cancel} -> 0
+{rightArm_posX} @ {cancel} -> -5
+{rightArm_posY} @ {cancel} -> 2
+{rightArm_posZ} @ {cancel} -> 0
+
+{leftArm_rotX} @ {cancel} -> 0
+{leftArm_rotY} @ {cancel} -> 0
+{leftArm_rotZ} @ {cancel} -> 0
+{leftArm_posX} @ {cancel} -> 5
+{leftArm_posY} @ {cancel} -> 2
+{leftArm_posZ} @ {cancel} -> 0
+
+{body_rotX} @ {cancel} -> 0
+{body_rotY} @ {cancel} -> 0
+{body_rotZ} @ {cancel} -> 0
+{body_posX} @ {cancel} -> 0
+{body_posY} @ {cancel} -> 0
+{body_posZ} @ {cancel} -> 0
+
+{leftLeg_rotX} @ {cancel} -> 0
+{leftLeg_rotY} @ {cancel} -> 0
+{leftLeg_rotZ} @ {cancel} -> 0
+{leftLeg_posX} @ {cancel} -> 2
+{leftLeg_posY} @ {cancel} -> 12
+{leftLeg_posZ} @ {cancel} -> 0
+
+{rightLeg_rotX} @ {cancel} -> 0
+{rightLeg_rotY} @ {cancel} -> 0
+{rightLeg_rotZ} @ {cancel} -> 0
+{rightLeg_posX} @ {cancel} -> -2
+{rightLeg_posY} @ {cancel} -> 12
+{rightLeg_posZ} @ {cancel} -> 0
+{0}=curve animate2({data},0.365,0,0.25,0.115)
+{1}=curve animate2({data},0.5,0.25,0.115,0.385)
+{2}=curve animate2({data},0.475,0.365,0.385,0.09)
+{3}=curve animate2({data},20,0,0.125,19.875)
+{4}=curve animate2({data},20,0,0,20)
+{5}=curve animate2({data},20,0,0.625,19.375)
+{6}=curve animate2({data},0.15,0.125,0.075,0.075)
+{7}=curve animate2({data},0.15,0.2,0.075,0.075)
+{8}=curve animate2({data},0.15,0.275,0.075,0.075)
+{9}=curve animate2({data},0.15,0.35,0.075,0.075)
+{10}=curve animate2({data},0.2,0.425,0.075,0.125)
+{11}=curve animate2({data},0.325,0.5,0.125,0.2)
+{12}=curve animate2({data},19.375,0.625,0.2,19.175)
+{13}=curve animate2({data},0.625,0,0.125,0.5)
+{14}=curve animate2({data},0.7,0.125,0.5,0.2)
+{15}=curve animate2({data},0.2,0,0.125,0.075)
+{16}=curve animate2({data},0.225,0.275,0.075,0.15)
+{17}=curve animate2({data},0.275,0.35,0.15,0.125)
+{18}=curve animate2({data},0.25,0.5,0.125,0.125)
+{19}=curve animate2({data},0.2,0.625,0.125,0.075)
+{20}=curve animate2({data},19.25,0.75,0.075,19.175)
+{21}=curve animate2({data},0.275,0,0.125,0.15)
+{22}=curve animate2({data},0.225,0.125,0.15,0.075)
+{23}=curve animate2({data},0.275,0.35,0.075,0.2)
+{24}=curve animate2({data},0.4,0.425,0.2,0.2)
+
+{head_rotY}+=80'{5}
+{head_posX}+=1.2155372438{6}
+{head_posZ}+=-6.893654271{6}
+{head_posX}+=1.9145927108{7}
+{head_posZ}+=-10.829231012{7}
+{head_posX}+=2.6045927108{8}
+{head_posZ}+=-14.769231012{8}
+{head_posX}+=2.8076565419{9}
+{head_posZ}+=-21.130572204{9}
+{head_posX}+=4.0165411216{10}
+{head_posZ}+=-27.4115537464{10}
+{head_posX}+=4.0165411216{11}
+{head_posZ}+=-27.4115537464{11}
+{head_posX}+=3.6627299252{12}
+{head_posY}+=0.6{12}
+{head_posZ}+=-13.8662797544{12}
+
+{body_rotY}+=-2.5'{13}
+{body_rotY}+=55'{14}
+{body_rotX}+=-5'{12}
+{body_rotY}+=80'{12}
+{body_posX}+=1.2155372439{6}
+{body_posZ}+=-6.893654271{6}
+{body_posX}+=1.9145927108{7}
+{body_posZ}+=-10.829231012{7}
+{body_posX}+=2.6045927108{8}
+{body_posZ}+=-14.769231012{8}
+{body_posX}+=2.8307294908{9}
+{body_posZ}+=-21.8373024487{9}
+{body_posX}+=3.718309351{10}
+{body_posZ}+=-26.8629040343{10}
+{body_posX}+=3.718309351{11}
+{body_posZ}+=-26.8629040343{11}
+{body_posX}+=3.4246942143{12}
+{body_posY}+=0.1743114854{12}
+{body_posZ}+=-13.7115244232{12}
+
+{leftArm_rotX}+=-39.5686869552'{15}
+{leftArm_rotY}+=6.4086463098'{15}
+{leftArm_rotZ}+=7.6926288193'{15}
+{leftArm_rotX}+=-62.0686869552'{6}
+{leftArm_rotY}+=6.4086463098'{6}
+{leftArm_rotZ}+=7.6926288193'{6}
+{leftArm_rotX}+=-22.9271978664'{7}
+{leftArm_rotY}+=0.6405975965'{7}
+{leftArm_rotZ}+=-6.1863232736'{7}
+{leftArm_rotX}+=50.4355939457'{16}
+{leftArm_rotY}+=3.164676176'{16}
+{leftArm_rotZ}+=-2.7428017495'{16}
+{leftArm_rotX}+=-32.0644060543'{17}
+{leftArm_rotY}+=3.164676176'{17}
+{leftArm_rotZ}+=-2.7428017495'{17}
+{leftArm_rotX}+=-21.5812118746'{18}
+{leftArm_rotY}+=61.751644607'{18}
+{leftArm_rotZ}+=-7.1017970042'{18}
+{leftArm_rotX}+=-150.3394051553'{19}
+{leftArm_rotY}+=66.7384254332'{19}
+{leftArm_rotZ}+=-32.9764513091'{19}
+{leftArm_rotX}+=-180.0867077509'{20}
+{leftArm_rotY}+=3.4277406593'{20}
+{leftArm_rotZ}+=-92.7496441257'{20}
+{leftArm_posX}+=1.2155372439{6}
+{leftArm_posZ}+=-6.893654271{6}
+{leftArm_posX}+=1.602025991{7}
+{leftArm_posY}+=0.4{7}
+{leftArm_posZ}+=-9.0565770566{7}
+{leftArm_posX}+=2.6245242481{8}
+{leftArm_posY}+=0.4{8}
+{leftArm_posZ}+=-14.8703657427{8}
+{leftArm_posX}+=3.6618890665{9}
+{leftArm_posY}+=0.4{9}
+{leftArm_posZ}+=-20.778846518{9}
+{leftArm_posX}+=4.6698630753{10}
+{leftArm_posY}+=0.4{10}
+{leftArm_posZ}+=-26.4922694614{10}
+{leftArm_posX}+=2.8331140569{11}
+{leftArm_posY}+=0.4{11}
+{leftArm_posZ}+=-30.4694283551{11}
+{leftArm_posX}+=-1.0333491702{12}
+{leftArm_posY}+=3.5623782902{12}
+{leftArm_posZ}+=-18.2285173798{12}
+
+{rightArm_rotX}+=39.9731372335'{15}
+{rightArm_rotY}+=1.606669721'{15}
+{rightArm_rotZ}+=-1.915613314'{15}
+{rightArm_rotX}+=64.9731372335'{6}
+{rightArm_rotY}+=1.606669721'{6}
+{rightArm_rotZ}+=-1.915613314'{6}
+{rightArm_rotX}+=24.9731372335'{7}
+{rightArm_rotY}+=1.606669721'{7}
+{rightArm_rotZ}+=-1.915613314'{7}
+{rightArm_rotX}+=-55.0202548481'{16}
+{rightArm_rotY}+=6.658743086'{16}
+{rightArm_rotZ}+=-0.3463595882'{16}
+{rightArm_rotX}+=1.7959394089'{17}
+{rightArm_rotY}+=0.2374974904'{17}
+{rightArm_rotZ}+=0.9635373467'{17}
+{rightArm_rotX}+=37.9404048884'{11}
+{rightArm_rotY}+=47.1627116254'{11}
+{rightArm_rotZ}+=61.2642084844'{11}
+{rightArm_rotX}+=-16.3155497924'{12}
+{rightArm_rotY}+=11.9898390486'{12}
+{rightArm_rotZ}+=75.2730619723'{12}
+{rightArm_posX}+=1.2155372434{6}
+{rightArm_posZ}+=-6.893654271{6}
+{rightArm_posX}+=1.9145927108{7}
+{rightArm_posY}+=0.3{7}
+{rightArm_posZ}+=-10.829231012{7}
+{rightArm_posX}+=2.6045927108{8}
+{rightArm_posY}+=1.4{8}
+{rightArm_posZ}+=-14.769231012{8}
+{rightArm_posX}+=3.7460779725{9}
+{rightArm_posY}+=0.3{9}
+{rightArm_posZ}+=-21.2697311698{9}
+{rightArm_posX}+=4.6654687809{10}
+{rightArm_posY}+=0.3{10}
+{rightArm_posZ}+=-26.4847890017{10}
+{rightArm_posX}+=4.2128066066{11}
+{rightArm_posY}+=0.3{11}
+{rightArm_posZ}+=-23.3112503726{11}
+{rightArm_posX}+=6.9954262778{12}
+{rightArm_posY}+=3.4873971058{12}
+{rightArm_posZ}+=-9.9841287877{12}
+
+{leftLeg_rotX}+=12.5'{21}
+{leftLeg_rotX}+=10'{22}
+{leftLeg_rotX}+=-12.5'{8}
+{leftLeg_rotX}+=5'{23}
+{leftLeg_rotX}+=8.1783125879'{24}
+{leftLeg_rotY}+=52.2167718673'{24}
+{leftLeg_rotZ}+=6.4800876872'{24}
+{leftLeg_rotX}+=-46.384587725'{12}
+{leftLeg_rotY}+=81.65623655'{12}
+{leftLeg_rotZ}+=28.7541467876'{12}
+{leftLeg_posZ}+=0.25{15}
+{leftLeg_posX}+=1.0418890662{6}
+{leftLeg_posZ}+=-5.658846518{6}
+{leftLeg_posX}+=1.5426180199{7}
+{leftLeg_posY}+=-3.1{7}
+{leftLeg_posZ}+=-15.4210130175{7}
+{leftLeg_posX}+=1.8872963554{8}
+{leftLeg_posY}+=-0.1{8}
+{leftLeg_posZ}+=-17.389615506{8}
+{leftLeg_posX}+=2.6714167998{9}
+{leftLeg_posY}+=-0.1{9}
+{leftLeg_posZ}+=-21.8216348885{9}
+{leftLeg_posX}+=3.542498258{10}
+{leftLeg_posY}+=-0.1{10}
+{leftLeg_posZ}+=-26.7437886861{10}
+{leftLeg_posX}+=2.7945621814{11}
+{leftLeg_posY}+=0.0157670556{11}
+{leftLeg_posZ}+=-28.0632235058{11}
+{leftLeg_posX}+=-2.3991598289{12}
+{leftLeg_posY}+=-2.2991824425{12}
+{leftLeg_posZ}+=-16.1560505274{12}
+
+{rightLeg_rotX}+=12.5'{15}
+{rightLeg_rotX}+=15'{7}
+{rightLeg_rotX}+=22.5'{8}
+{rightLeg_rotX}+=15'{9}
+{rightLeg_rotX}+=-22.5'{10}
+{rightLeg_rotX}+=34.2745173811'{11}
+{rightLeg_rotY}+=63.1716513445'{11}
+{rightLeg_rotZ}+=85.0212486056'{11}
+{rightLeg_rotX}+=264.9454382339'{12}
+{rightLeg_rotY}+=80.5158998424'{12}
+{rightLeg_rotZ}+=344.0287175009'{12}
+{rightLeg_posX}+=0.4341204447{15}
+{rightLeg_posY}+=-3{15}
+{rightLeg_posZ}+=-4.2620193825{15}
+{rightLeg_posX}+=1.2155372439{6}
+{rightLeg_posZ}+=-8.693654271{6}
+{rightLeg_posX}+=1.5672963556{7}
+{rightLeg_posZ}+=-10.659615506{7}
+{rightLeg_posX}+=2.3861464353{8}
+{rightLeg_posZ}+=-15.2885964391{8}
+{rightLeg_posX}+=4.4216836795{9}
+{rightLeg_posY}+=-4.6{9}
+{rightLeg_posZ}+=-26.8122507101{9}
+{rightLeg_posX}+=4.77{10}
+{rightLeg_posY}+=-0.4{10}
+{rightLeg_posZ}+=-28.78{10}
+{rightLeg_posX}+=2.4592771174{11}
+{rightLeg_posY}+=-4.4{11}
+{rightLeg_posZ}+=-24.3133950522{11}
+{rightLeg_posX}+=0.4283163214{12}
+{rightLeg_posY}+=-1.9{12}
+{rightLeg_posZ}+=-12.7877492899{12}
+
+out "translate" (0.25{4}, 0, 0)
+out "rotate" (80 * {3}, 0, 1, 0)
