@@ -167,7 +167,7 @@ function init(hero) {
                     // Sort by score (distance * maxHP), cap at 5
                     detected.sort(function (a, b) { return a.score - b.score; });
                     if (detected.length > 5) detected = detected.slice(0, 5);
-                    if (detected.length > 0) {
+                    if (detected.length > 0 && PackLoader.getSide() == "SERVER") {
                         var parts = [];
                         for (var j = 0; j < detected.length; j++) {
                             var d = detected[j];
