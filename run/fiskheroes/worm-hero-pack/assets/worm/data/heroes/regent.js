@@ -8,6 +8,16 @@ function heightAboveGround(world, pos) {
     return 10;
 }
 
+// Entities Regent cannot control (no nervous system)
+// Keys are getName() return values - may need adjustment after in-game testing
+var MINDLESS = {
+    "Skeleton": true,
+    "Wither Skeleton": true,
+    "Stray": true,
+    "Slime": true,
+    "Magma Cube": true
+};
+
 // Control buildup config
 var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill
 var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
@@ -48,6 +58,14 @@ function init(hero) {
         if (grabId > -1) {
             var grabbed = entity.world().getEntityById(grabId);
             if (grabbed != null) {
+                // Release mindless entities immediately
+                if (MINDLESS[grabbed.getName()] === true) {
+                    manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
+                    manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
+                    manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
+                    return false;
+                }
+
                 // Anti-lift check
                 var height = heightAboveGround(entity.world(), grabbed.pos());
                 if (height > 1) {
