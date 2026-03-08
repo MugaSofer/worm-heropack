@@ -54,7 +54,9 @@ function init(hero) {
             if (grabbed != null) {
                 // Release entities that resist control
                 var resistance = mc.resistsControl(grabbed);
-                if (resistance) {
+                // Hard blocks: mindless mobs, robots, and immune heroes
+                // "resistant", "anatomy", "trained" pass through for now (future: backfire mechanic)
+                if (resistance == "mindless" || resistance == "robot" || resistance == "immune") {
                     manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
@@ -65,10 +67,9 @@ function init(hero) {
                         if (p != null) {
                             var msg = resistance == "mindless" ? "No nervous system to hijack."
                                     : resistance == "immune"  ? "Their mind resists your control."
-                                    : resistance == "robot"   ? "Nothing organic to control."
-                                    : "You can't control this entity.";
+                                    : "Nothing organic to control.";
                             p.addChatMessage("\u00A77\u00A7o" + msg);
-                            resistMsgCooldown = 60; // 3 seconds
+                            resistMsgCooldown = 60;
                         }
                     }
                     return false;
