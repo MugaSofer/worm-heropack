@@ -131,6 +131,8 @@ hero.addKeyBindFunc("MY_FUNC", function(entity, manager) {
 }, "Label", 1);  // key 1
 ```
 
+**CRITICAL:** `addKeyBindFunc` with a slot number **must return a boolean**. Returning `undefined` (no return statement) causes `ClassCastException: Undefined cannot be cast to java.lang.Boolean` and crashes the game. Always end with `return true;` (keybind activated) or `return false;` (did nothing).
+
 Keys 1-5 are available. Multiple keybinds can share a key — when multiple are enabled simultaneously, the **first one registered** (in script order) gets its label shown in the HUD. Registration order matters for display priority. For `addKeyBind`, `isKeyBindEnabled` controls BOTH visibility AND whether the action fires. For `addKeyBindFunc`, the function always fires but `isKeyBindEnabled` controls the label display.
 
 ### Modifier gating
@@ -1677,7 +1679,7 @@ This enables custom vulnerability/resistance systems — e.g., one hero deals KR
 | Type | Label | Packs | Notes |
 |------|-------|-------|-------|
 | ADAMANTIUM | Adamantium | 3 | Wolverine's claws etc. (Sabri, sh-heropack, tgheroes) |
-| VIBRANIUM | Vibranium | 2 | Black Panther etc. (Miscellaneous, tgheroes) |
+| VIBRANIUM | Vibranium | 2 | Black Panther etc. (Miscellaneous, tgheroes). Possibly unused? |
 | BONE | Bone | 1 | Rogue's bone claws, X-Men (tgheroes) |
 | ROGUE | Rogue | 1 | Rogue's life-drain punch; she's immune to it (tgheroes) |
 | CHAOS | Chaos | 1 | Scarlet Witch? (sh-heropack) |
@@ -1723,7 +1725,7 @@ This enables custom vulnerability/resistance systems — e.g., one hero deals KR
 
 | Type | Label | Packs | Notes |
 |------|-------|-------|-------|
-| FORCE | The Force | 1 | |
+| FORCE | The Force | 1 | Unused |
 
 **Other**:
 
@@ -2027,7 +2029,7 @@ entity.team()                       // Team info
 entity.getHealth() / getMaxHealth() / getAbsorptionAmount()
 entity.getHeldItem()                // JSItem
 entity.getWornHelmet() / getWornChestplate() / getWornLeggings() / getWornBoots()
-entity.getEquipmentInSlot(slot)     // 0=helmet, 1=chest, 2=legs, 3=boots
+entity.getEquipmentInSlot(slot)     // 0=held item, 1=boots, 2=leggings, 3=chestplate, 4=helmet
 
 // Actions (on other entities from getEntitiesInRangeOf)
 other.hurt(heroRef, "PROFILE", "%1$s death message", damage)

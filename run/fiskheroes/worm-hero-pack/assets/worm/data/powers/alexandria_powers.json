@@ -179,6 +179,9 @@
     "fiskheroes:damage_immunity|cosmic": {
       "damageType": "COSMIC"
     },
+    "fiskheroes:damage_immunity|adamantium": {
+      "damageType": "ADAMANTIUM"
+    },
     "fiskheroes:fire_immunity": {},
     "fiskheroes:projectile_immunity": {},
     "fiskheroes:arrow_catching": {},

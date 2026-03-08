@@ -1,3 +1,5 @@
+var mc = implement("worm:external/mind_control");
+
 // How many blocks above ground the entity at pos is (max 10)
 function heightAboveGround(world, pos) {
     for (var i = 0; i < 10; i++) {
@@ -8,16 +10,6 @@ function heightAboveGround(world, pos) {
     return 10;
 }
 
-// Entities Regent cannot control (no nervous system)
-// Keys are getName() return values - may need adjustment after in-game testing
-var MINDLESS = {
-    "Skeleton": true,
-    "Wither Skeleton": true,
-    "Stray": true,
-    "Slime": true,
-    "Magma Cube": true
-};
-
 // Control buildup config
 var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill
 var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
@@ -25,6 +17,7 @@ var FULL_CONTROL = 1.0;
 
 // Per-entity control map (keyed by entity UUID)
 var controlMap = {};
+var resistMsgCooldown = 0;
 
 function init(hero) {
     hero.setName("Regent");
@@ -54,15 +47,30 @@ function init(hero) {
         if (cooldown > 0) {
             manager.setData(entity, "worm:dyn/tk_cooldown", cooldown - 1);
         }
+        if (resistMsgCooldown > 0) resistMsgCooldown--;
 
         if (grabId > -1) {
             var grabbed = entity.world().getEntityById(grabId);
             if (grabbed != null) {
-                // Release mindless entities immediately
-                if (MINDLESS[grabbed.getName()] === true) {
+                // Release entities that resist control
+                var resistance = mc.resistsControl(grabbed);
+                if (resistance) {
                     manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
+                    manager.setData(entity, "worm:dyn/tk_cooldown", 40);
+                    manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
+                    if (PackLoader.getSide() == "SERVER" && resistMsgCooldown <= 0) {
+                        var p = entity.as("PLAYER");
+                        if (p != null) {
+                            var msg = resistance == "mindless" ? "No nervous system to hijack."
+                                    : resistance == "immune"  ? "Their mind resists your control."
+                                    : resistance == "robot"   ? "Nothing organic to control."
+                                    : "You can't control this entity.";
+                            p.addChatMessage("\u00A77\u00A7o" + msg);
+                            resistMsgCooldown = 60; // 3 seconds
+                        }
+                    }
                     return false;
                 }
 

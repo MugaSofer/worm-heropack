@@ -27,7 +27,8 @@
     "BONE": "Bone",
     "CANCER": "Cancer",
     "COCAINE": "Cocaine",
-    "SPACE": "Space"
+    "SPACE": "Space",
+    "ADAMANTIUM": "Adamantium"
   },
   "dataVars": {
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
