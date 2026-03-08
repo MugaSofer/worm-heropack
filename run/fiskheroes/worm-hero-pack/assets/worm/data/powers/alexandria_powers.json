@@ -95,6 +95,90 @@
     "fiskheroes:damage_immunity|electricity": {
       "damageType": "ELECTRICITY"
     },
+    "fiskheroes:damage_immunity|sound": {
+      "damageType": "SOUND"
+    },
+    "fiskheroes:damage_immunity|heat_vision": {
+      "damageType": "HEAT_VISION"
+    },
+    "fiskheroes:damage_immunity|cactus": {
+      "damageType": "CACTUS"
+    },
+    "fiskheroes:damage_immunity|shuriken": {
+      "damageType": "SHURIKEN"
+    },
+    "fiskheroes:damage_immunity|thorns": {
+      "damageType": "THORNS"
+    },
+    "fiskheroes:damage_immunity|telepathic": {
+      "damageType": "TELEPATHIC"
+    },
+    "fiskheroes:damage_immunity|telepatic": {
+      "damageType": "TELEPATIC"
+    },
+    "fiskheroes:damage_immunity|lightning": {
+      "damageType": "LIGHTNING"
+    },
+    "fiskheroes:damage_immunity|light": {
+      "damageType": "LIGHT"
+    },
+    "fiskheroes:damage_immunity|acid": {
+      "damageType": "ACID"
+    },
+    "fiskheroes:damage_immunity|wind": {
+      "damageType": "WIND"
+    },
+    "fiskheroes:damage_immunity|heat": {
+      "damageType": "HEAT"
+    },
+    "fiskheroes:damage_immunity|instant_death": {
+      "damageType": "INSTANT_DEATH"
+    },
+    "fiskheroes:damage_immunity|explode": {
+      "damageType": "EXPLODE"
+    },
+    "fiskheroes:damage_immunity|flame": {
+      "damageType": "FLAME"
+    },
+    "fiskheroes:damage_immunity|scream": {
+      "damageType": "SCREAM"
+    },
+    "fiskheroes:damage_immunity|sound_blast": {
+      "damageType": "SOUND_BLAST"
+    },
+    "fiskheroes:damage_immunity|shockwavem": {
+      "damageType": "SHOCKWAVEM"
+    },
+    "fiskheroes:damage_immunity|wither": {
+      "damageType": "WITHER"
+    },
+    "fiskheroes:damage_immunity|kryptonite": {
+      "damageType": "KRYPTONITE"
+    },
+    "fiskheroes:damage_immunity|blue_kryptonite": {
+      "damageType": "BLUE_KRYPTONITE"
+    },
+    "fiskheroes:damage_immunity|solar": {
+      "damageType": "SOLAR"
+    },
+    "fiskheroes:damage_immunity|redsolar": {
+      "damageType": "REDSOLAR"
+    },
+    "fiskheroes:damage_immunity|supercharged": {
+      "damageType": "SUPERCHARGED"
+    },
+    "fiskheroes:damage_immunity|bone": {
+      "damageType": "BONE"
+    },
+    "fiskheroes:damage_immunity|cancer": {
+      "damageType": "CANCER"
+    },
+    "fiskheroes:damage_immunity|cocaine": {
+      "damageType": "COCAINE"
+    },
+    "fiskheroes:damage_immunity|cosmic": {
+      "damageType": "COSMIC"
+    },
     "fiskheroes:fire_immunity": {},
     "fiskheroes:projectile_immunity": {},
     "fiskheroes:arrow_catching": {},

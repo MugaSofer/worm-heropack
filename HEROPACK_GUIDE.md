@@ -23,6 +23,8 @@ An unofficial guide compiled through extensive trial, error, and reverse-enginee
 10. [Built-in Modifiers Reference](#10-built-in-modifiers-reference)
 11. [Built-in Attributes Reference](#11-built-in-attributes-reference)
 12. [Built-in External Scripts](#12-built-in-external-scripts)
+- [Appendix A: JS API Reference](#appendix-a-js-api-reference)
+- [Appendix B: Tiering & Stat Reference](#appendix-b-tiering--stat-reference)
 
 ---
 
@@ -1631,14 +1633,106 @@ Once registered, use them anywhere you'd use a built-in type:
 
 This enables custom vulnerability/resistance systems — e.g., one hero deals KRYPTONITE damage, another is weak to it.
 
-**Examples from reference packs:**
-- dcuniverse: KRYPTONITE, LIGHTNING, TELEPATIC
-- God of War: CHAOS_FLAMES, BIFROST, JORMUNGANDR_VENOM, PRIMORDIAL, GALE, LEVIATHAN_ICE
-- Star Wars: FORCE
-- TMF: LIGHT, ACID
-- Sabri: ADAMANTIUM, TUTRIDIUM
-- DMH: GOD, ANGEL, ARCHANGEL
-- Superman & Lois: KRYPTONITE, XKRYPTONITE, BLUE_KRYPTONITE
+**Complete catalog of custom damage types across 16 reference packs** (54 types total, surveyed March 2026):
+
+**Generic / Setting-Independent** — usable in any superhero context:
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| TELEPATIC | Telepathy | 3 | De facto standard spelling (dcuniverse, Miscellaneous, tgheroes) |
+| TELEPATHIC | Telepathic | 1 | Correct spelling, incompatible with above (sh-heropack) |
+| LIGHTNING | Lightning | 3 | Distinct from built-in ELECTRICITY (dcuniverse, GoW3, tgheroes) |
+| LIGHT | Light | 2 | Light/radiant damage (sh-heropack, tmf) |
+| ACID | Acid Damage | 1 | (tmf) |
+| WATER | Water | 1 | (DERPZ) |
+| WIND | Wind | 1 | (supermanandlois) |
+| HEAT | Heat | 1 | (supermanandlois) |
+| INSTANT_DEATH | Instant Death | 1 | Lady Death's 10,000-damage touch-kill (DMH) |
+
+**Near-duplicates of built-ins** — packs create these to distinguish thematic variants:
+
+| Type | Label | Packs | vs Built-in | Usage |
+|------|-------|-------|-------------|-------|
+| EXPLODE | Explode | 2 | EXPLOSION | Energy/projectile explosions vs impact ground slams (dcuniverse, tgheroes) |
+| FLAME | Flame | 2 | FIRE | Thematic fire attacks, e.g. Azrael's ignite sword (dcuniverse, tgheroes) |
+| SCREAM | Scream | 2 | SOUND | Black Canary's sonic cry with debuffs (dcuniverse, tgheroes) |
+| SOUND_BLAST | Sound | 1 | SOUND | Focused sonic attack; lower weakness multiplier than SOUND on symbiotes (jmcthp) |
+| SHOCKWAVEM | Shockwave | 1 | SOUND | Maestro's thunderclap. The M is probably for Maestro, not a typo (DMH) |
+| WITHER | Wither | 1 | (potion effect) | Decay/wither as a damage type rather than potion (tgheroes) |
+
+**DC Universe**:
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| KRYPTONITE | Kryptonite | **9** | Most shared type in the ecosystem |
+| BLUE_KRYPTONITE | Blue Kryptonite | 2 | (jmcthp, supermanandlois) |
+| XKRYPTONITE | X-Kryptonite | 1 | (supermanandlois) |
+| SOLAR | Solar Blast | 1 | (supermanandlois) |
+| REDSOLAR | Red Solar Blast | 1 | (supermanandlois) |
+| SUPERCHARGED | Super Solar Charged | 1 | (supermanandlois) |
+| OMEGA | Omega Beams | 1 | Darkseid's eye beams (jmcthp) |
+
+**Marvel**:
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| ADAMANTIUM | Adamantium | 3 | Wolverine's claws etc. (Sabri, sh-heropack, tgheroes) |
+| VIBRANIUM | Vibranium | 2 | Black Panther etc. (Miscellaneous, tgheroes) |
+| BONE | Bone | 1 | Rogue's bone claws, X-Men (tgheroes) |
+| ROGUE | Rogue | 1 | Rogue's life-drain punch; she's immune to it (tgheroes) |
+| CHAOS | Chaos | 1 | Scarlet Witch? (sh-heropack) |
+| VOID | The Void | 1 | Sentry's dark side; he's immune to it |
+
+**Norse / God of War** (GoW 2.0 and 3.0 are the same franchise):
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| BIFROST | Bifrost | 2 | Rainbow bridge energy |
+| PRIMORDIAL | Primordial | 2 | Ancient/primeval damage |
+| GALE | Gale | 2 | Wind magic |
+| JORMUNGANDR_VENOM | Eitr | 2 | World Serpent poison |
+| CHAOS_FLAMES | Chaos Flames | 1 | Blades of Chaos |
+| LEVIATHAN_ICE | Leviathan Ice | 1 | Leviathan Axe |
+| SPARTAN_RAGE | Spartan Rage | 1 | Kratos's rage mode |
+| THUNDERWAVE | Thunderwave | 1 | Thor's lightning |
+| GIANT_MAGIC | Giant Magic | 1 | Jotunheim magic |
+| DWARF_MAGIC | Dwarf Magic | 1 | Brok/Sindri crafting |
+| ASGARD_MAGIC | Asgard Magic | 1 | Asgardian sorcery |
+| ASGARD_FLAMES | Asgard Flames | 1 | Asgardian fire |
+
+**Supernatural / Religious** (DMH):
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| GOD | Godly Powers | 1 | |
+| ANGEL | Angelic Powers | 1 | |
+| ARCHANGEL | Archangelic Powers | 1 | |
+| DEMON | Demonic Powers | 1 | |
+| THE_COLT | The Colt | 1 | Supernatural TV show weapon; demons are weak to it |
+| DIVINEMAGIC | Divinemagic | 1 | (sh-heropack) |
+
+**Anime — Jujutsu Kaisen** (jjkp):
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| POSITIVE | Positive Energy | 1 | |
+| CURSED | Cursed Energy | 1 | |
+| CANCEL | Technique Canceling | 1 | |
+
+**Star Wars** (StarWarsHeroPack):
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| FORCE | The Force | 1 | |
+
+**Other**:
+
+| Type | Label | Packs | Notes |
+|------|-------|-------|-------|
+| COCAINE | Cocaine | 1 | Snowflame's cocaine-fueled punch damage (supermanandlois) |
+| CANCER | Cancer | 1 | Weakness type — no hero deals it, but one is vulnerable (supermanandlois) |
+
+**Cross-compatibility note**: Registering a custom type that another loaded pack also registers is safe — both packs share the type. This lets your heroes' immunities work against other packs' attacks. The most impactful types to register for compatibility are KRYPTONITE (9 packs), TELEPATIC (3), LIGHTNING (3), ADAMANTIUM (3), and the built-in near-duplicates.
 
 #### Potion Effects via Damage Profiles
 
@@ -2100,3 +2194,208 @@ The wrapper objects use a proxy pattern: unknown properties return `null` (type 
 - **No mob aggro clearing** — targeting/AI methods not exposed. Vanilla Minecraft mob aggro persists through `fiskheroes:invisible`
 - **No command execution** — no way to run `/gamemode` or any server command from scripts
 - **No entity removal** — cannot despawn or kill mob entities programmatically
+
+---
+
+## Appendix B: Tiering & Stat Reference
+
+Empirical data from 67 official base-mod heroes and 681 community heroes across 22 packs. Use this to calibrate your hero's tier and stats against the broader ecosystem.
+
+### What Tier Means
+
+Tier is primarily a **durability indicator** — it directly controls passive damage reduction. Higher tier = takes less damage from all sources. It also signals to players what power level to expect.
+
+### Tier Damage Reduction (from mod source)
+
+Formula: `protection = round((100 - (100 - B) * F / F^tier) * 10) / 1000` where B=75 (baseline), F=1.3 (factor). Both are configurable server rules.
+
+| Tier | Damage Reduction | Damage Taken | Effective HP (20 base) |
+|------|-----------------|--------------|------------------------|
+| 1 | 75.0% | 25.0% | 80 HP |
+| 2 | 80.8% | 19.2% | 104 HP |
+| 3 | 85.2% | 14.8% | 135 HP |
+| 4 | 88.6% | 11.4% | 175 HP |
+| 5 | 91.2% | 8.8% | 227 HP |
+| 6 | 93.3% | 6.7% | 299 HP |
+| 7 | 94.8% | 5.2% | 385 HP |
+| 8 | 96.0% | 4.0% | 500 HP |
+| 9 | 96.9% | 3.1% | 645 HP |
+| 10 | 97.6% | 2.4% | 833 HP |
+
+The curve has diminishing returns — each tier adds less % reduction but effectively multiplies survivability. A Tier 5 hero takes ~3x less damage than a Tier 1. A Tier 9 takes ~8x less. Combined with MAX_HEALTH additions, high-tier heroes can be nearly unkillable without specific immunities being bypassed.
+
+| Tier | Label | Who Goes Here |
+|------|-------|---------------|
+| 1 | Underpowered | Joke characters, untrained civilians. Spodermen, Penguin. |
+| 2 | Weak | Minor powers, support roles. Doctor Strange (no combat focus), Gambit. |
+| 3 | Skilled | Trained fighters, street-level powers. Red Hood, Arsenal, Black Canary. |
+| 4 | Competent | Entry-level metas, enhanced agents. Cyclops, Kid Flash, Arrow. |
+| 5 | Established | Standard superhero baseline. **Largest group.** Batman, The Flash, Deadpool, Green Arrow. |
+| 6 | Elite | Peak-human tech or strong powers. Batman (DCEU), Captain America, Black Lightning. |
+| 7 | Superhuman | True superhumans. **Second largest group.** Spider-Man, Iron Man, Colossus, Black Panther. |
+| 8 | Powerful | Top-tier powers, advanced tech. Iron Man MK50/85, Homelander, Invincible, Wonder Woman. |
+| 9 | World-class | Near-invulnerable powerhouses. Superman, Shazam, Vision, Martian Manhunter. |
+| 10 | Godlike | Cosmic/divine entities. Anti-Monitor, Spectre. **High variance — use sparingly.** |
+
+### Punch Damage by Tier
+
+Community consensus from 681 heroes (center = median, range = observed min-max):
+
+| Tier | Center | Typical Range | Official Range |
+|------|--------|---------------|----------------|
+| 1 | 2.0 | 0.1 – 3.9 | 3.0 – 5.0 |
+| 2 | 3.7 | 1.4 – 6.0 | 1.5 – 5.5 |
+| 3 | 4.0 | 2.9 – 5.1 | 3.5 – 4.5 |
+| 4 | 4.5 | 3.4 – 5.6 | 4.0 – 5.5 |
+| 5 | 5.0 | 3.9 – 6.2 | 4.5 – 6.0 |
+| 6 | 5.9 | 4.3 – 7.5 | 6.5 – 7.5 |
+| 7 | 7.6 | 5.5 – 9.8 | 7.0 – 9.0 |
+| 8 | 8.3 | 5.8 – 10.8 | 8.5 – 10.0 |
+| 9 | 10.8 | 8.4 – 13.2 | 10.5 – 12.0 |
+| 10 | 10.3 | 5.1 – 15.6 | 13.0 |
+
+The biggest stat jumps are Tier 1→2 (+87%) and Tier 8→9 (+29%). Tiers 3-4 are very close. Tier 10 actually *decreases* vs Tier 9 on average due to inconsistent usage.
+
+**Extremes**:
+
+| | Official (fiskheroes-builtin) | Community |
+|---|---|---|
+| **Highest** | Anti-Monitor, Spectre (T10): 13.0 | Invincible profile (soulhp, T9): 89.0 |
+| **Lowest** | Doctor Strange (T2): 1.5 | Space Stone profile (Miscellaneous, T2): 0.5 |
+
+Note: community extremes often come from attribute *profiles* (temporary boosts), not base stats. Base stats rarely exceed 20.0 even at Tier 10.
+
+### Beam / Special Damage
+
+From 493 powers JSON files across all packs:
+
+| Damage Value | Frequency | Typical Usage |
+|--------------|-----------|---------------|
+| 3.0 | 45 powers | Low-tier beams, debuff-focused attacks |
+| 4.0 | 45 powers | Entry-level beams |
+| 5.0 | 36 powers | Mid-tier energy projection |
+| **7.0** | **71 powers** | **Community standard — most common beam damage** |
+| 8.0 | 30 powers | Heat vision (Kryptonian-class) |
+| 12.0 | 26 powers | Heavy beams, repulsor blasts |
+| 15.0 | 15 powers | Charged beams, top-tier attacks |
+| 20.0 | 8 powers | Ground slams, ultimate abilities |
+
+**Rule of thumb**: If you're implementing a basic energy beam, 7.0 is the safe default. Scale up/down from there based on charge time, cooldown, and character power level.
+
+**Extremes**:
+
+| | Official | Community |
+|---|---|---|
+| **Highest** | Basic beam (various): 7.0 | Firefly charged beam (dcuniverse, T5): 10.0; Superman charged beam (various, T9): 15.0 |
+| **Lowest** | Debuff-only beams: 0.01 | Near-zero debuff beams: 0.001 |
+
+### Ground Slam / AoE Damage
+
+| Example | Pack | Tier | Damage | Radius | Cooldown | Type |
+|---------|------|------|--------|--------|----------|------|
+| Earthquake (generic) | dcuniverse | — | 1.0 | 5.0 | 160 ticks | EXPLOSION |
+| Ambush | casadeheroes | 4 | 15.0 | 3.0 | 40 ticks | EXPLOSION |
+| Wonder Woman | dcuniverse | 8 | 15.0 | 3.0 | 80 ticks | EXPLOSION |
+| Superman | dcuniverse | 9 | 20.0 | 10.0 | 120 ticks | EXPLOSION |
+| Superboy | supermanandlois | 8 | 25.0 | — | — | EXPLOSION |
+
+Ground smash damage doesn't scale strongly with tier — the difference is mostly in radius and cooldown. Community highest is 25.0 (Superboy), official highest is 20.0 (Superman/Bane kryptonian powers).
+
+### Immunities by Tier
+
+Strongest correlation with tier of any stat. From community data:
+
+| Tier Range | Typical Immunities | Count |
+|------------|-------------------|-------|
+| 1–4 | 0–2 types | Minimal. Maybe BULLET for armored characters. |
+| 5–6 | 2–4 types | BULLET + 1-2 elemental (FIRE, COLD). |
+| 7 | 3–5 types | BULLET, FIRE, PROJECTILE + thematic types. |
+| 8 | 4–6 types | Broad elemental + physical. EXPLOSION common. |
+| 9 | 6–8+ types | Near-total. FIRE, COLD, EXPLOSION, BULLET, PROJECTILE, TELEPATHY, MAGIC. |
+| 10 | 8+ types | Everything + custom types (COSMIC, GOD, KRYPTONITE). |
+
+**Most common immunity types** (by frequency across all packs):
+1. EXPLOSION (30+ heroes)
+2. BULLET (25+)
+3. FIRE (20+)
+4. COLD (18+)
+5. TELEPATHY (12+)
+6. SOUND/SCREAM (8+)
+7. MAGIC (6+)
+8. ELECTRICITY (5+)
+
+### Flight Speed
+
+Flight speed is character-specific, **not** tier-correlated. A Tier 9 flyer can be anywhere from 0.07 to 0.3.
+
+| Speed | Boost | Examples | Feel |
+|-------|-------|----------|------|
+| 0.05 | 0.05 | Gliders (Catwoman, Beyond suit) | Barely flight — more like gliding |
+| 0.07 | 0.10 | Aquaman, Cyborg | Slow, deliberate |
+| 0.10 | 0.20 | Martian Manhunter, generic flyers | Standard |
+| 0.14 | 0.24 | Superman (standard) | Fast |
+| 0.15 | 0.30 | Green Lantern | Very fast |
+| 0.21 | 0.28 | Batwing, jet-powered | Quick tech flight |
+| 0.24 | 0.31 | Superman (boosted) | Extremely fast |
+
+Flight speed is set via `controlled_flight` in powers JSON, not `addAttribute`. No `FLIGHT_SPEED` attribute exists.
+
+### Max Health by Tier
+
+| Tier | Typical Addition | Examples |
+|------|-----------------|----------|
+| 1–3 | 0 – 2.0 | Street-level, no extra durability |
+| 4–5 | 2.0 – 6.0 | Flash (+4), Green Arrow (+4) |
+| 6 | 4.0 – 6.0 | Batman (+6), Deathstroke (+4) |
+| 7 | 6.0 – 8.0 | Cyborg (+6), Killer Croc (+8) |
+| 8 | 8.0 – 14.0 | Aquaman (+8), Wonder Woman (+14) |
+| 9 | 8.0 – 16.0 | Martian Manhunter (+8), Superman (+16) |
+| 10 | 20.0+ | God (+20), cosmic entities (+40) |
+
+**Extremes**: Official heroes mostly use +2.0 across the board. Community range: Eren Yeager profile (Miscellaneous, T4): +1 to Amara/The Darkness (DMH, T10): +40.
+
+### Other Attributes by Tier
+
+| Attribute | Low Tier (1–4) | Mid Tier (5–7) | High Tier (8–10) |
+|-----------|---------------|----------------|-----------------|
+| SPRINT_SPEED | 0.05 – 0.1 (×) | 0.1 – 0.3 (×) | 0.15 – 0.8 (×) |
+| JUMP_HEIGHT | 0.5 – 1.0 (+) | 1.0 – 1.5 (+) | 1.5 – 2.0 (+) |
+| FALL_RESISTANCE | 0.0 – 0.5 (+) | 0.5 – 1.0 (+) | 1.0 (+, typical) |
+| KNOCKBACK | 0.0 – 0.3 (+) | 0.3 – 0.5 (+) | 0.5 – 1.0 (+) |
+
+**Extremes**:
+
+| Stat | Official Extreme | Community Extreme |
+|------|-----------------|-------------------|
+| SPRINT_SPEED high | Spodermen (T1): 0.75 | Rhino profile (jmcthp, T7): 2.3 |
+| SPRINT_SPEED low | Arrow + 12 others (T4): 0.1 | Various: 0.1 |
+| JUMP_HEIGHT high | Spodermen (T1): 4.0 | Conquest profile (jmcthp, T9): 40.0 |
+| JUMP_HEIGHT low | Atom, Black Canary (various): 0.5 | Lois Lane (supermanandlois, T1): 0.2 |
+| FALL_RESISTANCE high | Spider-Man PS4/Webb (T7): 13.0 | Ezio profile (Miscellaneous, T2): 10000.0 |
+| FALL_RESISTANCE typical | Most heroes: 1.0 | Most heroes: 1.0 |
+
+Note: FALL_RESISTANCE > 1.0 is valid (it's additive damage reduction, not a cap). Official Spider-Man uses 13.0. Extreme community values come from attribute profiles.
+
+### Worm Hero Pack Tiering Rationale
+
+For reference, how our heroes map to this system:
+
+| Hero | Tier | Punch | Rationale |
+|------|------|-------|-----------|
+| Imp | 2 | 2.0 | Teenager with a knife/axe. Power is stealth, not combat. |
+| Eidolon | 3 | 6.0 | Versatile but not innately durable. Power is flexibility. |
+| Grue | 3 | 3.0 | Street-level fighter with darkness. |
+| Regent | 3 | 3.0 | Scepter-wielding master. Power is control, not strength. |
+| Skitter | 5 | 2.0 | Protected by her costume; the bugs do the damage, not Taylor. |
+| Bitch | 3 | 10.0 | Mounted on a monster dog — the dog hits hard. Scales 5–30 with size. |
+| Alexandria | 9 | 12.0 | Near-invulnerable flying brick. Top-tier durability + strength. |
+| Legend | 9 | 4.0 | Fragile for his tier — power is in lasers and speed, not fists. |
+
+### Key Takeaways
+
+1. **Tier = durability expectation.** A Tier 9 hero should be very hard to kill. A Tier 3 hero should be killable by focused fire.
+2. **Punch damage loosely tracks tier** but varies widely by character concept. A Tier 3 with a giant mech can punch harder than a Tier 7 martial artist.
+3. **7.0 beam damage is the community standard.** Use it as your baseline and adjust from there.
+4. **Immunities scale most reliably with tier.** This is the stat where tier matters most.
+5. **Flight speed is purely thematic.** Set it to match the character, not the tier.
+6. **Tier 10 is inconsistent across packs.** Use Tier 9 for your strongest heroes unless they're truly cosmic.

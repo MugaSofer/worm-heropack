@@ -24,7 +24,7 @@
       "damageProfile": {
         "damage": 0.01,
         "types": {
-          "BLUNT": 1.0
+          "TELEPATHIC": 1.0
         },
         "properties": {
           "EFFECTS": [

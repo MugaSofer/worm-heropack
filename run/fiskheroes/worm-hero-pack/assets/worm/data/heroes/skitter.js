@@ -17,7 +17,7 @@ var SENSE_INTERVAL = 100;  // ticks between scans (5 seconds)
 function init(hero) {
     heroRef = hero;
     hero.setName("Skitter");
-    hero.setTier(3);
+    hero.setTier(5);
 
     hero.setHelmet("Mask");
     hero.setChestplate("Chestpiece");

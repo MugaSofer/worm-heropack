@@ -4,13 +4,28 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 
 **Equip command**: `/suit worm:<hero_name>` (e.g. `/suit worm:alexandria`)
 
+## Characters
+
+| Tier | Name | Team |
+|------|------|------|
+| 9 | Alexandria | The Triumvirate |
+| 9 | Legend | The Triumvirate |
+| 5 | Skitter | The Undersiders |
+| 3 | Eidolon | The Triumvirate |
+| 3 | Grue | The Undersiders |
+| 3 | Bitch | The Undersiders |
+| 2 | Regent | The Undersiders |
+| 2 | Imp | The Undersiders |
+
 ---
 
-## Alexandria
+## The Triumvirate
+
+### Alexandria
 
 **Tier 9** | The Triumvirate's bruiser. Near-total invulnerability, super strength, flight, and a combat thinker ability.
 
-### Keybinds
+#### Keybinds
 
 | Key | Ability | Description |
 |-----|---------|-------------|
@@ -20,15 +35,15 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 4 | Kick / Stop Kick | Roundhouse kick. Locks movement briefly, hits the nearest target in front of you for heavy damage. |
 | 5 | Flight / Boost | Hold to fly. Sprint while flying to boost. |
 
-### Passive Abilities
+#### Passive Abilities
 
-- **Near-total invulnerability** — Immune to bullets, projectiles, fire, explosions, poison, blunt, sharp, energy, electricity, and cold damage.
+- **Near-total invulnerability** — Immune to every kind of physical damage we could find, as well as telepathy. (But not magic or cosmic power.)
 - **Super strength** — 12 punch damage with heavy knockback. Mobs get launched.
 - **Enhanced mobility** — High sprint speed, enhanced jump, full fall resistance.
 - **Arrow catching** — Snatches projectiles out of the air if you're looking in their direction.
-- **Superhero landing** — Land from a high fall or flight boost dive for a shockwave that damages nearby enemies.
+- **Superhero landing** — Land from a high fall to land dramatically, or flight boost dive for a shockwave that damages nearby enemies.
 
-### Notes
+#### Notes
 
 - Flight collisions damage entities but don't stop you or hurt you from blocks.
 - Boost dive into the ground for maximum landing shockwave damage.
@@ -36,11 +51,11 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 
 ---
 
-## Legend
+### Legend
 
 **Tier 9** | The Triumvirate's flying artillery. The fastest flyer in the pack, with a modular laser system offering 25 unique combinations.
 
-### Keybinds
+#### Keybinds
 
 | Key | Ability | Description |
 |-----|---------|-------------|
@@ -50,7 +65,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 4 | Bombardment / Super Boost | Hold to channel bombardment, right-click to fire. While flying at boost speed, activates super boost (energy form). |
 | 5 | Relativistic (Teleport) | While in energy form (super boost), teleport to target location. Can reach the moon. Range 4096. |
 
-### Laser Methods
+#### Laser Methods
 
 | Method | Charge | Duration | Cooldown | Range | Radius | Behaviour |
 |--------|--------|----------|----------|-------|--------|-----------|
@@ -60,7 +75,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | **Invisible** | 0.25s | 2s | 0.5s | 48 | 0.3 | Same as Basic but no visible beam. Stealth kills. |
 | **Swarm** | 0.4s | 1.25s | 1s | 36 | 4.0 | Multiple zig-zagging beams. Medium everything. |
 
-### Laser Effects
+#### Laser Effects
 
 | Effect | Damage | Special |
 |--------|--------|---------|
@@ -70,7 +85,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | **Cold** | 4 cold | Applies Slowness VIII for 15 seconds. Near-total immobilization. |
 | **Disintegration** | 20 energy/explosion | Highest damage. Burns, cooks, destroys terrain. |
 
-### Bombardment (Key 4)
+#### Bombardment (Key 4)
 
 Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, hands glow blue. Right-click a distant block to fire a ground slam at that location plus a beam burst. The ground slam is the main damage dealer and destroys terrain. The active laser effect (key 2) determines damage type.
 
@@ -87,14 +102,14 @@ Hold key 4 to enter bombardment mode — arms extend forward tracking your aim, 
 - **Cooldown**: 3 seconds
 - **Visual feedback**: Hand glow dims during cooldown, fills back up when ready
 
-### Passive Abilities
+#### Passive Abilities
 
 - **Fastest flight** — Base speed 0.14, boost 0.28, super boost available. Barrel rolls.
 - **Durability** — 50% resistance to blunt and sharp damage. Fire and projectile immunity.
 - **Night vision** — Always active (disabled on the moon to avoid visual glitches).
 - **Space breathing** — Can breathe in space.
 
-### Energy Form (Super Boost)
+#### Energy Form (Super Boost)
 
 Sprint while flying at boost speed to enter energy form. While active:
 - **Blue-white glow** envelops your body, intensifying with speed.
@@ -105,7 +120,7 @@ Sprint while flying at boost speed to enter energy form. While active:
 
 Note: Bombardment keybind (Key 4) becomes super boost activation while flying at high speed.
 
-### Notes
+#### Notes
 
 - Mix methods and effects for 25 combinations (5 x 5). Experiment to find your favourites.
 - Staccato + Concussive is great for juggling targets. AoE + Cold locks down groups. Invisible + Disintegration for silent devastation.
@@ -115,11 +130,11 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 
 ---
 
-## Eidolon
+### Eidolon
 
 **Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 14 abilities. The most versatile hero in the pack.
 
-### Keybinds
+#### Keybinds
 
 | Key | Ability | Description |
 |-----|---------|-------------|
@@ -129,7 +144,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | 4 | Slot 1 Ability | Activates the current Slot 1 power (see below). |
 | 5 | Slot 2 Ability | Activates the current Slot 2 power (see below). |
 
-### Slot 1 — Active (Key 1 to change, Key 4 to use)
+#### Slot 1 — Active (Key 1 to change, Key 4 to use)
 
 | Power | Key 4 Abilities | Passives | Flight? |
 |-------|----------------|----------|---------|
@@ -138,7 +153,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Lightning Storm** | Lightning Storm (16 energy damage beam, range 30) | Electric aura (1 electricity/tick, 2 block range), lightning flicker trail | Yes |
 | **Conjuration** | Conjure Tech — opens equipment wheel: Freeze Grenade (24 cold/explosion), Grenade (30 explosion, radius 10), Smoke Pellet | — | No |
 
-### Slot 2 — Active (Key 2 to change, Key 5 to use)
+#### Slot 2 — Active (Key 2 to change, Key 5 to use)
 
 | Power | Key 5 Abilities | Passives | Flight? |
 |-------|----------------|----------|---------|
@@ -147,7 +162,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Bubble** | Bubble (hold to block — 360-degree energy shield, 400 HP, regenerates 10/tick, deals 1 blunt/tick to entities inside) | — | No |
 | **Illusions** | Illusion Menu — opens spell wheel: Duplication (5 decoy clones), Blindness (24 block range, 20 second duration) | — | No |
 
-### Slot 3 — Passive (Key 3)
+#### Slot 3 — Passive (Key 3)
 
 | Power | Effect | Flight? |
 |-------|--------|---------|
@@ -157,7 +172,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise), can breathe in space & underwater. | Yes |
 | **Flicker Regen** | Rapid healing factor (20 tick delay). Sharp white flash visual when healing. | No |
 
-### Energy Absorption Details
+#### Energy Absorption Details
 
 Energy Absorption has a unique charge mechanic:
 1. Select Energy Absorption (Slot 1, index 1).
@@ -167,7 +182,7 @@ Energy Absorption has a unique charge mechanic:
 5. While charged, you also gain explosion immunity and 75% energy damage resistance.
 6. Charge resets to zero if you switch away from Energy Absorption.
 
-### Base Stats
+#### Base Stats
 
 | Stat | Value |
 |------|-------|
@@ -176,7 +191,7 @@ Energy Absorption has a unique charge mechanic:
 | Sprint speed | +20% |
 | Jump height | +0.5 |
 
-### Flight Summary
+#### Flight Summary
 
 Flight is available when any of these are active:
 - Slot 1: Gravity Control or Lightning Storm
@@ -185,7 +200,7 @@ Flight is available when any of these are active:
 
 Flight speed: 0.1 base, 0.2 boost. Slower than Legend or Alexandria.
 
-### Notes
+#### Notes
 
 - The three slots are fully independent — mix and match any combination.
 - Eidolon is deliberately lower tier than Alexandria/Legend. His strength comes from versatility, not innate durability.
@@ -193,6 +208,231 @@ Flight speed: 0.1 base, 0.2 boost. Slower than Legend or Alexandria.
 - Intangibility forces flight on every tick. You cannot disable flight while intangible.
 - Energy Form's contact damage affects all living entities within 3 blocks every tick. Don't stand near allies.
 - Arrow catching is only available via Chronokinesis (Slot 2), and only while Slow Time is active.
+
+---
+
+## The Undersiders
+
+### Grue
+
+**Tier 3** | The Undersiders' leader. Generates clouds of pure darkness that blind everyone inside — except him.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Darkness Flood | Hold to charge, release to deploy a shadowdome — a sphere of pure black darkness (radius 20, lasts 30 seconds). |
+| 2 | Blinding Blast | Fire a short-range darkness beam that blinds targets (Blindness II for 3.5 seconds). Requires empty hand. |
+| 3 | Darkness Aura | Toggle a shroud of darkness around your body. Black overlay + dark particles. |
+| 4 | Kick / Stop Kick | Roundhouse kick. Roots you in place, hits the nearest visible target in front for 8 blunt damage. |
+
+#### Passive Abilities
+
+- **Night vision** — Activates when your shadowdome is deployed, letting you see through your own darkness. Dims at night to avoid over-brightening.
+- **Moderate stats** — 3 punch damage, enhanced sprint speed (+10%), jump height +0.5, fall resistance.
+
+#### Notes
+
+- The shadowdome is opaque from outside — enemies inside are completely blind. You can see normally thanks to night vision.
+- Blinding Blast is disabled while holding an item (shows greyed-out keybind).
+- During shadowdome charging, all other keybinds are locked out.
+- Darkness Aura is purely visual — a cosmetic toggle for the menacing look.
+
+---
+
+### Imp
+
+**Tier 2** | The Undersiders' infiltrator. Invisible by default — people literally forget she exists. Only becomes visible when she chooses to reveal herself or attacks.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Reveal Self | Toggle visibility. Press to fade visible, press again to fade back to invisible. |
+| V | Mask Toggle | Built-in mask on/off (with cowl removal animation). |
+
+#### Passive Abilities
+
+- **Default invisibility** — Invisible when wearing the full suit. This is always-on stealth, not an activated power.
+- **Punch breaks stealth** — Attacking briefly reveals Imp, then she fades back to invisible.
+- **Slight speed** — +5% sprint speed, full fall resistance.
+- **Low combat stats** — 2 punch damage (she's a teenager with a knife, not a bruiser).
+
+#### Costume System
+
+- **Full suit**: Body/skin base with costume overlaid on top. Invisibility active.
+- **Partial suit**: Costume texture shows directly on equipped pieces. No invisibility.
+- **Mask toggle**: Removes the demon mask with a smooth cowl animation, showing Aisha's face underneath.
+
+#### Notes
+
+- Imp's invisibility only works with the full suit equipped. Individual pieces are always visible.
+- The "Reveal Self" keybind uses the heat vision system internally but fires an invisible zero-damage beam — it's purely a visibility toggle.
+- Opacity smoothly transitions between invisible and visible states.
+
+---
+
+### Regent
+
+**Tier 2** | The Undersiders' master. Controls people's bodies through their nervous system — subtle at first, devastating once he has full control.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Nerve Attack | Invisible beam that disrupts the target's nervous system. Applies Nausea IV, Slowness VI, and Weakness VI for 1 second. |
+| 2 | Body Control | Telekinetic grab — seize a mob and puppeteer it. Builds control over repeated grabs. |
+
+#### Body Control Mechanic
+
+Regent's signature ability works through a **control buildup** system:
+
+1. **Grab a mob** (Key 2) — telekinetic hold, range 12 blocks. Mobs only (no items, projectiles, or players).
+2. **Control builds** while holding — each tick adds ~0.14% control. The HUD charge bar shows progress.
+3. **Grab duration limited** — before full control, each grab lasts max 3 seconds, then drops with a 2-second cooldown.
+4. **Repeat grabs** — control persists between grabs (tracked per entity UUID). ~12 grabs to reach full control.
+5. **Full control** — once the bar is full, grab duration becomes unlimited. The target is your puppet.
+
+##### Anti-Lift Safety
+
+If a grabbed entity is lifted more than 1 block off the ground, the grab auto-releases with a cooldown. Regent controls bodies, he doesn't levitate them.
+
+#### Passive Abilities
+
+- **Slim build** — Uses Alex (slim) arm models for a more accurate character silhouette.
+- **Moderate stats** — 3 punch damage, +5% sprint speed, fall resistance.
+
+#### Notes
+
+- Nerve Attack and Body Control are mutually exclusive — can't use both simultaneously.
+- Nerve Attack is invisible (no beam visual). The target just starts stumbling.
+- The control charge bar only appears while actively grabbing a target.
+- Control buildup persists per entity across sessions — once you've worked on controlling a mob, progress is saved.
+
+---
+
+### Skitter
+
+**Tier 5** | The Undersiders' field commander. Controls a vast swarm of insects — summoning, directing, and sensing through them.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Summon Swarm | Hold to charge — fills the swarm density bar. The longer you hold, the denser the swarm. |
+| 2 | Direct Swarm | Hold to direct your swarm at a target (beam attack). + Sneak to dismiss swarm. At low density: Dismiss Swarm (Sneak). |
+| 3 | Cycle Method | Toggle between Targeted (beam at one enemy) and Entire Area (AoE damage to everything in range). |
+| 4 | Cycle Effect | Toggle between Biting (piercing/sharp damage) and Stinging (piercing + Wither poison). |
+| 5 | Swarm Sense | Toggle — sense nearby entities through your swarm. |
+
+#### Swarm Density
+
+The core mechanic is the **swarm density bar** (HUD charge bar):
+
+| Density | Capabilities |
+|---------|-------------|
+| **0%** | No swarm. Only Summon available. |
+| **>5%** | Diffuse insects visible in wide area. Swarm Sense and Dismiss available. |
+| **>25%** | Dense cloud forms around you. Attack keybinds unlock (Direct Swarm, Method, Effect). |
+| **>50%** | Thicker cloud, more particle types. |
+| **>75%** | Maximum density — tight swarm of bugs, smoke, and debris around you. |
+
+#### Attack Methods
+
+**Targeted** (Method 0): Hold Key 2 to direct your swarm at a single target. Drains density slowly while firing.
+
+**Entire Area** (Method 1): Damages all living entities within 100 blocks. Flat drain per tick. No aiming needed.
+
+#### Attack Effects
+
+| Effect | Targeted (Beam) | AoE | Special |
+|--------|-----------------|-----|---------|
+| **Biting** | 3 piercing/sharp | 1 piercing/sharp | — |
+| **Stinging** | 3 piercing + Wither | 1 piercing | Wither I (3s) on beam; Wither I + Weakness II on AoE |
+
+#### Swarm Sense
+
+Toggle on Key 5 (requires active swarm). Provides:
+
+- **Night vision** — see clearly in darkness.
+- **Entity detection** — every 5 seconds, scans for living entities within swarm radius (100 blocks). Reports the 5 highest-threat targets (nearby + high HP ranked first) with name, distance, and relative direction.
+- **Visual pulses** — wandering forcefield pulses expand outward around you, with a sonar ring sweep. Represents the swarm's spatial awareness.
+- **Chat readout** — `[Swarm Sense] Zombie 3m left, Skeleton 12m ahead, ...`
+
+#### Swarm Particles
+
+Particles scale inversely with density — at low levels, sparse insects spread across a wide area. As density builds, they concentrate into a tight cloud around Skitter:
+
+- **>5%**: Sparse depth particles and dust across 100-block radius
+- **>25%**: Mid-range insects (14-16 blocks), small smoke, debris fragments
+- **>50%**: Closer cloud (12 blocks), shadow smoke, more debris
+- **>75%**: Dense swarm (6-8 blocks) — thick reddust, smoke, and suspended particles tight around you
+
+#### Passive Abilities
+
+- **Slim build** — Uses Alex (slim) arm models.
+- **Moderate stats** — 2 punch damage, +5% sprint speed, fall resistance.
+
+#### Notes
+
+- Attacks are gated at 25% density. Below that, you can only summon, sense, and dismiss.
+- To dismiss the swarm, sneak while holding Keybind 2 (Direct Swarm).
+- Swarm Sense only works with an active swarm (density > 1%).
+- The swarm beam and impact are invisible — damage comes from bugs, not lasers.
+
+---
+
+### Bitch
+
+**Tier 3** | Rachel Lindt. Rides a monstrous mutant dog that she can grow and shrink at will. The suit transforms you into a dog-mounted rider with a companion hound.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Call / Mount Dog | Toggle mount/dismount. Dismounting reveals Rachel on foot with a companion dog following. |
+| 2 | Grow Dog | Increase dog size by 0.25 (max 3.0). Scales up speed, damage, knockback, and step height. |
+| 3 | Shrink Dog | Decrease dog size by 0.25 (min 0.5). |
+| 4 | Crouch Leap | Toggle crouch stance. Hold still to charge (HUD circle fills over 3 seconds), then move to leap with massive jump height and speed burst. |
+
+#### Dog Size Scaling
+
+The monster dog's stats scale with size (default 1.75):
+
+| Size | Punch Damage | Sprint Speed | Step Height | Jump |
+|------|-------------|-------------|-------------|------|
+| 0.5 (min) | 5 | Slow | 0.25 | 0.5 |
+| 1.0 | 10 | Normal | 0.5 | 1.0 |
+| 1.75 (default) | 17.5 | Fast | 0.875 | 1.75 |
+| 3.0 (max) | 30 | Very fast | 1.5 | 3.0 |
+
+Speed scales as `(size^1.5 - 1) * 0.5` — exponential growth makes large dogs devastatingly fast.
+
+#### Crouch Leap
+
+1. Press Key 4 to enter crouch stance — the dog lowers, legs splay outward.
+2. Stand still while the charge circle fills (3 seconds to full).
+3. Move in any direction — if fully charged, you get a massive jump boost (10 jump height) and speed burst (2x base, 2x sprint).
+4. The leap fires on first movement after full charge. Moving before full charge cancels the crouch.
+5. Auto-cancels if airborne for more than 3 ticks (prevents hovering).
+
+#### Mount / Dismount
+
+- **Mounted** (default): You ride the monster dog. The player model is replaced with a custom 3D dog (body + 4 animated legs) with Rachel sitting on top (torso, head with look-tracking, swinging arms). Walk animation drives both dog legs and Rachel's arms.
+- **Dismounted**: Rachel appears as a normal player with her skin. A companion dog follows on a tentacle leash. Dog size/grow/shrink/leap keybinds are hidden.
+
+#### Passive Abilities
+
+- **Massive stats** — 10 base punch damage, high knockback, +30% sprint speed, +1 jump height, full fall resistance, +20 max health, 0.5 step height. All scale with dog size.
+- **1.75x default scale** — The hitbox is 75% larger than a normal player to match the dog model.
+
+#### Notes
+
+- The dog model is split into 5 pieces (body + 4 legs) animated independently with sine-wave walk cycles. Legs splay during crouch.
+- Rachel's rider model is split into 4 pieces (torso, head, right arm, left arm) to allow independent head tracking and arm swing.
+- All models use `ignoreAnchor(true)` for position independence from the player skeleton.
+- Dog size animates smoothly (0.05/tick) rather than snapping — growing/shrinking is visually gradual.
+- The companion dog (dismounted) uses the tentacle system with a custom walk animation synced to movement speed.
 
 ---
 

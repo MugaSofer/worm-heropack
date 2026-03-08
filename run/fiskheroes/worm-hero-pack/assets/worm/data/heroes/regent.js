@@ -18,7 +18,7 @@ var controlMap = {};
 
 function init(hero) {
     hero.setName("Regent");
-    hero.setTier(3);
+    hero.setTier(2);
 
     hero.setHelmet("Mask & Crown");
     hero.setChestplate("Shirt");

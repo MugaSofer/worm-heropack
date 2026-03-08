@@ -1,7 +1,7 @@
 
 #Phase 1 - DONE (for now)
 
-Alexandria
+Alexandria - DONE (needs polish)
 
 - Two-handed super blow - DONE
 	- TODO: BUGFIX: no sound effect
@@ -89,18 +89,12 @@ Imp - DONE
 
 Skitter
 
-- Swarm AoE
-- Bug particles.
-- Swarm gain/loss mechanic?
+- Swarm gain/loss mechanic? - DONE (MVP)
 - Knife, pepper spray, gun (as items?)
-- Tricks: spells
+- Tricks: spells?
 	- Swarm decoys
 	- Blinding
 	- Capsaicin Wasps (reskinned whip)?
-- Swarm sense - toggle
-	- Ideally highlight every creature in area w/ white glow (for her only)
-	- Copy from Daredevil?
-	- night vision but B&W?
 - Sentry Mode for swarm clones? Just spawns a swarm? Can this be done without losing the suit?
 - Spider-man webs? Only for Weaver?
 	- sticky web?
@@ -124,10 +118,10 @@ Regent - DONE (MVP, needs polish)
 
 Bitch - DONE (MVP, needs polish)
 
-- Dog companion: Minecraft dog model & animations? attatched to an invisible tentacle a la grogu - DONE
+- Dog companion - DONE
  - Add attack (tentacle strike)
  - Add warning (dog barks if enemies nearby)
-- Dog transformation: Animation shows dog grow, turn red, gain bone spikes, & Bitch hops on their back. Becomes a single character model with high HP, strength, etc. - DONE
+- Dog transformation- DONE
 	- Cleanup available powers
 	- Dog grows spikes
 	- Add full transform/dismount animation
@@ -135,7 +129,7 @@ Bitch - DONE (MVP, needs polish)
 
 Optional: Brutus
 
-- normal Minecraft Dog
+- normal dog
 - can grow *but only with Bitch around*, and/or *Bitch has a power that makes him grow*. (Investigation suggests this should be possible.)
 
 GENERAL:
@@ -153,6 +147,9 @@ Parian
 - Needles - TK? Projectile? Tentacles? 
 
 Foil
+- Toggle Sting
+	- Pin - slow debuff
+	- Kill - scale damage by target durability (person looked at?)
 - Massively increased arrow damage
 - Shurikens?
 - Dodge? Auto-dodge?
@@ -163,6 +160,7 @@ Foil
 #Phase X - WARDS
 
 Flechette
+- Sting (see above)
 - Massively increased arrow damage
 - Shurikens?
 - Dodge? Auto-dodge?
@@ -191,6 +189,7 @@ Shadow Stalker
 			- Weakness to poison & electricity
 	- Martial arts
 		- Kick
+- Crossbow
 
 Kid Win
 	- Hoverboard
@@ -264,6 +263,23 @@ Armsmaster
 - Halberd - weapon?
 - Combat engine - auto-dodge?
 - Immune to telepathy
+- Key 1 - gadget select 
+ - Visor, halberd head/shaft/base?
+ - individual gadgets?
+- Key 2 - gadget setting (on/off etc.)
+ - Halberd head:
+  - Axe
+  - plasma torch
+ - Halberd shaft
+  - Sonar
+ - Halberd Base
+  - Bugzapper - AoE, scales with nearby metal, reduces Skitter's swarm
+- Visor
+ - Night vision?
+ - Combat Algorithm - auto-dodge vs single enemy
+- Key 3 - halberd head 
+- Key 4 - halberd bottom
+- Key 5 - acrobatics?
 
 Miss Militia
 - Every primary weapon option
@@ -272,7 +288,7 @@ Miss Militia
 Velocity
 - Standard speedster
 - Melee damage & knockback inversely proportional to speedster levels (min 0)
-- Super-speed attack - similar to Invincible? V. low damage, but normal knockback.
+- Super-speed attack - similar to Invincible? AoE w/after-images? V. low damage, but normal knockback.
 
 Dauntless
 - shield
@@ -287,7 +303,7 @@ Dragon
 - As Iron Man, but with growth, wings, etc.
 
 Narwhal
-- Forcefields, TK, flight
+- Forcefields, TK, flight, maybe tentacle-spikes a la Magneto
 - Crystalline visuals on everything
 - Horn
 
@@ -303,6 +319,8 @@ Custodian
 
 Number Man/Harbinger
 - Dodge, but not auto
+- Math-y info (HP %, exact XYZ, etc)
+- Math-y visuals in FP (enchantment particles, maybe string/web particles)
 
 Doctor Mother
 - Iconic item - Cauldron vial? Function?
@@ -375,10 +393,48 @@ Labyrinth
 Scrub
 - Constant AoE, can make it more intense
 
+#Phase X - ENDBRINGERS
+
+Behemoth
+- Big, strong, tough
+- Kill Aura toggle
+- Energy redirect - various effects depending on damage taken?
+- Can switch through various attack options
+
+Leviathan
+- Personal weapon - stack of water blocks?
+- Tail
+- Water aura visuals
+- Super-speed that's faster underwater
+- Super-fast strikes? Can whip water at people?
+- Tidal wave?
+
+Simurgh
+- Flight, TK
+- Halo - tentacles, unlocks tinker weapon options. Toggle between tinkertech and debris? Takes time to build up?
+- auto-dodge
+- toggle scream - telepathy-type damage? Building debuff?
+
+Khonsu
+- Teleport, slow time, some kind of TK cylinder grab
+
+Tohu
+- Eidolon ripoff
+
+Bohu
+- Grow giant, some kind of AoE
+- Can place blocks at range
+
 #Phase X - MISC.
+
+Scion
+- Tier 10
+- golden beam with various options - normal, ignore durability, clap, Legend-esque bombardment but much more powerful
+- ~instant regen
 
 Purity
 - Pretty much just a worse Legend with a glow transformation
 
 Animos
 - Copy off Hatchet Face
+
