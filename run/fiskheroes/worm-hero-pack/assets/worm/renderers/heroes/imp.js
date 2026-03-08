@@ -39,7 +39,7 @@ function initAnimations(renderer) {
 function initEffects(renderer) {
     // Costume overlay — renders costume texture on top of body base
     costumeOverlay = renderer.createEffect("fiskheroes:overlay");
-    costumeOverlay.texture.set(null, "costume");
+    costumeOverlay.texture.set("costume", null);
 
     // Opacity: invisible when full suit, normal when partial
     // Three visibility sources: reveal keybind, punching, electronic detection
@@ -66,7 +66,7 @@ function render(entity, renderLayer, isFirstPersonArm) {
         var maskOff = entity.is("DISPLAY") && entity.as("DISPLAY").isStatic()
             ? entity.getData("fiskheroes:mask_open")
             : entity.getData("fiskheroes:mask_open_timer2") > 0.35;
-        costumeOverlay.texture.set(null, maskOff ? "costume_nomask" : "costume");
+        costumeOverlay.texture.set(maskOff ? "costume_nomask" : "costume", null);
         costumeOverlay.render();
     }
 }
