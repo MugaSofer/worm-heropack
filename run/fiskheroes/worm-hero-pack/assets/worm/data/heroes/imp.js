@@ -1,12 +1,8 @@
 var mc = implement("worm:external/mind_control");
 
 // Electronic vision detection config
-var SCAN_INTERVAL = 5;         // ticks between scans (0.25s)
 var SCAN_RANGE = 32;           // blocks
-var SCAN_ANGLE = 45;           // degrees — electronic FOV cone for detection
-
-var scanCounter = 0;
-var robotDetected = {};        // UUID -> boolean
+var SCAN_ANGLE = 65;           // degrees — electronic FOV cone for detection
 
 function scanForElectronicVision(entity) {
     var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SCAN_RANGE);
@@ -57,18 +53,10 @@ function init(hero) {
     hero.setTickHandler(function (entity, manager) {
         var revealing = entity.getData("fiskheroes:heat_vision");
         var punching = entity.isPunching();
-        var uuid = entity.getUUID();
-
-        // Throttled scan for electronic vision looking at Imp
-        scanCounter++;
-        if (scanCounter >= SCAN_INTERVAL) {
-            scanCounter = 0;
-            robotDetected[uuid] = !revealing && scanForElectronicVision(entity);
-        }
-        var detected = robotDetected[uuid] || false;
+        var detected = !revealing && scanForElectronicVision(entity);
 
         // Smooth fade for detection (3-tick transition)
-        manager.incrementData(entity, "worm:dyn/imp_visible_timer", 3, detected);
+        manager.incrementData(entity, "worm:dyn/imp_visible_timer", 1, detected);
 
         // Invisible unless revealing, punching, or detected
         manager.setDataWithNotify(entity, "fiskheroes:invisible", !revealing && !punching && !detected);
