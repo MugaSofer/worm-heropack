@@ -91,6 +91,14 @@ function init(hero) {
             "BLUNT": 1.0
         }
     });
+    hero.addDamageProfile("HEADACHE", {
+        "types": {
+            "BLUNT": 1.0
+        },
+        "properties": {
+            "ADD_KNOCKBACK": -0.2
+        }
+    });
     hero.setDamageProfile(getDamageProfile);
 
     var heroRef = hero;
@@ -118,7 +126,7 @@ function init(hero) {
                 damageTimer++;
                 if (damageTimer >= DAMAGE_INTERVAL) {
                     damageTimer = 0;
-                    entity.hurtByAttacker(heroRef, "PUNCH", "%s thought too hard", 1.0, entity);
+                    entity.hurtByAttacker(heroRef, "HEADACHE", "%s thought too hard", 1.0, entity);
                 }
             } else {
                 damageTimer = 0;
