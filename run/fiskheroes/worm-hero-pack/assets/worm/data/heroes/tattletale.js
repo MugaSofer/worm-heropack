@@ -92,6 +92,15 @@ function init(hero) {
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);
 
     hero.addKeyBind("ANALYZE", "Analyze", 1);
+    hero.addKeyBind("AIM", "Aim", -1);
+
+    hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", false);
+    hero.setHasPermission(function (entity, permission) {
+        return permission == "USE_GUN";
+    });
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getHeldItem().name() == "fisktag:weapon";
+    });
 
     hero.addDamageProfile("PUNCH", {
         "types": {
