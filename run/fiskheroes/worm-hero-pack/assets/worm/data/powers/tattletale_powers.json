@@ -1,0 +1,22 @@
+{
+  "name": "Thinker Power",
+  "modifiers": {
+    "fiskheroes:transformation|thinker": {
+      "key": "ANALYZE",
+      "transformation": {
+        "toggleData": "worm:dyn/tt_active",
+        "timerData": "worm:dyn/tt_active_timer",
+        "time": 5
+      },
+      "isToggle": true
+    }
+  },
+  "hud": [
+    {
+      "type": "CIRCLE",
+      "color": "0xCC3333",
+      "data": "worm:dyn/tt_headache",
+      "condition": "worm:dyn/tt_active"
+    }
+  ]
+}

@@ -2087,6 +2087,42 @@ item.nbt()                   // NBT data access
 item.nbt().getString("HeroType")  // Read hero ID from suit
 ```
 
+### NBT Persistence (Storing Data on Armor Items)
+Data vars reset when the suit is removed. For data that must **persist across restarts** (XP, tracked targets, unlock states), write directly to the armor item's NBT compound tag. Changes are saved automatically with the item.
+
+**Reading NBT:**
+```javascript
+var nbt = entity.getWornChestplate().nbt();
+nbt.getString("myKey")          // String
+nbt.getByte("myKey")            // Byte (0-255)
+nbt.getInteger("myKey")         // Integer
+nbt.getBoolean("myKey")         // Boolean
+nbt.hasKey("myKey")             // Check existence
+nbt.getCompoundTag("nested")    // Sub-compound
+nbt.getTagList("myList")        // Tag list
+```
+
+**Writing NBT (requires manager):**
+```javascript
+var nbt = entity.getWornChestplate().nbt();
+manager.setByte(nbt, "level", 5);
+manager.setString(nbt, "targetUUID", "abc-123-...");
+manager.setCompoundTag(nbt, "display", manager.newCompoundTag("{Lore:[\"Line 1\"]}"));
+manager.setTagList(nbt, "items", manager.newTagList("[{Index:0}]"));
+manager.appendTag(tagList, newElement);  // Add to existing list
+```
+
+**Pattern — persistent per-target tracking:**
+```javascript
+// Store a target UUID on the chestplate
+var nbt = entity.getWornChestplate().nbt();
+manager.setString(nbt, "analyzed_target", target.getUUID());
+// Read it back later (survives restarts)
+var savedUUID = nbt.getString("analyzed_target");
+```
+
+Reference: TMF (Ben 10) pack uses `manager.setByte(nbt, alienId, level)` for per-alien XP that persists across sessions.
+
 ### Vector3 (JSVector3)
 ```javascript
 vec.x() / vec.y() / vec.z()

@@ -74,6 +74,9 @@
     "swarm_density": {"type": "FLOAT", "resetWithoutSuit": true},
     "swarm_density_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "swarm_sense": {"type": "BOOLEAN", "resetWithoutSuit": true},
-    "swarm_sense_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
+    "swarm_sense_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "tt_active": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "tt_active_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "tt_headache": {"type": "FLOAT_INTERP", "resetWithoutSuit": true}
   }
 }
