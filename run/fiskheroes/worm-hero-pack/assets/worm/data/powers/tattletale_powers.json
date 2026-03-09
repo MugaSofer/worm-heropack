@@ -16,7 +16,7 @@
       "type": "CIRCLE",
       "color": "0xCC3333",
       "data": "worm:dyn/tt_headache",
-      "condition": "worm:dyn/tt_active"
+      "condition": "worm:dyn/tt_headache"
     }
   ]
 }
