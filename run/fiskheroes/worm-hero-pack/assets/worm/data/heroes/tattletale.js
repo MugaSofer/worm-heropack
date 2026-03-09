@@ -93,6 +93,8 @@ function init(hero) {
     });
     hero.setDamageProfile(getDamageProfile);
 
+    var heroRef = hero;
+
     hero.setTickHandler(function (entity, manager) {
         var active = entity.getData("worm:dyn/tt_active");
 
@@ -116,9 +118,7 @@ function init(hero) {
                 damageTimer++;
                 if (damageTimer >= DAMAGE_INTERVAL) {
                     damageTimer = 0;
-                    try {
-                        entity.hurtByAttacker(null, null, null, 1.0, null);
-                    } catch (e) {}
+                    entity.hurtByAttacker(heroRef, "PUNCH", "%s thought too hard", 1.0, entity);
                 }
             } else {
                 damageTimer = 0;
