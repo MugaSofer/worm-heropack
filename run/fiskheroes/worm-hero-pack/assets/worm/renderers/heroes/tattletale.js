@@ -3,6 +3,10 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:tattletale_layer1_noarms",
     "layer2": "worm:tattletale_layer1_noarms",
+    "helmet": "worm:tattletale_helmet",
+    "chest": "worm:tattletale_chest",
+    "leggings": "worm:tattletale_leggings",
+    "boots": "worm:tattletale_boots",
     "arm_tex": "worm:tattletale_layer1"
 });
 
@@ -11,6 +15,13 @@ var alexArmL;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initEffects(renderer) {
