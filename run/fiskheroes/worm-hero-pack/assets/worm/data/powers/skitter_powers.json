@@ -1,5 +1,5 @@
 {
-  "name": "Swarm Control",
+  "name": "Bug Control",
   "modifiers": {
     "fiskheroes:charged_beam|swarm": {
       "damageProfile": {

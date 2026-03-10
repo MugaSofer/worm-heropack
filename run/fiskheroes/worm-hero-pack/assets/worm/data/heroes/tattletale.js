@@ -10,7 +10,40 @@ var DAMAGE_INTERVAL = 40;     // ticks between damage ticks above threshold
 
 var scanTimer = 0;
 var damageTimer = 0;
-var lastScanMsg = "";
+var healthCache = {};  // UUID → last health% (session dedup for repeat scans)
+
+// Easter egg insights for known heroes (keyed on hero ID after ":")
+var INSIGHTS = {
+    // Worm
+    "alexandria": "Invulnerable. Flight. Enhanced cognition. But still needs to breathe...",
+    "legend": "Flight, enhanced vision, lasers can bend mid-flight. But he still needs to see you to target you.",
+    "eidolon": "Powers shifting... can't get a read on them. But he's hiding something.",
+    "regent": "Pupil dilation suggests sociopathy.",
+    "grue": "Darkness generation; muffles sound, light: inhibits radiation, microwaves, radio frequencies...",
+    "imp": "It's Imp. Remember Imp?",
+    "bitch": "Controls dogs. They grow. A lot. Don\u2019t threaten the dogs.",
+    "skitter": "Bug control. Thousands at once, perfect multitasking. Considering betraying you, but won't.",
+    "tattletale": "...That\u2019s you.",
+    // DC
+    "batman": "No powers. Contingency files on every ally. Paranoia is the power \u2014 and the weakness.",
+    "superman": "Solar-powered. Kryptonite, magic bypasses his defenses entirely. Holds back \u2014 always.",
+    "flash": "Speed Force. Vibrates through solid matter. Emotional instability at high speeds.",
+    "wonder_woman": "Demigod. Millennia of combat experience. Susceptible to piercing. Lasso forces truth - avoid.",
+    "aquaman": "Atlantean. Dehydration weakens him. Everyone underestimates him \u2014 that's his real advantage.",
+    "green_arrow": "No powers. Trick arrows. Predictable moral code makes him easy to manipulate.",
+    "arrow": "No powers. Trick arrows. Predictable moral code makes him easy to manipulate.",
+    "chronos": "Assassin. Mind controlled. Access to temporal manipulation tech - separate them.",
+    "daredevil": "Blind. Radar sense compensates. Overwhelm with loud noise or strong chemicals.",
+    // Marvel
+    "spider_man": "Precognitive danger sense \u2014 can't be ambushed. Guilt complex makes him predictable.",
+    "iron_man": "Arc reactor dependency. Suit is vulnerable to EMP. Ego is the real weak point.",
+    "hulk": "No strength ceiling. Angrier = stronger. Banner's still in there \u2014 appeal to him.",
+    "captain_america": "Peak human. Vibranium shield absorbs all kinetic energy. Won't compromise \u2014 predictable.",
+    "thor": "Asgardian. Weather manipulation. Power is internal now, not the hammer.",
+    "black_panther": "Vibranium weave absorbs and redirects kinetic energy. The suit has limits.",
+    "wolverine": "Adamantium skeleton. Healing factor. Memory gaps \u2014 identity is a wound.",
+    "deadpool": "Healing factor. Cannot die. Knows things he shouldn't \u2014 don't ask."
+};
 
 function scanTarget(entity, manager) {
     var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SCAN_RANGE);
@@ -37,34 +70,96 @@ function scanTarget(entity, manager) {
 
     if (bestTarget == null) return false;
 
-    // Build scan message, only send if different from last
+    // Build scan message with NBT-persistent first-scan tracking
     if (PackLoader.getSide() == "SERVER") {
         var p = entity.as("PLAYER");
         if (p != null) {
+            var uuid = "" + bestTarget.getUUID();
             var name = bestTarget.getName();
             var health = bestTarget.getHealth();
             var maxHealth = bestTarget.getMaxHealth();
             var pct = Math.round((health / maxHealth) * 100);
 
-            var suitInfo = "";
+            // Detect suit
+            var heroId = "";
             try {
                 var helm = bestTarget.getEquipmentInSlot(4);
                 if (helm != null && !helm.isEmpty()) {
                     var heroType = helm.nbt().getString("HeroType");
                     if (heroType != null && heroType != "") {
                         var parts = heroType.split(":");
-                        var raw = parts.length > 1 ? parts[1] : parts[0];
-                        suitInfo = raw.replace(/_/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+                        heroId = parts.length > 1 ? parts[1] : parts[0];
                     }
                 }
             } catch (e) {}
 
-            var msg = name + "|" + pct + "|" + suitInfo;
-            if (msg != lastScanMsg) {
-                lastScanMsg = msg;
+            // Check NBT for persistent scan history (format: "uuid:heroId,uuid:heroId,...")
+            var nbt = entity.getWornChestplate().nbt();
+            var scannedStr = nbt.getString("tt_scanned") || "";
+            var entries = scannedStr === "" ? [] : scannedStr.split(",");
+
+            // Find existing entry for this UUID
+            var existingIdx = -1;
+            var existingHeroId = "";
+            for (var j = 0; j < entries.length; j++) {
+                var colonPos = entries[j].indexOf(":");
+                var entryUuid = colonPos >= 0 ? entries[j].substring(0, colonPos) : entries[j];
+                if (entryUuid === uuid) {
+                    existingIdx = j;
+                    existingHeroId = colonPos >= 0 ? entries[j].substring(colonPos + 1) : "";
+                    break;
+                }
+            }
+
+            // Imp's Stranger power — can't remember her, always a fresh read
+            var isImp = heroId === "imp";
+            var isFirstScan = existingIdx === -1 || existingHeroId !== heroId || isImp;
+
+            if (isFirstScan) {
+                // Update or add NBT entry (skip Imp — can't remember her)
+                if (!isImp) {
+                    var entry = uuid + ":" + heroId;
+                    if (existingIdx >= 0) {
+                        entries[existingIdx] = entry;
+                    } else {
+                        entries.push(entry);
+                    }
+                    manager.setString(nbt, "tt_scanned", entries.join(","));
+                }
+
+                // Full scan report
                 p.addChatMessage("\u00A7e\u00A7o[Thinker] \u00A7r\u00A7f" + name + " \u00A77\u2014 \u00A7c" + pct + "% HP");
-                if (suitInfo != "") {
-                    p.addChatMessage("\u00A7e\u00A7o  Suit: \u00A7r\u00A7f" + suitInfo);
+
+                if (heroId !== "") {
+                    var suitName = heroId.replace(/_/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+                    p.addChatMessage("\u00A7e\u00A7o  Suit: \u00A7r\u00A7f" + suitName);
+                }
+
+                // Easter egg insight — split at ". " to avoid line-wrap formatting loss
+                var insight = INSIGHTS[heroId];
+                if (insight) {
+                    var sentences = [];
+                    var remaining = insight;
+                    var dotIdx;
+                    while ((dotIdx = remaining.indexOf(". ")) !== -1) {
+                        sentences.push(remaining.substring(0, dotIdx + 1));
+                        remaining = remaining.substring(dotIdx + 2);
+                    }
+                    sentences.push(remaining);
+                    p.addChatMessage("\u00A7e\u00A7o  Insight: \u00A77" + sentences[0]);
+                    for (var k = 1; k < sentences.length; k++) {
+                        p.addChatMessage("\u00A77    " + sentences[k]);
+                    }
+                } else if (heroId !== "") {
+                    p.addChatMessage("\u00A7e\u00A7o  Insight: \u00A77Powers unclear \u2014 need more data.");
+                }
+
+                healthCache[uuid] = pct;
+            } else {
+                // Already scanned — only report if health changed
+                if (healthCache[uuid] !== pct) {
+                    healthCache[uuid] = pct;
+                    p.addChatMessage("\u00A7e\u00A7o[Thinker] \u00A7r\u00A7f" + name + " \u00A77\u2014 \u00A7c" + pct + "% HP");
                 }
             }
         }
@@ -94,7 +189,7 @@ function init(hero) {
     hero.addKeyBind("ANALYZE", "Analyze", 1);
     hero.addKeyBind("AIM", "Aim", -1);
 
-    hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", false);
+    hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", true, function(item) { return item.nbt().getString("WeaponType") == "worm:beret_92f"; });
     hero.setHasPermission(function (entity, permission) {
         return permission == "USE_GUN";
     });

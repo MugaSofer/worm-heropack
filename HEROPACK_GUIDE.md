@@ -703,21 +703,20 @@ function isModifierEnabled(entity, modifier) {
 #### 2. addPrimaryEquipment (weapon radial menu)
 Adds weapons the hero can equip/unequip. Holding the Equip/Unequip keybind (default I) opens a radial menu if multiple weapons are registered. Each weapon goes into the player's hand when selected.
 
-```javascript
-// Built-in item
-hero.addPrimaryEquipment("fiskheroes:grappling_gun", true);
+**Second parameter (`autoEquip`) is critical:**
+- `false` — weapon starts holstered, "Equip/Unequip Item" keybind appears. **Use this for single weapons.**
+- `true` — weapon auto-equips on suit equip, always in hand. With a single weapon, NO equip/unequip keybind is generated (no way to put it away). Only use `true` when multiple weapons are registered (the system generates a cycle keybind).
 
-// Custom fisktag weapon
-hero.addPrimaryEquipment("fisktag:weapon{WeaponType:mypack:my_gun}", true);
+```javascript
+// Single weapon — use false for equip/unequip toggle
+hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", false);
+
+// Multiple weapons — true is fine, radial menu handles cycling
+hero.addPrimaryEquipment("fiskheroes:grappling_gun", true);
+hero.addPrimaryEquipment("fiskheroes:desert_eagle", true);
 
 // With condition (e.g., dual wield check)
 hero.addPrimaryEquipment("fiskheroes:katana{Dual:1}", true,
-    item => item.nbt().getBoolean("Dual"));
-
-// Multiple calls = multiple weapons on the radial menu
-hero.addPrimaryEquipment("fiskheroes:katana{Dual:1}", true,
-    item => item.nbt().getBoolean("Dual"));
-hero.addPrimaryEquipment("fiskheroes:desert_eagle{Dual:1}", true,
     item => item.nbt().getBoolean("Dual"));
 ```
 
@@ -744,42 +743,136 @@ Known built-in item IDs (usable with both systems): `fiskheroes:grappling_gun`, 
 
 Note: Built-in items only work if they exist in your mod version.
 
-#### 4. Custom fisktag weapons
-Define custom weapons in `assets/<domain>/data/fisktag/weapons/<weapon>.json`:
+#### 4. Custom FiskTag Weapons (Full Guide)
+
+Custom weapons require **5 files** (all paths relative to `assets/<domain>/`):
+
+1. **Weapon definition**: `data/fisktag/weapons/<name>.json` — stats, damage, sound
+2. **Weapon renderer**: `renderers/fisktag/weapons/<name>.js` — 3D model, beam, crosshair
+3. **Weapon texture**: `textures/fisktag/weapons/<name>.png` — skin for the 3D model
+4. **Beam model**: `models/beams/<name>.json` — projectile visual (for guns)
+5. **Sound event**: `events/sounds/<name>.json` — shoot sound registration
+
+##### Weapon Definition JSON
 
 ```json
 {
-  "name": "My Gun",
-  "permission": "USE_MY_GUN",
+  "name": "Beret 92F",
+  "permission": "USE_GUN",
   "holdingPose": "SINGLE",
-  "cooldown": 40,
+  "cooldown": 8,
   "damageProfile": {
-    "damage": 8.0,
-    "types": { "ENERGY": 1.0 }
+    "damage": 4.0,
+    "types": { "BULLET": 1 }
   },
-  "spread": {
-    "sprintingFactor": 1.5,
-    "fallingFactor": 1.6
-  },
-  "recoil": {
-    "amount": 0.2,
-    "cameraShake": 1.5
-  },
-  "projectiles": [{
-    "type": "BEAM",
-    "spread": 1.25,
-    "speed": 2.0,
-    "trail": 1
-  }],
-  "soundEvents": {
-    "SHOOT": "mypack:gun_shoot"
-  }
+  "fisktag": { "sprintShootDelay": 4, "sprintDelay": 2 },
+  "scope": { "zoom": 0.3, "allowHeadshots": true, "damageBonus": 1.3, "headshotDamageBonus": 2.0 },
+  "spread": { "sprintingFactor": 1.4, "fallingFactor": 1.5, "scopingFactor": 0.5 },
+  "recoil": { "amount": 0.25, "cameraShake": 1.0 },
+  "projectiles": [{ "type": "BEAM", "range": 24.0, "spread": 0.3, "trail": 1 }],
+  "soundEvents": { "SHOOT": "worm:pistol_shoot" }
 }
 ```
 
-Holding poses: `SINGLE`, `DUAL`, `RIFLE`
+- `permission`: Use `"USE_GUN"` for firearms (convention across packs).
+- Holding poses: `SINGLE`, `DUAL`, `RIFLE`.
+- Melee weapons use `"melee": { "attackDamage": 9.0 }` instead of `projectiles`.
 
-Melee weapons use `"melee": { "attackDamage": 9.0 }` instead of `projectiles`.
+##### Weapon Renderer JS
+
+```javascript
+loadTextures({
+    "base": "worm:beret_92f",           // textures/fisktag/weapons/beret_92f.png
+    "crosshair": "fisktag:crosshairs/pistol"  // built-in crosshair
+});
+var utils = implement("fisktag:external/utils");  // provided by FiskTag mod
+var model;
+
+function init(renderer) {
+    model = utils.createModel(renderer, "fisktag:pistol", "base");  // built-in pistol model
+    renderer.setModel(model);
+    utils.makeDilatingCrosshair(renderer, "crosshair", 16, 8, [
+        { "pos": [6, 1], "size": [5, 7] },
+        { "pos": [1, 1], "size": [5, 7], "axis": [-1, 0] },
+        { "pos": [11, 1], "size": [5, 7], "axis": [1, 0] }
+    ], 0, 4, 12.5);
+    // Beam model MUST exist or weapon silently fails (purple missing texture)
+    utils.bindScopedBeam(renderer, "worm:gunshot", 0xDDCCBB, [
+        { "firstPerson": [-5.0, 4.5, -18.0], "offset": [0.0, 15.0, -4.0], "size": [1.0, 1.0] }
+    ], [3.0, -2.0, -2.0]);
+}
+
+function render(renderer, entity, glProxy, renderType, scopeTimer, recoil, isLeftSide) {
+    glProxy.translate(0, -0.85, -0.52);
+    if (renderType === "EQUIPPED_FIRST_PERSON") {
+        var f = 1 - scopeTimer * 0.4;
+        recoil *= 0.7;
+        glProxy.rotate(-recoil * (20 - scopeTimer * 7), 1, 0, 0);
+    }
+    glProxy.scale(0.85);
+}
+```
+
+Built-in 3D models: `"fisktag:pistol"`, `"fisktag:rifle"`, `"fisktag:sniper"`, `"fisktag:rocket_launcher"`. For custom models, use `"domain:modelname"` pointing to a `.tbl` file.
+
+Built-in beam models: `"fiskheroes:repulsor_blast"`, `"fisktag:rocket_launcher_beam"`, `"fisktag:sniper_beam"`.
+
+##### Sound Event JSON (`events/sounds/<name>.json`)
+
+```json
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:item.gun.deagle.shoot"
+}
+```
+
+Reference in weapon JSON as `"domain:sound_name"`. Can point to built-in sounds or custom `.ogg` files.
+
+##### Beam Model JSON (`models/beams/<name>.json`)
+
+```json
+{
+  "aspects": [{
+    "type": "LASER",
+    "opacity": { "start": 0.0, "end": 0.2 },
+    "scale": 1.0, "spin": 0.0,
+    "core": { "color": "0xFFFFFF", "additiveBlending": true },
+    "bloom": { "strength": 0.5, "spread": 3.0, "dropoff": 3.0, "quality": 1.0 }
+  }]
+}
+```
+
+Multiple aspects create layered effects. `opacity.start`/`end` = beam lifecycle timing (0=start, 1=end). Color tint is set in the renderer's `bindScopedBeam` call.
+
+##### Hero Script Requirements
+
+**All of these are required** for a gun to work:
+
+```javascript
+hero.addKeyBind("AIM", "Aim", -1);  // enables aiming/firing
+hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", false);
+hero.setHasPermission(function(entity, permission) {
+    return permission == "USE_GUN";
+});
+hero.supplyFunction("canAim", function(entity) {
+    return entity.getHeldItem().name() == "fisktag:weapon";
+});
+```
+
+- **`AIM` keybind**: Without this, weapon cannot be aimed or fired.
+- **`canAim` function**: `.isGun()` only works for built-in weapons. FiskTag weapons need `.name() == "fisktag:weapon"`.
+- **`GUN_RELOAD` keybind**: Optional — only add for ammo-based weapons.
+- **Firing**: Right-click to aim, then left-click to fire.
+
+##### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Purple missing texture, no model | Beam model reference doesn't exist | Check `models/beams/<name>.json` exists, check logs for `FileNotFoundException` |
+| In equipment wheel but won't fire | Missing AIM keybind, canAim, or permission | Add all three (see hero script requirements above) |
+| No equip/unequip keybind | `addPrimaryEquipment` second arg is `true` with single weapon | Change to `false` |
+| "Missing resource" warning | Sound event not registered | Create `events/sounds/<name>.json` |
+| `.isGun()` returns false | FiskTag weapons aren't "guns" to the built-in API | Use `.name() == "fisktag:weapon"` |
 
 ---
 

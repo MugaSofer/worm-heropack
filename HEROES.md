@@ -14,6 +14,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 3 | Eidolon | The Triumvirate |
 | 3 | Grue | The Undersiders |
 | 3 | Bitch | The Undersiders |
+| 2 | Tattletale | The Undersiders |
 | 2 | Regent | The Undersiders |
 | 2 | Imp | The Undersiders |
 
@@ -237,6 +238,64 @@ Flight speed: 0.1 base, 0.2 boost. Slower than Legend or Alexandria.
 - Blinding Blast is disabled while holding an item (shows greyed-out keybind).
 - During shadowdome charging, all other keybinds are locked out.
 - Darkness Aura is purely visual — a cosmetic toggle for the menacing look.
+
+---
+
+### Tattletale
+
+**Tier 2** | The Undersiders' information specialist. Her Thinker power lets her read people — health, identity, weaknesses — at a glance. Comes with a Beret 92F pistol for when intuition isn't enough.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Analyze | Toggle Thinker power on/off. While active, auto-scans entities you look at and reports findings in chat. Builds headache over time. |
+| I | Equip/Unequip Item | Pull out or holster the Beret 92F pistol. |
+
+#### Thinker Power (Analyze)
+
+Toggle Key 1 to activate. While active:
+
+- **Night vision** — see clearly in darkness.
+- **Auto-scan** — every 0.5 seconds, scans the entity closest to your crosshair within a 10-degree cone and 64-block range. Requires line of sight.
+- **Chat readout** — `[Thinker] Zombie — 85% HP` with suit identification for players wearing hero suits (`Suit: Alexandria`).
+- **Deduplication** — repeated scans of the same target at the same health are suppressed. Only new information triggers a message.
+
+#### Headache Meter
+
+Using the Thinker power has a cost — the red circle HUD shows your headache level:
+
+| Headache | Effect |
+|----------|--------|
+| 0–70% | No effect. Builds slowly while Analyze is active (~0.05% per tick passive, +5% per scan). |
+| 70–95% | **Self-damage** — takes 1 blunt damage every 2 seconds. You can keep pushing, but it hurts. |
+| Inactive | Drains at ~0.1% per tick. Turn off Analyze to recover. |
+
+The headache bar is visible whenever it's non-zero, even while draining, so you can track your recovery.
+
+#### Beret 92F Pistol
+
+A custom Earth Bet pistol (fictional manufacturer — serial numbers filed off).
+
+- **Equip**: Press I to draw/holster.
+- **Aim**: Right-click to aim down sights.
+- **Fire**: Left-click while aiming.
+- **Damage**: 4.0 (bullet type), with headshot bonus (2x) and scope damage bonus (1.3x).
+- **Range**: 24 blocks.
+- **Cooldown**: 0.4 seconds between shots.
+- **Infinite ammo** — no reload needed.
+
+#### Passive Abilities
+
+- **Slim build** — Uses Alex (slim) arm models.
+- **Minimal combat stats** — 1 punch damage, +8% sprint speed, fall resistance. She's a thinker, not a fighter.
+
+#### Notes
+
+- The headache mechanic is a deliberate trade-off — you can push through the pain for critical intel, but sustained use will kill you.
+- Scanning doesn't work through walls. You need line of sight to your target.
+- The pistol starts holstered. Draw it with I before you can aim and fire.
+- Analyze and the pistol work independently — scan targets while armed.
 
 ---
 
