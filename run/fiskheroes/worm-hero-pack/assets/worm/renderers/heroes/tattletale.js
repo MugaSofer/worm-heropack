@@ -3,7 +3,7 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:tattletale_layer1_noarms",
     "layer2": "worm:tattletale_layer1_noarms",
-    "helmet": "worm:tattletale_helmet",
+    "mask": "worm:tattletale_mask",
     "chest": "worm:tattletale_chest",
     "leggings": "worm:tattletale_leggings",
     "boots": "worm:tattletale_boots",
@@ -17,7 +17,8 @@ function init(renderer) {
     parent.init(renderer);
     renderer.setTexture(function (entity, renderLayer) {
         if (entity.isWearingFullSuit()) return "layer1";
-        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "mask";
         if (renderLayer == "LEGGINGS") return "leggings";
         if (renderLayer == "BOOTS") return "boots";
         return "chest";
@@ -58,7 +59,8 @@ function initAnimations(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    if (renderLayer == "CHESTPLATE") {
+    // Slim alex arms only when full suit hides the real arms
+    if (renderLayer == "CHESTPLATE" && entity.isWearingFullSuit()) {
         alexArmR.render();
         alexArmL.render();
     }

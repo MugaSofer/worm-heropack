@@ -2,7 +2,7 @@ extend("fiskheroes:hero_basic");
 
 loadTextures({
     "layer1": "worm:imp_costume_noscarf",
-    "layer2": "worm:imp_costume_noscarf",
+    "layer2": "worm:imp_layer2",
     "costume": "worm:imp_costume",
     "costume_noarms": "worm:imp_costume_noarms",
     "costume_nomask": "worm:imp_costume_nomask",
