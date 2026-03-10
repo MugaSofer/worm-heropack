@@ -14,7 +14,7 @@ var riderTorso, riderHead, riderArmR, riderArmL;
 
 var S = 1.75;
 var BASE_DOG_SCALE = 1.7 / S;
-var RIDER_SCALE = 1.0;
+var RIDER_SCALE = 0.8;
 
 // Model space Y values for offset math
 var DOG_FEET_Y = 24.0;  // bottom of legs in model space (tuned)
@@ -167,18 +167,22 @@ function render(entity, renderLayer, isFirstPersonArm) {
         dogLegBR.setRotation(-backSwing - crouchSplay, 0.0, 0.0);
         dogLegBR.render();
 
+        riderTorso.setScale(RIDER_SCALE);
         riderTorso.setOffset(0.0, riderOffsetY, 0.0);
         riderTorso.render();
 
         var headYaw = entity.rotYaw() - entity.rotBodyYawInterpolated();
+        riderHead.setScale(RIDER_SCALE);
         riderHead.setOffset(0.0, riderOffsetY, 0.0);
         riderHead.setRotation(entity.rotPitch(), headYaw, 0.0);
         riderHead.render();
 
         var armSwing = Math.sin(walkCycle) * 30.0 * speed;
+        riderArmR.setScale(RIDER_SCALE);
         riderArmR.setOffset(0.0, riderOffsetY, 0.0);
         riderArmR.setRotation(armSwing, 0.0, 0.0);
         riderArmR.render();
+        riderArmL.setScale(RIDER_SCALE);
         riderArmL.setOffset(0.0, riderOffsetY, 0.0);
         riderArmL.setRotation(-armSwing, 0.0, 0.0);
         riderArmL.render();

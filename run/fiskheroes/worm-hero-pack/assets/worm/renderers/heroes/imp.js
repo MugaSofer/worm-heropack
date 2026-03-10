@@ -62,13 +62,18 @@ function initEffects(renderer) {
     alexArmL.setOffset(5.0, -2.05, 0.0);
 
     // Opacity: invisible when full suit, slim-arm transparency when partial
-    // Three visibility sources: reveal keybind, punching, electronic detection
+    // Visible on costume stands; fades in on equip then goes invisible
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
         if (!entity.isWearingFullSuit()) return 0.9999;
+        // Costume stands — always visible
+        if (entity.is("DISPLAY")) return 0.9999;
+        // Fade-in on equip (0→1 over ~2s), then normal invisibility
+        var fadeIn = entity.getInterpolatedData("worm:dyn/imp_fade_in");
         var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
         var punching = entity.isPunching() ? 1.0 : 0.0;
         var detected = entity.getInterpolatedData("worm:dyn/imp_visible_timer");
-        return Math.min(Math.max(reveal, punching, detected) * 0.995 + 0.005, 0.9999);
+        var visible = Math.max(reveal, punching, detected, 1.0 - fadeIn);
+        return Math.min(visible * 0.995 + 0.005, 0.9999);
     });
 
     // Suppress default heat vision beam by binding an invisible beam renderer
@@ -94,10 +99,11 @@ function render(entity, renderLayer, isFirstPersonArm) {
     if (renderLayer == "CHESTPLATE") {
         if (fullSuit) {
             // Match arm opacity to entity visibility
+            var fadeIn = entity.getInterpolatedData("worm:dyn/imp_fade_in");
             var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
             var punching = entity.isPunching() ? 1.0 : 0.0;
             var detected = entity.getInterpolatedData("worm:dyn/imp_visible_timer");
-            var armOpacity = Math.max(reveal, punching, detected) * 0.995 + 0.005;
+            var armOpacity = Math.max(reveal, punching, detected, 1.0 - fadeIn) * 0.995 + 0.005;
             alexArmR.opacity = armOpacity;
             alexArmL.opacity = armOpacity;
         } else {

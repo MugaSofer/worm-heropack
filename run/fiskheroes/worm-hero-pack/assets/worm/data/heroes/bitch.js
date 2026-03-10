@@ -52,7 +52,16 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
-    hero.addKeyBind("TENTACLES", "Call / Mount Dog", 1);
+    hero.addKeyBindFunc("MOUNT_DOG", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/dog_mounted", !entity.getData("worm:dyn/dog_mounted"));
+        return true;
+    }, "Mount / Dismount Dog", 1);
+
+    // Companion dog (tentacle) only shows when dismounted
+    hero.setModifierEnabled(function (entity, modifier) {
+        if (modifier == "fiskheroes:tentacles") return !entity.getData("worm:dyn/dog_mounted");
+        return true;
+    });
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
@@ -76,7 +85,7 @@ function init(hero) {
     }, "Crouch Leap", 4);
 
     hero.setKeyBindEnabled(function (entity, keyBind) {
-        var mounted = !entity.getData("worm:dyn/dog_dismounted");
+        var mounted = entity.getData("worm:dyn/dog_mounted");
         var size = entity.getData("worm:dyn/dog_size");
         if (keyBind == "GROW_DOG") return mounted && size < MAX_DOG_SIZE;
         if (keyBind == "SHRINK_DOG") return mounted && size > MIN_DOG_SIZE;
@@ -85,9 +94,9 @@ function init(hero) {
     });
 
     hero.setTickHandler(function (entity, manager) {
-        // Tentacle state drives mount/dismount
-        var tentaclesOut = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
-        var dismounted = tentaclesOut;
+        // Mount state driven by custom keybind (defaults false = dismounted)
+        var mounted = entity.getData("worm:dyn/dog_mounted");
+        var dismounted = !mounted;
         if (entity.getData("worm:dyn/dog_dismounted") != dismounted) {
             manager.setData(entity, "worm:dyn/dog_dismounted", dismounted);
         }

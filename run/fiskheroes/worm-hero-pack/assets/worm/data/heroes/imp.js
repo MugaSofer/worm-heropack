@@ -51,6 +51,10 @@ function init(hero) {
     hero.setDamageProfile(getDamageProfile);
 
     hero.setTickHandler(function (entity, manager) {
+        // Fade-in on equip: timer goes 0→1 over ~2s, invisibility kicks in after
+        manager.incrementData(entity, "worm:dyn/imp_fade_in", 40, true);
+        var fadedIn = entity.getData("worm:dyn/imp_fade_in") >= 1.0;
+
         var revealing = entity.getData("fiskheroes:heat_vision");
         var punching = entity.isPunching();
         var detected = !revealing && scanForElectronicVision(entity);
@@ -58,8 +62,8 @@ function init(hero) {
         // Smooth fade for detection (3-tick transition)
         manager.incrementData(entity, "worm:dyn/imp_visible_timer", 1, detected);
 
-        // Invisible unless revealing, punching, or detected
-        manager.setDataWithNotify(entity, "fiskheroes:invisible", !revealing && !punching && !detected);
+        // Invisible unless revealing, punching, detected, or still fading in
+        manager.setDataWithNotify(entity, "fiskheroes:invisible", fadedIn && !revealing && !punching && !detected);
         return false;
     });
 }
