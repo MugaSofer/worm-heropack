@@ -1,16 +1,15 @@
 extend("fiskheroes:hero_basic");
 
 loadTextures({
-    "layer1": "worm:imp_costume_noscarf",
+    "layer1": "worm:imp_costume_noscarf_noarms",
     "layer2": "worm:imp_layer2",
-    "costume": "worm:imp_costume",
-    "costume_noarms": "worm:imp_costume_noarms",
-    "costume_nomask": "worm:imp_costume_nomask",
-    "costume_nomask_noarms": "worm:imp_costume_nomask_noarms",
-    "costume_notop": "worm:imp_costume_notop",
-    "costume_noscarf": "worm:imp_costume_noscarf",
-    "body": "worm:imp_body",
     "body_noarms": "worm:imp_body_noarms",
+    "costume_noarms": "worm:imp_costume_noarms",
+    "costume_nomask_noarms": "worm:imp_costume_nomask_noarms",
+    "mask": "worm:imp_mask",
+    "chest": "worm:imp_chest",
+    "leggings": "worm:imp_leggings",
+    "boots": "worm:imp_boots",
     "arm_tex": "worm:imp_costume"
 });
 
@@ -20,12 +19,14 @@ var alexArmL;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.showModel("HELMET", "head", "headwear", "body");
     renderer.setTexture(function (entity, renderLayer) {
-        var fullSuit = entity.isWearingFullSuit();
-        if (fullSuit) return "body_noarms";
-        // Partial suit: helmet shows mask+scarf, others show costume without scarf
-        if (renderLayer == "HELMET") return "costume_notop";
-        return "costume_noscarf";
+        if (entity.isWearingFullSuit()) return "body_noarms";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "mask";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
     });
 }
 
@@ -43,7 +44,7 @@ function initAnimations(renderer) {
 }
 
 function initEffects(renderer) {
-    // Costume overlay — renders costume texture on top of body base
+    // Costume overlay — renders costume texture on top of body base (full suit)
     costumeOverlay = renderer.createEffect("fiskheroes:overlay");
     costumeOverlay.texture.set("costume_noarms", null);
 
@@ -95,21 +96,15 @@ function render(entity, renderLayer, isFirstPersonArm) {
         costumeOverlay.render();
     }
 
-    // Slim arms — render on CHESTPLATE layer
-    if (renderLayer == "CHESTPLATE") {
-        if (fullSuit) {
-            // Match arm opacity to entity visibility
-            var fadeIn = entity.getInterpolatedData("worm:dyn/imp_fade_in");
-            var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
-            var punching = entity.isPunching() ? 1.0 : 0.0;
-            var detected = entity.getInterpolatedData("worm:dyn/imp_visible_timer");
-            var armOpacity = Math.max(reveal, punching, detected, 1.0 - fadeIn) * 0.995 + 0.005;
-            alexArmR.opacity = armOpacity;
-            alexArmL.opacity = armOpacity;
-        } else {
-            alexArmR.opacity = 0.9999;
-            alexArmL.opacity = 0.9999;
-        }
+    // Slim alex arms only when full suit hides the real arms
+    if (renderLayer == "CHESTPLATE" && fullSuit) {
+        var fadeIn = entity.getInterpolatedData("worm:dyn/imp_fade_in");
+        var reveal = entity.getInterpolatedData("fiskheroes:heat_vision_timer");
+        var punching = entity.isPunching() ? 1.0 : 0.0;
+        var detected = entity.getInterpolatedData("worm:dyn/imp_visible_timer");
+        var armOpacity = Math.max(reveal, punching, detected, 1.0 - fadeIn) * 0.995 + 0.005;
+        alexArmR.opacity = armOpacity;
+        alexArmL.opacity = armOpacity;
         alexArmR.render();
         alexArmL.render();
     }
