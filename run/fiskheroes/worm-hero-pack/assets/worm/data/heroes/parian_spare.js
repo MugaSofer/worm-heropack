@@ -1,13 +1,10 @@
 var parian = implement("worm:external/parian_base");
 
 function init(hero) {
-    hero.setName("Parian");
+    hero.setName("Spare Parian");
     hero.setTier(2);
 
-    hero.setHelmet("Mask & Wig");
-    hero.setChestplate("Top");
-    hero.setLeggings("Skirt");
-    hero.setBoots("Shoes");
+    hero.setChestplate("Costume");
 
     hero.addPowers("worm:parian_powers");
     hero.addAttribute("PUNCH_DAMAGE", 1.0, 0);
