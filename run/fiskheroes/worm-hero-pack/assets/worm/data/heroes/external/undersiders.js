@@ -1,15 +1,13 @@
 // Shared Undersiders team logic.
 // Usage: var team = implement("worm:external/undersiders");
-//        team.tick(entity, manager)       — call from each Undersider's tick handler
+//        team.tick(entity, manager, hero) — call from each Undersider's tick handler
 //        team.isUndersider(entity)        — check if entity wears an Undersider suit
-//        team.isModifierEnabled(entity, modifier) — gate shared modifiers
 //
 // Features:
 //   1. isUndersider() — for Skitter AoE skip, future team checks
 //   2. TT proximity — sets worm:dyn/tt_nearby when a Tattletale player is within range
-//   3. TT scanned target boost — sets worm:dyn/tt_target_scanned when looking at a
-//      target that Tattletale has scanned (read from her chestplate NBT)
-//   4. Tinker weapons — USE_GUN gated on tt_nearby (handled per-hero)
+//   3. TT scanned target boost — +2 bonus damage when punching a target TT has scanned
+//      (read from her chestplate NBT tt_scanned field)
 
 var UNDERSIDERS = {
     "worm:skitter": true,
@@ -24,11 +22,14 @@ var UNDERSIDERS = {
 var TT_RANGE = 64;
 var TT_CHECK_INTERVAL = 20;  // ticks between TT proximity checks (1 second)
 var SCAN_CONE = 10;          // degrees — match TT's own scan cone
+var BONUS_DAMAGE = 2.0;
+var BONUS_COOLDOWN = 10;     // ticks between bonus hits (0.5 seconds)
 
-// Per-entity state (keyed by entity, reset each check cycle)
+// Per-entity state (shared module instance — keyed by UUID for multiplayer safety)
 var ttCheckTimer = 0;
 var scannedUUIDs = {};
 var hasTTNearby = false;
+var punchCooldowns = {};     // UUID string -> ticks remaining
 
 function isUndersider(entity) {
     try {
@@ -40,7 +41,7 @@ function isUndersider(entity) {
     return false;
 }
 
-function tick(entity, manager) {
+function tick(entity, manager, hero) {
     // Periodic TT proximity + scanned list update
     ttCheckTimer++;
     if (ttCheckTimer >= TT_CHECK_INTERVAL) {
@@ -80,20 +81,37 @@ function tick(entity, manager) {
     manager.setData(entity, "worm:dyn/tt_nearby", hasTTNearby);
 
     // Check if currently looking at a scanned target
-    var targetScanned = false;
+    var scannedTarget = null;
     if (hasTTNearby) {
-        targetScanned = checkLookingAtScanned(entity);
+        scannedTarget = findScannedTarget(entity);
     }
-    manager.setData(entity, "worm:dyn/tt_target_scanned", targetScanned);
+    manager.setData(entity, "worm:dyn/tt_target_scanned", scannedTarget != null);
+
+    // Bonus damage on punch against scanned target
+    var myUUID = "" + entity.getUUID();
+    if (!punchCooldowns[myUUID]) punchCooldowns[myUUID] = 0;
+    if (punchCooldowns[myUUID] > 0) punchCooldowns[myUUID]--;
+
+    if (hero != null && scannedTarget != null && entity.isPunching() && punchCooldowns[myUUID] == 0) {
+        scannedTarget.hurtByAttacker(hero, "PUNCH", "%1$s was outsmarted by %2$s", BONUS_DAMAGE, entity);
+        punchCooldowns[myUUID] = BONUS_COOLDOWN;
+        if (PackLoader.getSide() == "SERVER") {
+            try {
+                var targetName = scannedTarget.getName();
+                entity.as("PLAYER").addChatMessage("\u00A77\u00A7o+" + BONUS_DAMAGE + " damage \u2014 applying Tattletale's insight on \u00A7f" + targetName);
+            } catch (e) {}
+        }
+    }
 }
 
-function checkLookingAtScanned(entity) {
+// Returns the scanned entity we're looking at, or null
+function findScannedTarget(entity) {
     var lookVec = entity.getLookVector();
-    if (lookVec == null) return false;
+    if (lookVec == null) return null;
 
     var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 48);
     var bestAngle = SCAN_CONE;
-    var bestUUID = null;
+    var bestEntity = null;
 
     for (var i = 0; i < nearby.length; i++) {
         var other = nearby[i];
@@ -106,19 +124,12 @@ function checkLookingAtScanned(entity) {
 
         if (angle < bestAngle) {
             bestAngle = angle;
-            bestUUID = "" + other.getUUID();
+            bestEntity = other;
         }
     }
 
-    return bestUUID != null && scannedUUIDs[bestUUID] === true;
-}
-
-function isModifierEnabled(entity, modifier) {
-    if (modifier.name() == "fiskheroes:damage_bonus" && modifier.id() == "tt_intel") {
-        return entity.getData("worm:dyn/tt_target_scanned");
+    if (bestEntity != null && scannedUUIDs["" + bestEntity.getUUID()] === true) {
+        return bestEntity;
     }
-    if (modifier.name() == "fiskheroes:damage_immunity" && modifier.id() == "swarm") {
-        return true;  // always active
-    }
-    return null;  // null = not handled, let hero's own logic decide
+    return null;
 }

@@ -111,7 +111,7 @@ function init(hero) {
     });
 
     hero.setTickHandler(function (entity, manager) {
-        team.tick(entity, manager);
+        team.tick(entity, manager, heroRef);
         debounce_method = false;
         debounce_effect = false;
 
@@ -230,9 +230,6 @@ function init(hero) {
 }
 
 function isModifierEnabled(entity, modifier) {
-    var teamResult = team.isModifierEnabled(entity, modifier);
-    if (teamResult != null) return teamResult;
-
     var method = Number(entity.getData("worm:dyn/swarm_method"));
     var effect = Number(entity.getData("worm:dyn/swarm_effect"));
     var hasSwarm = entity.getData("worm:dyn/swarm_density") > 0.01;
