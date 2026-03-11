@@ -955,6 +955,80 @@ hero.supplyFunction("canAim", function(entity) {
 | "Missing resource" warning | Sound event not registered | Create `events/sounds/<name>.json` |
 | `.isGun()` returns false | FiskTag weapons aren't "guns" to the built-in API | Use `.name() == "fisktag:weapon"` |
 
+#### 5. Granting Access to Non-Native Weapons (Picked Up / Found)
+
+Heroes can be given the ability to use weapons they don't own (from other packs, creative mode, etc.) by satisfying **three requirements**:
+
+1. **`setHasPermission`** — return `true` for the weapon's permission string. Each weapon JSON declares a `"permission"` field (e.g. `"USE_GUN"`, `"USE_COLD_GUN"`, `"USE_CHRONOS_RIFLE"`). Return `true` unconditionally to grant all weapons, or check specific strings.
+
+2. **`addKeyBind("AIM", ...)`** — the hero MUST have an AIM keybind registered, even if hidden at slot -1. Without this, the aiming system is never initialized. **Requires a game restart** when first added to a hero.
+
+3. **`supplyFunction("canAim", ...)`** — return `true` when the hero should be able to aim. For built-in weapons, `entity.getHeldItem().isGun()` and `entity.getHeldItem().isLaserGun()` work. For FiskTag weapons, check `entity.getHeldItem().name() == "fisktag:weapon"`. For a blanket "can aim anything held", use `!entity.getHeldItem().isEmpty()`.
+
+**Key findings:**
+- `setHasPermission` IS called for built-in weapons (e.g. cold gun checks `USE_COLD_GUN`), not just FiskTag weapons.
+- `setHasPermission` alone is NOT sufficient — without `canAim` and AIM keybind, the weapon won't aim or fire even with permission granted.
+- `canAim` can be conditional (e.g. only when a teammate is nearby).
+- Adding AIM keybind requires a **game restart**, not just `/fiskheroes reload`.
+- `addPrimaryEquipment` is NOT required to use found weapons — it only controls what auto-spawns with the suit.
+
+```javascript
+// Example: grant all weapon permissions conditionally
+hero.addKeyBind("AIM", "Aim", -1);  // hidden but required
+hero.setHasPermission(function (entity, permission) {
+    return entity.getData("some:dyn/condition");  // dynamic gate
+});
+hero.supplyFunction("canAim", function (entity) {
+    return entity.getData("some:dyn/condition") && !entity.getHeldItem().isEmpty();
+});
+```
+
+#### 6. Equipment NBT Manipulation (Unlimited Items / Item Conjuration)
+
+The chestplate's `Equipment` NBT tag list controls what items the hero has available. You can directly read and write this to conjure items, reset consumed items, or clear equipment entirely.
+
+**Key API methods:**
+- `entity.getWornChestplate().nbt()` — get the chestplate's NBT compound
+- `nbt.getTagList("Equipment")` — read the current equipment list
+- `manager.setTagList(nbt, "Equipment", newTagList)` — overwrite the equipment list
+- `manager.newTagList(jsonString)` — create a new tag list from a JSON string
+- `manager.setByte(itemSlot, "Count", newCount)` — modify item stack count
+
+**Conjure arbitrary items** (God/Doctor Manhattan pattern):
+```javascript
+// Write a fresh item into the equipment slot on demand
+hero.addKeyBindFunc("CONJURE", function (entity, manager) {
+    var nbt = entity.getWornChestplate().nbt();
+    var equipment = manager.newTagList('[{Index:0,Item:{Count:1,Damage:0,id:"minecraft:diamond_sword"}}]');
+    manager.setTagList(nbt, "Equipment", equipment);
+    return true;
+}, "Conjure Item", 1);
+```
+
+**Clear equipment** (reset "taken out" state):
+```javascript
+// Clear all equipment — items return to available-to-take-out state
+var nbt = entity.getWornChestplate().nbt();
+manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
+```
+
+**Read item count** (consumable tracking):
+```javascript
+var nbt = entity.getWornChestplate().nbt();
+var equipList = nbt.getTagList("Equipment");
+var itemSlot = equipList.getCompoundTag("0").getCompoundTag("Item");
+var itemCount = itemSlot.getByte("Count");
+manager.setByte(itemSlot, "Count", itemCount - 1);  // decrement
+```
+
+**Use cases:**
+- Shaker powers that create materials (e.g. Labyrinth conjuring walls)
+- Unlimited consumable gadgets (reset count after use)
+- Transformation-based item swapping (different loadouts per form)
+- Any power that needs to repeatedly give the player items
+
+Reference implementations: `dmh:god` (DMH-v1.3.2), `stellar:dr_manhattan` (StellarHeroes_2.0.5).
+
 ---
 
 ## 9. Gotchas & Pitfalls

@@ -215,6 +215,26 @@ Flight speed: 0.1 base, 0.2 boost. Slower than Legend or Alexandria.
 
 ## The Undersiders
 
+All Undersiders share the **Undersider** team power, which provides three passive benefits:
+
+#### Swarm Immunity
+
+Skitter's AoE swarm attacks (Entire Area mode) automatically skip teammates wearing an Undersider suit. Targeted swarm attacks can still be aimed at allies if needed.
+
+#### Tattletale's Insight
+
+When Tattletale is within 64 blocks, all Undersiders gain **+2 bonus damage** against targets she has scanned. The bonus applies when punching a scanned target while looking at them (5-block melee range). A chat message confirms when the bonus fires:
+
+> *+2 damage — applying Tattletale's insight on the Zombie*
+
+Tattletale doesn't need Analyze active for this to work — once a target is scanned, the intel persists on her suit's NBT. Tattletale herself also benefits from her own scans.
+
+#### Tinker Weapons
+
+When Tattletale is within 64 blocks, all Undersiders can aim and fire any weapon they pick up — guns, laser weapons, or any other Tinker tech. Without her nearby, only heroes with native weapon access (Tattletale's pistol, Foil's rapier/crossbow) can use weapons.
+
+---
+
 ### Grue
 
 **Tier 3** | The Undersiders' leader. Generates clouds of pure darkness that blind everyone inside — except him.
