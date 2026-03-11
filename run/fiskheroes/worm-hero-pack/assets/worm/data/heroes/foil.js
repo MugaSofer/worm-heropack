@@ -1,3 +1,5 @@
+var team = implement("worm:external/undersiders");
+
 function init(hero) {
     hero.setName("Foil");
     hero.setTier(4);
@@ -43,7 +45,8 @@ function init(hero) {
     // Crossbow (slot 3)
     hero.addKeyBind("AIM", "Crossbow", 3);
     hero.supplyFunction("canAim", function (entity) {
-        return entity.getHeldItem().isEmpty();
+        if (entity.getHeldItem().isEmpty()) return true;
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
     });
 
     // Martial arts kick (slot 4) — cycles front flip / back flip / roundhouse
@@ -64,6 +67,9 @@ function init(hero) {
         if (keyBind == "DODGE") return entity.getData("worm:dyn/foil_dodge_timer") == 0;
         if (keyBind == "DODGE_STOP") return entity.getData("worm:dyn/foil_dodge_timer") != 0;
         return true;
+    });
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
     });
 
     // Gate equipment variants on sting mode
@@ -96,7 +102,9 @@ function init(hero) {
     });
 
     // Tick handler — disable flying when not next to a wall in climbing mode
+    var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         // Wall climbing — disable flying when not near wall
         if (entity.getData("fiskheroes:flying")) {
             var pos = entity.pos();

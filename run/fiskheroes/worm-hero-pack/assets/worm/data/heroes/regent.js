@@ -1,3 +1,4 @@
+var team = implement("worm:external/undersiders");
 var mc = implement("worm:external/mind_control");
 
 // How many blocks above ground the entity at pos is (max 10)
@@ -38,8 +39,17 @@ function init(hero) {
 
     hero.setModifierEnabled(isModifierEnabled);
     hero.setKeyBindEnabled(isKeyBindEnabled);
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
+    });
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
+    });
 
+    var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         var grabId = entity.getData("fiskheroes:grab_id");
         var cooldown = entity.getData("worm:dyn/tk_cooldown");
         var grabTicks = entity.getData("worm:dyn/tk_grab_ticks");

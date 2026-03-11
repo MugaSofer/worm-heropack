@@ -49,6 +49,26 @@ function tick(entity, manager, hero) {
         hasTTNearby = false;
         scannedUUIDs = {};
 
+        // TT always counts as her own proximity
+        try {
+            var selfHelm = entity.getEquipmentInSlot(4);
+            if (selfHelm != null && !selfHelm.isEmpty() && selfHelm.nbt().getString("HeroType") === "worm:tattletale") {
+                hasTTNearby = true;
+                var selfChest = entity.getWornChestplate();
+                if (selfChest != null && !selfChest.isEmpty()) {
+                    var selfScanned = selfChest.nbt().getString("tt_scanned") || "";
+                    if (selfScanned !== "") {
+                        var selfEntries = selfScanned.split(",");
+                        for (var s = 0; s < selfEntries.length; s++) {
+                            var sColonPos = selfEntries[s].indexOf(":");
+                            var sUuid = sColonPos >= 0 ? selfEntries[s].substring(0, sColonPos) : selfEntries[s];
+                            scannedUUIDs[sUuid] = true;
+                        }
+                    }
+                }
+            }
+        } catch (e) {}
+
         var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), TT_RANGE);
         for (var i = 0; i < nearby.length; i++) {
             var other = nearby[i];
@@ -92,7 +112,8 @@ function tick(entity, manager, hero) {
     if (!punchCooldowns[myUUID]) punchCooldowns[myUUID] = 0;
     if (punchCooldowns[myUUID] > 0) punchCooldowns[myUUID]--;
 
-    if (hero != null && scannedTarget != null && entity.isPunching() && punchCooldowns[myUUID] == 0) {
+    var inMeleeRange = scannedTarget != null && scannedTarget.pos().distanceTo(entity.pos()) < 5;
+    if (hero != null && scannedTarget != null && inMeleeRange && entity.isPunching() && punchCooldowns[myUUID] == 0) {
         scannedTarget.hurtByAttacker(hero, "PUNCH", "%1$s was outsmarted by %2$s", BONUS_DAMAGE, entity);
         punchCooldowns[myUUID] = BONUS_COOLDOWN;
         if (PackLoader.getSide() == "SERVER") {
@@ -132,4 +153,9 @@ function findScannedTarget(entity) {
         return bestEntity;
     }
     return null;
+}
+
+// Tinker weapons: grant all weapon permissions when TT is nearby
+function hasPermission(entity, permission) {
+    return entity.getData("worm:dyn/tt_nearby");
 }

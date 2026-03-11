@@ -86,6 +86,13 @@ function init(hero) {
 
     hero.setKeyBindEnabled(isKeyBindEnabled);
     hero.setModifierEnabled(isModifierEnabled);
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
+    });
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
+    });
 
     // Damage profiles for AoE mode
     hero.addDamageProfile("SWARM_BITING", {

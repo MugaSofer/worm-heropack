@@ -1,3 +1,5 @@
+var team = implement("worm:external/undersiders");
+
 // Thinker Power config
 var SCAN_RANGE = 64;
 var SCAN_CONE = 10;           // degrees — narrow cone for deliberate targeting
@@ -191,10 +193,11 @@ function init(hero) {
 
     hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:beret_92f}", true, function(item) { return item.nbt().getString("WeaponType") == "worm:beret_92f"; });
     hero.setHasPermission(function (entity, permission) {
-        return permission == "USE_GUN";
+        return permission == "USE_GUN" || team.hasPermission(entity, permission);
     });
     hero.supplyFunction("canAim", function (entity) {
-        return entity.getHeldItem().name() == "fisktag:weapon";
+        if (entity.getHeldItem().name() == "fisktag:weapon") return true;
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
     });
 
     hero.addDamageProfile("PUNCH", {
@@ -215,6 +218,7 @@ function init(hero) {
     var heroRef = hero;
 
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         var active = entity.getData("worm:dyn/tt_active");
 
         var headache = entity.getData("worm:dyn/tt_headache");

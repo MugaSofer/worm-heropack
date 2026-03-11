@@ -1,3 +1,4 @@
+var team = implement("worm:external/undersiders");
 var mc = implement("worm:external/mind_control");
 
 // Electronic vision detection config
@@ -42,6 +43,13 @@ function init(hero) {
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);
 
     hero.addKeyBind("HEAT_VISION", "Reveal Self", 1);
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
+    });
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
+    });
 
     hero.addDamageProfile("PUNCH", {
         "types": {
@@ -50,7 +58,9 @@ function init(hero) {
     });
     hero.setDamageProfile(getDamageProfile);
 
+    var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         // Fade-in on equip: timer goes 0→1 over ~2s, invisibility kicks in after
         manager.incrementData(entity, "worm:dyn/imp_fade_in", 40, true);
         var fadedIn = entity.getData("worm:dyn/imp_fade_in") >= 1.0;

@@ -1,3 +1,5 @@
+var team = implement("worm:external/undersiders");
+
 var MIN_DOG_SIZE = 0.5;
 var MAX_DOG_SIZE = 3.0;
 var BASELINE_SIZE = 1.75;
@@ -92,8 +94,17 @@ function init(hero) {
         if (keyBind == "CROUCH_LEAP") return mounted;
         return true;
     });
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
+    });
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
+    });
 
+    var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         // Mount state driven by custom keybind (defaults false = dismounted)
         var mounted = entity.getData("worm:dyn/dog_mounted");
         var dismounted = !mounted;

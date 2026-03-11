@@ -1,3 +1,5 @@
+var team = implement("worm:external/undersiders");
+
 function isInFront(entity, other) {
     return entity.getLookVector().dot(entity.pos().subtract(other.pos())) < 0;
 }
@@ -61,8 +63,17 @@ function init(hero) {
 
     hero.setModifierEnabled(isModifierEnabled);
     hero.setKeyBindEnabled(isKeyBindEnabled);
+    hero.setHasPermission(function (entity, permission) {
+        return team.hasPermission(entity, permission);
+    });
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getData("worm:dyn/tt_nearby") && !entity.getHeldItem().isEmpty();
+    });
 
+    var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager, heroRef);
         // Kick: auto-cancel when timer completes
         if (entity.getData("worm:dyn/kick_timer") == 1) {
             manager.setData(entity, "worm:dyn/kick", false);
