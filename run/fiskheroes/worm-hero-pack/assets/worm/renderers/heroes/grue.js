@@ -2,6 +2,10 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:grue_layer1",
     "layer2": "worm:grue_layer2",
+    "helmet": "worm:grue_helmet",
+    "chest": "worm:grue_chest",
+    "leggings": "worm:grue_leggings",
+    "boots": "worm:grue_boots",
     "darkness_overlay": "worm:grue_darkness_overlay",
     "shadowdome": "worm:grue_shadowdome"
 });
@@ -12,6 +16,14 @@ var darknessOverlay;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initAnimations(renderer) {
