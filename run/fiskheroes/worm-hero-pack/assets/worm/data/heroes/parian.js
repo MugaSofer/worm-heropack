@@ -10,6 +10,7 @@ function init(hero) {
     hero.setBoots("Shoes");
 
     hero.addPowers("worm:parian_powers");
+    hero.addKeyBind("SENTRY_MODE", "key.sentryMode", 3);
     hero.addAttribute("PUNCH_DAMAGE", 1.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);

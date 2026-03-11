@@ -34,6 +34,9 @@
   "dataVars": {
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "kick_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "parian_punch": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "parian_punch_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "parian_attack_type": {"type": "BYTE", "resetWithoutSuit": true},
     "superhero_landing_ticks": {"type": "BYTE", "resetWithoutSuit": true},
     "superhero_landing_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "thunderclap_sound": {"type": "BOOLEAN", "resetWithoutSuit": true},

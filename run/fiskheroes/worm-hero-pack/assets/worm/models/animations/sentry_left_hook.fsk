@@ -1,0 +1,33 @@
+{0}=curve animate2({data},0.6,0,0.4,0.2)
+{1}=curve animate2({data},0.6,0.4,0.2,0.4)
+
+{head_rotY}+=15'{0}
+{head_rotY}+=-25'{1}
+{head_rotZ}+=5'{0}
+{head_rotZ}+=-10'{1}
+
+{body_rotY}+=25'{0}
+{body_rotY}+=-45'{1}
+{body_rotX}+=-5'{0}
+{body_rotX}+=8'{1}
+{body_posX}+=1{0}
+{body_posX}+=-2{1}
+
+{leftArm_rotX}+=20'{0}
+{leftArm_rotX}+=-90'{1}
+{leftArm_rotY}+=-30'{0}
+{leftArm_rotY}+=50'{1}
+{leftArm_rotZ}+=15'{0}
+{leftArm_rotZ}+=-35'{1}
+{leftArm_posX}+=2{0}
+{leftArm_posX}+=-3{1}
+
+{rightArm_rotX}+=-10'{0}
+{rightArm_rotX}+=-20'{1}
+{rightArm_rotZ}+=15'{0}
+{rightArm_rotZ}+=15'{1}
+
+{rightLeg_rotX}+=8'{0}
+{rightLeg_rotX}+=-12'{1}
+{leftLeg_rotX}+=-8'{0}
+{leftLeg_rotX}+=12'{1}

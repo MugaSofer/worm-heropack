@@ -1887,7 +1887,20 @@ Chargable blast. Used for Hawkman, Gambit etc. in some heropacks for a short-ran
 Bow/arrow combat system.
 
 #### `fiskheroes:sentry_mode`
-Stationary turret/guard mode, a la Iron Man suits. *Removes* your costume and powers, separating them into an independent entity that walks around protecting you. Right-clicking on the costume will allow you to re-enter it (Iron Man suits have custom visuals for this.)
+Deploys your costume as an independent AI entity (`EntityIronMan`) that targets hostile mobs and follows its owner. Right-click the sentry to re-enter the suit. Sneak+right-click toggles sentry flight.
+
+**Setup**: Add modifier to powers JSON + `hero.addKeyBind("SENTRY_MODE", "key.sentryMode", N)` in hero JS. Optional `soundEvents` with `"OPEN"`/`"CLOSE"` keys.
+
+**AI internals** (decompiled from mod source):
+- **Ranged AI** (priority 2, 30-block engagement range): Calls `InteractionRepulsor.shoot()` which **requires `fiskheroes:repulsor_blast`** modifier. Without it, the sentry aims but fires blanks. This is the primary intended attack path — every official sentry-mode hero (Iron Man, War Machine, Steel, etc.) includes `repulsor_blast`.
+- **Melee AI** (priority 3): `EntityAIAttackOnCollide` — walks up and punches. However, it shares mutex bits with the ranged AI, so it **never runs** while the ranged AI is active (which is always during combat).
+- **`fiskheroes:aiming`** data var: Set automatically when the sentry has a target, regardless of whether `repulsor_blast` exists.
+- **`fiskheroes:flame_blast`** is the only other modifier that works on sentries — it auto-fires via its `onUpdate` tick when `AIMING` is true. Other attack modifiers (heat_vision, energy_projection, sonic_waves) need keybind toggles that sentries can't press.
+
+**Custom sentry melee workaround** (for non-Iron-Man heroes):
+JS tick handlers DO run on sentry entities. You can detect `entity.getData("fiskheroes:aiming")` in the tick handler, use `entity.world().getEntitiesInRangeOf()` to find nearby enemies, and deal damage via `target.hurtByAttacker(heroRef, profileName, deathMsg, damage, entity)`. Pair with a custom `.fsk` punch animation driven by a data var (use `priority = -10` to override the default aiming pose). Note: `entity.getHero()` doesn't exist on the sentry entity — capture `heroRef` from the `init()` closure instead.
+
+**Pathing limitation**: The ranged AI's 30-block engagement range is hardcoded. The sentry stops pathfinding once within 30 blocks with line-of-sight for 20+ ticks, even if the actual attack range is shorter. The sentry won't actively close to melee range — it relies on enemies approaching or the owner being nearby (follow-owner AI runs between combats).
 
 #### `fiskheroes:hover`
 Stationary hovering (not full flight).

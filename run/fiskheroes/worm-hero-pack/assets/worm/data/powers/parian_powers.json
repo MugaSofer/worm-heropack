@@ -1,4 +1,6 @@
 {
   "name": "Cloth Manipulation",
-  "modifiers": {}
+  "modifiers": {
+    "fiskheroes:sentry_mode": {}
+  }
 }

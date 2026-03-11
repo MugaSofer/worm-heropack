@@ -1,0 +1,15 @@
+; Sentry punch animation
+; Uses @ for right arm to OVERRIDE the aiming pose
+; {data} goes 0->1 (punch extending) then back 1->0 (return to aim)
+
+; Right arm: absolute position — fully extended punch at data=1
+{rightArm_rotX} @ {data} -> -120'
+{rightArm_rotY} @ {data} -> -15'
+{rightArm_rotZ} @ {data} -> 0
+
+; Body twist to sell the punch (additive)
+{body_rotY} += {data} * 20'
+
+; Left arm pulls back slightly (additive)
+{leftArm_rotX} += {data} * -30'
+{leftArm_rotZ} += {data} * -10'

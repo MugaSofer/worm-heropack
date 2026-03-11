@@ -20,6 +20,28 @@ function init(renderer) {
     });
 }
 
+function initAnimations(renderer) {
+    parent.initAnimations(renderer);
+
+    var leftPunch = addAnimationWithData(renderer, "parian.LEFT_PUNCH", "worm:sentry_left_punch", "worm:dyn/parian_punch_timer");
+    leftPunch.setCondition(function (entity) {
+        return entity.getData("worm:dyn/parian_punch") && Number(entity.getData("worm:dyn/parian_attack_type")) == 0;
+    });
+    leftPunch.priority = -10;
+
+    var kick = addAnimationWithData(renderer, "parian.KICK", "worm:roundhouse_kick", "worm:dyn/parian_punch_timer");
+    kick.setCondition(function (entity) {
+        return entity.getData("worm:dyn/parian_punch") && Number(entity.getData("worm:dyn/parian_attack_type")) == 1;
+    });
+    kick.priority = -10;
+
+    var hook = addAnimationWithData(renderer, "parian.HOOK", "worm:sentry_left_hook", "worm:dyn/parian_punch_timer");
+    hook.setCondition(function (entity) {
+        return entity.getData("worm:dyn/parian_punch") && Number(entity.getData("worm:dyn/parian_attack_type")) == 2;
+    });
+    hook.priority = -10;
+}
+
 function initEffects(renderer) {
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
         return 0.9999;

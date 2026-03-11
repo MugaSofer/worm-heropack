@@ -1,0 +1,9 @@
+; Sentry right leg kick
+; {data} = parian_punch_timer, 0->1->0
+
+; Right leg extends forward in a kick
+{rightLeg_rotX} @ {data} -> -80'
+
+; Body leans back and twists slightly
+{body_rotX} += {data} * 10'
+{body_rotY} += {data} * -15'
