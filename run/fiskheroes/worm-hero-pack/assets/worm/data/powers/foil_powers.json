@@ -65,6 +65,22 @@
       "soundEvents": {
         "SWITCH": "fiskheroes:utility_belt_switch"
       }
+    },
+    "fiskheroes:controlled_flight": {
+      "speed": 0.05,
+      "boostSpeed": 0.05,
+      "canBoost": false,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": false
+        }
+      },
+      "knockback": 0.0
     }
   }
 }

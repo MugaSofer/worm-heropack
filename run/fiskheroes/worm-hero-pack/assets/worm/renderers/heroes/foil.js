@@ -10,6 +10,7 @@ loadTextures({
     "arm_tex": "worm:foil_layer1"
 });
 
+var utils = implement("fiskheroes:external/utils");
 var alexArmR;
 var alexArmL;
 
@@ -43,6 +44,11 @@ function initEffects(renderer) {
     alexArmL = renderer.createEffect("fiskheroes:model").setModel(armLModel);
     alexArmL.anchor.set("leftArm");
     alexArmL.setOffset(5.0, -2.05, 0.0);
+}
+
+function initAnimations(renderer) {
+    parent.initAnimations(renderer);
+    utils.addFlightAnimation(renderer, "foil.WALL_CRAWL", "worm:wall_crawl");
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {

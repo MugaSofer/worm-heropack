@@ -15,6 +15,7 @@ Models & Animations:
 - Beret 92F pistol model & crosshair from FiskTag (built-in pistol)
 - Beret 92F gunshot beam based on JMCT Heroes gunshot beam
 - Beret 92F sound from Fisk's Superheroes (desert eagle shoot)
+- Wall crawl animation from DC Universe Hero Pack (loriatpack)
 - Others by MugaSofer & Claude
 
 Thanks/Inspirations:

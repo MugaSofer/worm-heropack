@@ -21,7 +21,7 @@ function init(hero) {
         return item.nbt().getString("WeaponType") == "worm:rapier";
     });
 
-    // Sting mode cycling: 0=off, 1=pinning, 2=lethal (slot 1)
+    // Sting mode cycling: 0=off, 1=pinning, 2=lethal, 3=climbing (slot 1)
     hero.addKeyBindFunc("STING_0", function (entity, manager) {
         manager.setData(entity, "worm:dyn/foil_sting", 1);
         return true;
@@ -33,9 +33,14 @@ function init(hero) {
     }, "\u00A7fSting: \u00A7ePinning \u00A78>", 1);
 
     hero.addKeyBindFunc("STING_2", function (entity, manager) {
-        manager.setData(entity, "worm:dyn/foil_sting", 0);
+        manager.setData(entity, "worm:dyn/foil_sting", 3);
         return true;
     }, "\u00A7fSting: \u00A7cLethal \u00A78>", 1);
+
+    hero.addKeyBindFunc("STING_3", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/foil_sting", 0);
+        return true;
+    }, "\u00A7fSting: \u00A7bClimbing \u00A78>", 1);
 
     // Throwing darts (slot 2)
     hero.addKeyBind("UTILITY_BELT", "Throwing Darts", 2);
@@ -45,6 +50,7 @@ function init(hero) {
         if (keyBind == "STING_0") return mode == 0;
         if (keyBind == "STING_1") return mode == 1;
         if (keyBind == "STING_2") return mode == 2;
+        if (keyBind == "STING_3") return mode == 3;
         return true;
     });
 
@@ -56,7 +62,31 @@ function init(hero) {
             if (modifier.id() == "pinning") return mode == 1;
             if (modifier.id() == "lethal") return mode == 2;
         }
+        if (modifier.name() == "fiskheroes:controlled_flight") {
+            if (mode != 3) return false;
+            // Only allow flight when adjacent to a wall
+            var pos = entity.pos();
+            return entity.world().getBlock(pos.add(1, 0, 0)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(-1, 0, 0)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(0, 0, 1)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(0, 0, -1)) != "minecraft:air";
+        }
         return true;
+    });
+
+    // Tick handler — disable flying when not next to a wall in climbing mode
+    hero.setTickHandler(function (entity, manager) {
+        var mode = Number(entity.getData("worm:dyn/foil_sting"));
+        if (mode == 3 && entity.getData("fiskheroes:flying")) {
+            var pos = entity.pos();
+            var nearWall = entity.world().getBlock(pos.add(1, 0, 0)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(-1, 0, 0)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(0, 0, 1)) != "minecraft:air"
+                || entity.world().getBlock(pos.add(0, 0, -1)) != "minecraft:air";
+            if (!nearWall) {
+                manager.setData(entity, "fiskheroes:flying", false);
+            }
+        }
     });
 
     // Attribute profiles per sting mode
