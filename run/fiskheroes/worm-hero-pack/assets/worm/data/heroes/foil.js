@@ -10,6 +10,7 @@ function init(hero) {
     hero.setBoots("Boots");
 
     hero.addPowers("worm:foil_powers");
+    hero.addPowers("worm:undersiders");
 
     // Base attributes — skilled fencer with enhanced timing
     hero.addAttribute("PUNCH_DAMAGE", 3.0, 0);

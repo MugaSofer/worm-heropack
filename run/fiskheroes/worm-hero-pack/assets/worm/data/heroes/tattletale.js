@@ -184,6 +184,7 @@ function init(hero) {
     hero.setBoots("Boots");
 
     hero.addPowers("worm:tattletale_powers");
+    hero.addPowers("worm:undersiders");
     hero.addAttribute("PUNCH_DAMAGE", 1.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.08, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);

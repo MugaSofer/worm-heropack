@@ -30,6 +30,7 @@ function init(hero) {
     hero.setBoots("Boots");
 
     hero.addPowers("worm:regent_powers");
+    hero.addPowers("worm:undersiders");
     hero.addAttribute("PUNCH_DAMAGE", 3.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);

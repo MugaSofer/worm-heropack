@@ -24,6 +24,7 @@ function init(hero) {
     hero.setBoots("Combat Boots");
 
     hero.addPowers("worm:grue_powers");
+    hero.addPowers("worm:undersiders");
     hero.addAttribute("PUNCH_DAMAGE", 3.0, 0);
     hero.addAttribute("KNOCKBACK", 0.5, 0);
     hero.addAttribute("SPRINT_SPEED", 0.1, 1);

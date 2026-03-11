@@ -17,6 +17,7 @@ function init(hero) {
 
     hero.setDefaultScale(1.75);
     hero.addPowers("worm:bitch_powers");
+    hero.addPowers("worm:undersiders");
 
     hero.addAttribute("PUNCH_DAMAGE", 10.0, 0);
     hero.addAttribute("KNOCKBACK", 1.0, 0);

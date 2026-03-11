@@ -38,6 +38,7 @@ function init(hero) {
     hero.setHasProperty(function (entity, property) { return property == "MASK_TOGGLE"; });
 
     hero.addPowers("worm:imp_powers");
+    hero.addPowers("worm:undersiders");
     hero.addAttribute("PUNCH_DAMAGE", 2.0, 0);
     hero.addAttribute("SPRINT_SPEED", 0.05, 1);
     hero.addAttribute("FALL_RESISTANCE", 1.0, 0);

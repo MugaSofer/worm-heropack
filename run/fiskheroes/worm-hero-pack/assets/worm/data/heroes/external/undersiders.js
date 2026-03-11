@@ -119,7 +119,8 @@ function tick(entity, manager, hero) {
         if (PackLoader.getSide() == "SERVER") {
             try {
                 var targetName = scannedTarget.getName();
-                entity.as("PLAYER").addChatMessage("\u00A77\u00A7o+" + BONUS_DAMAGE + " damage \u2014 applying Tattletale's insight on \u00A7f" + targetName);
+                var article = scannedTarget.as("PLAYER") != null ? "" : "the ";
+                entity.as("PLAYER").addChatMessage("\u00A77\u00A7o+" + BONUS_DAMAGE + " damage \u2014 applying Tattletale's insight on \u00A7f" + article + targetName);
             } catch (e) {}
         }
     }
