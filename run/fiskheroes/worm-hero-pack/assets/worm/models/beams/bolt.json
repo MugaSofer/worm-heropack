@@ -3,20 +3,20 @@
     {
       "type": "LASER",
       "opacity": {
-		"start":0.0,
-		"end":0.4
-	  },
-      "scale": 0.5,
+        "start": 0.8,
+        "end": 1.0
+      },
+      "scale": 0.4,
       "spin": 0.0,
       "pulse": null,
       "core": {
-        "color": "0xFFFFFF",
-        "additiveBlending": true
+        "color": "0x222222",
+        "additiveBlending": false
       },
       "bloom": {
-        "strength": 0.75,
-        "spread": 5.5,
-        "dropoff": 3.0,
+        "strength": 0.0,
+        "spread": 0.0,
+        "dropoff": 0.0,
         "quality": 1.0,
         "scaleToSize": false
       }

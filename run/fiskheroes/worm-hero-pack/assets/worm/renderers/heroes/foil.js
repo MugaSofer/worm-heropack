@@ -56,7 +56,7 @@ function initEffects(renderer) {
 
     // Bolt beam visual for repulsor_blast
     utils.bindBeam(renderer, "fiskheroes:repulsor_blast", "worm:bolt", "rightArm", 0x000000, [
-        { "firstPerson": [-5.5, 1.0, -15.0], "offset": [-0.5, 9.0, -4.0], "size": [1.0, 1.0] }
+        { "firstPerson": [-4.0, 1.0, -10.0], "offset": [-0.5, 9.0, -4.0], "size": [2.0, 2.0] }
     ]);
 }
 
