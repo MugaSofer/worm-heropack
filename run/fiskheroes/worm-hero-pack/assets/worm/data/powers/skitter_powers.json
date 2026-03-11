@@ -12,14 +12,14 @@
     "fiskheroes:heat_vision|swarm_biting": {
       "damageProfile": {
         "damage": 3.0,
-        "types": { "SHARP": 0.6, "SHARP": 0.4 }
+        "types": { "SWARM": 1.0 }
       },
       "canDoGriefing": false, "range": 100.0, "radius": 0.3
     },
     "fiskheroes:heat_vision|swarm_stinging": {
       "damageProfile": {
         "damage": 3.0,
-        "types": { "SHARP": 1.0 },
+        "types": { "SWARM": 1.0 },
         "properties": {
           "EFFECTS": [
             {

@@ -1,3 +1,5 @@
+var team = implement("worm:external/undersiders");
+
 var SWARM_RADIUS = 100.0;
 var SWARM_DAMAGE = 1.0;
 var DRAIN_PER_HIT = 0.001;  // drain per tick for targeted
@@ -88,14 +90,13 @@ function init(hero) {
     // Damage profiles for AoE mode
     hero.addDamageProfile("SWARM_BITING", {
         "types": {
-            "SHARP": 0.6,
-            "SHARP": 0.4
+            "SWARM": 1.0
         }
     });
 
     hero.addDamageProfile("SWARM_STINGING", {
         "types": {
-            "SHARP": 1.0
+            "SWARM": 1.0
         },
         "properties": {
             "EFFECTS": [
@@ -110,6 +111,7 @@ function init(hero) {
     });
 
     hero.setTickHandler(function (entity, manager) {
+        team.tick(entity, manager);
         debounce_method = false;
         debounce_effect = false;
 
@@ -203,7 +205,7 @@ function init(hero) {
                 var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
                 for (var i = 0; i < nearby.length; i++) {
                     var target = nearby[i];
-                    if (target.isLivingEntity() && target.getUUID() != entity.getUUID()) {
+                    if (target.isLivingEntity() && target.getUUID() != entity.getUUID() && !team.isUndersider(target)) {
                         target.hurtByAttacker(heroRef, profileName, deathMsg, SWARM_DAMAGE, entity);
                     }
                 }
@@ -228,6 +230,9 @@ function init(hero) {
 }
 
 function isModifierEnabled(entity, modifier) {
+    var teamResult = team.isModifierEnabled(entity, modifier);
+    if (teamResult != null) return teamResult;
+
     var method = Number(entity.getData("worm:dyn/swarm_method"));
     var effect = Number(entity.getData("worm:dyn/swarm_effect"));
     var hasSwarm = entity.getData("worm:dyn/swarm_density") > 0.01;

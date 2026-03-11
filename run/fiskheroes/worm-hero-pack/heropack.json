@@ -28,7 +28,8 @@
     "CANCER": "Cancer",
     "COCAINE": "Cocaine",
     "SPACE": "Space",
-    "ADAMANTIUM": "Adamantium"
+    "ADAMANTIUM": "Adamantium",
+    "SWARM": "Swarm"
   },
   "dataVars": {
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
@@ -84,6 +85,8 @@
     "foil_kick_type": {"type": "BYTE", "resetWithoutSuit": true},
     "foil_dodge": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "foil_dodge_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
-    "foil_dodge_type": {"type": "BYTE", "resetWithoutSuit": true}
+    "foil_dodge_type": {"type": "BYTE", "resetWithoutSuit": true},
+    "tt_nearby": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "tt_target_scanned": {"type": "BOOLEAN", "resetWithoutSuit": true}
   }
 }
