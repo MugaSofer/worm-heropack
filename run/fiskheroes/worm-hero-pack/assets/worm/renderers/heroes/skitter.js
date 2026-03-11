@@ -3,6 +3,10 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:skitter_layer1_noarms",
     "layer2": "worm:skitter_layer1_noarms",
+    "helmet": "worm:skitter_helmet",
+    "chest": "worm:skitter_chest",
+    "leggings": "worm:skitter_leggings",
+    "boots": "worm:skitter_boots",
     "arm_tex": "worm:skitter_layer1"
 });
 
@@ -17,6 +21,14 @@ var wanderRadius = 250;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initEffects(renderer) {
@@ -96,7 +108,7 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    if (renderLayer == "CHESTPLATE") {
+    if (renderLayer == "CHESTPLATE" && entity.isWearingFullSuit()) {
         alexArmR.render();
         alexArmL.render();
     }
