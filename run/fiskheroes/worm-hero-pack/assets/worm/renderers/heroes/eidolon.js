@@ -2,6 +2,10 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:eidolon_layer1",
     "layer2": "worm:eidolon_layer1",
+    "helmet": "worm:eidolon_helmet",
+    "chest": "worm:eidolon_chest",
+    "leggings": "worm:eidolon_leggings",
+    "boots": "worm:eidolon_boots",
     "crystal": "worm:eidolon_crystal",
     "crystal_cracked1": "worm:eidolon_crystal_cracked1",
     "crystal_cracked2": "worm:eidolon_crystal_cracked2",
@@ -18,6 +22,15 @@ var flickerGlow;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.showModel("HELMET", "head", "headwear", "body", "rightArm", "leftArm", "rightLeg", "leftLeg");
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initAnimations(renderer) {

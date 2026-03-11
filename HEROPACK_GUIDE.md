@@ -490,6 +490,87 @@ function render(entity, renderLayer, isFirstPersonArm) {
 }
 ```
 
+### Per-Piece Texture Splitting (Partial Suit Rendering)
+
+Without per-piece textures, wearing individual armor pieces (e.g., just boots) renders the full body skin texture on that piece's geometry, causing wrong body parts to show. The fix: create separate textures per render layer, each containing only the UV regions relevant to that piece.
+
+**64x64 Minecraft Skin UV Layout:**
+| Region | Layer 1 (Base) | Layer 2 (Overlay) |
+|--------|---------------|-------------------|
+| Head | (0,0)-(31,15) | (32,0)-(63,15) |
+| Right Leg | (0,16)-(15,31) | (0,32)-(15,47) |
+| Body | (16,16)-(39,31) | (16,32)-(39,47) |
+| Right Arm | (40,16)-(55,31) | (40,32)-(55,47) |
+| Left Leg | (16,48)-(31,63) | (0,48)-(15,63) |
+| Left Arm | (32,48)-(47,63) | (48,48)-(63,63) |
+
+**Split textures needed per piece** (each is a 64x64 PNG with only the relevant UV regions filled, rest transparent):
+- **Mask/Helmet** — head overlay region only (32,0)-(63,15). For mask-style accessories, exclude the base head (hair/face) so it only shows with the full suit.
+- **Chest** — body + arm UV regions. Use the FULL texture (with normal-width arms) for partial suit, since slim alex arm overlays only render with full suit.
+- **Leggings** — leg UV regions, top portion of side faces + top cap.
+- **Boots** — leg UV regions, bottom portion of side faces + sole cap. Overlap 1 row with leggings at the boundary to prevent gaps.
+
+**Renderer pattern:**
+```javascript
+loadTextures({
+    "layer1": "domain:hero_noarms",       // Full costume, arms transparent (full suit + SKIN base)
+    "layer2": "domain:hero_noarms",
+    "mask": "domain:hero_mask",           // Head overlay only
+    "chest": "domain:hero_chest",         // Body + arms (with normal-width arm art)
+    "leggings": "domain:hero_leggings",
+    "boots": "domain:hero_boots",
+    "arm_tex": "domain:hero_full"         // Full texture for alex arm overlays
+});
+
+function init(renderer) {
+    parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "mask";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
+}
+
+function render(entity, renderLayer, isFirstPersonArm) {
+    // Alex arms only with full suit (partial suit uses normal arms from chest texture)
+    if (renderLayer == "CHESTPLATE" && entity.isWearingFullSuit()) {
+        alexArmR.render();
+        alexArmL.render();
+    }
+}
+```
+
+**Important notes:**
+- `setTexture()` only controls layer 1 (base) geometry. Body overlay UV regions (y=32-47) render on layer 2 geometry, controlled by the `"layer2"` key in `loadTextures`, not by `setTexture()`.
+- **Tick handlers only run with full suit equipped.** Cannot use data vars set in tick handlers for partial suit rendering decisions.
+- `entity.getEquipmentInSlot(4)` reads the helmet slot (confirmed working). `getWornHelmet()` may not exist.
+
+### showModel — Cross-Layer Body Part Rendering
+
+`renderer.showModel(renderLayer, ...bodyParts)` makes a render layer render additional body parts beyond its default set. This is essential when a costume piece visually spans multiple body regions (e.g., a scarf that's part of the helmet item but hangs down onto the torso).
+
+```javascript
+// Make HELMET layer also render body geometry (for scarf body pixels in mask texture)
+renderer.showModel("HELMET", "head", "headwear", "body");
+```
+
+Body part names: `"head"`, `"headwear"`, `"body"`, `"rightArm"`, `"leftArm"`, `"rightLeg"`, `"leftLeg"`.
+
+**Use case — Imp's scarf:** The scarf is part of the "Mask & Scarf" helmet item but has pixels in both head overlay (mask) and body overlay (scarf torso) UV regions. By adding `"body"` to the HELMET's showModel, the mask texture's body overlay pixels render on body geometry when the helmet is equipped.
+
+### fixHatLayer — Render Layer Ordering
+
+`renderer.fixHatLayer(layerA, layerB)` fixes render ordering between two armor layers. It makes the first layer's base geometry render when the second layer is equipped, but **only layer 1 (base) geometry, not layer 2 (overlay)**. It does NOT force a missing armor layer to fully render.
+
+```javascript
+renderer.fixHatLayer("HELMET", "CHESTPLATE");
+```
+
+For most cross-layer rendering needs, prefer `showModel` instead.
+
 ---
 
 ## 6. Model JSON
