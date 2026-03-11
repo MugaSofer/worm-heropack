@@ -994,12 +994,19 @@ The chestplate's `Equipment` NBT tag list controls what items the hero has avail
 - `manager.newTagList(jsonString)` — create a new tag list from a JSON string
 - `manager.setByte(itemSlot, "Count", newCount)` — modify item stack count
 
+**CRITICAL: Item IDs must be numeric**, not string names. `id:4097` works, `id:"fiskheroes:superhero_chestplate"` fails silently. Find the right ID by reading existing equipment NBT (see debugging pattern below).
+
+**Equipment tagCount behaviour:**
+- `tagCount() == 0` — items are in their initial state (managed by `addPrimaryEquipment`), OR all items have been taken out
+- `tagCount() > 0` — items have been returned/modified by the player
+- Use `tagCount() == 0` to detect "item was taken out, needs refill"
+
 **Conjure arbitrary items** (God/Doctor Manhattan pattern):
 ```javascript
 // Write a fresh item into the equipment slot on demand
 hero.addKeyBindFunc("CONJURE", function (entity, manager) {
     var nbt = entity.getWornChestplate().nbt();
-    var equipment = manager.newTagList('[{Index:0,Item:{Count:1,Damage:0,id:"minecraft:diamond_sword"}}]');
+    var equipment = manager.newTagList('[{Index:0,Item:{Count:1,Damage:0,id:4097,tag:{HeroType:"worm:parian_spare"}}}]');
     manager.setTagList(nbt, "Equipment", equipment);
     return true;
 }, "Conjure Item", 1);
@@ -1027,7 +1034,82 @@ manager.setByte(itemSlot, "Count", itemCount - 1);  // decrement
 - Transformation-based item swapping (different loadouts per form)
 - Any power that needs to repeatedly give the player items
 
-Reference implementations: `dmh:god` (DMH-v1.3.2), `stellar:dr_manhattan` (StellarHeroes_2.0.5).
+**Unlimited equipment** (tick-based replenishment):
+```javascript
+// In init: define initial equipment
+hero.addPrimaryEquipment('fiskheroes:superhero_chestplate{HeroType:worm:parian_spare}', true);
+
+// In tick handler: refill when taken out
+hero.setTickHandler(function (entity, manager) {
+    if (entity.ticksExisted() % 40 != 0) return;
+    var nbt = entity.getWornChestplate().nbt();
+    if (nbt.getTagList("Equipment").tagCount() == 0) {
+        manager.setTagList(nbt, "Equipment",
+            manager.newTagList('[{Index:0,Item:{Count:1,Damage:0,id:4097,tag:{HeroType:"worm:parian_spare"}}}]'));
+    }
+});
+```
+
+**Debug equipment NBT** (find numeric item IDs):
+```javascript
+// Dump equipment entry contents to chat
+var equipList = nbt.getTagList("Equipment");
+if (equipList.tagCount() > 0) {
+    var tag = equipList.getCompoundTag(0);
+    var item = tag.getCompoundTag("Item");
+    entity.as("PLAYER").addChatMessage("id=" + item.getShort("id")
+        + " dmg=" + item.getShort("Damage")
+        + " count=" + item.getByte("Count")
+        + " hero=" + item.getCompoundTag("tag").getString("HeroType"));
+}
+```
+
+**Known numeric item IDs:** `4097` = `fiskheroes:superhero_chestplate`
+
+Reference implementations: `dmh:god` (DMH-v1.3.2), `stellar:dr_manhattan` (StellarHeroes_2.0.5), `worm:parian` (unlimited equipment).
+
+#### 7. Single-Piece Full-Body Suits
+
+A hero can define only one armor piece (e.g. just a chestplate) while still rendering the full body using `showModel`:
+
+```javascript
+// In renderer init():
+renderer.showModel("CHESTPLATE", "head", "headwear", "body", "rightArm", "leftArm", "rightLeg", "leftLeg");
+```
+
+This tells the CHESTPLATE render layer to also draw all body parts. The hero's `setTexture` callback applies to all parts. Examples: Danny Phantom (TMHP), Green Lantern (TMHP/DCUniverse), Clayface (DCUniverse), many Casa de Heroes quantum suits.
+
+#### 8. Custom Tabula Models (.tbl)
+
+Tabula `.tbl` files are ZIP archives containing `model.json` and optionally `texture.png`. Create programmatically:
+
+```python
+import json, zipfile
+model = {
+    "modelName": "ModelBiped", "authorName": "pack", "projVersion": 2,
+    "textureWidth": 64, "textureHeight": 32,
+    "scale": [1.0, 1.0, 1.0], "cubeGroups": [], "anims": [],
+    "cubes": [{
+        "name": "panel", "dimensions": [8, 10, 1],
+        "position": [-4.0, 10.0, 3.0], "offset": [0.0, 0.0, 0.0],
+        "rotation": [6.0, 0.0, 0.0], "scale": [1.0, 1.0, 1.0],
+        "txOffset": [0, 0], "txMirror": False, "mcScale": 0.5,
+        "opacity": 100.0, "hidden": False, "children": [],
+        "identifier": "unique_id"
+    }],
+    "cubeCount": 1
+}
+with zipfile.ZipFile("model.tbl", "w") as zf:
+    zf.writestr("model.json", json.dumps(model))
+    zf.writestr("texture.png", png_bytes)  # bundled texture
+```
+
+**Key properties:**
+- `mcScale`: inflates each face outward by N units (useful for making panels larger without changing UV)
+- `txMirror`: flips UV horizontally (use for symmetric left/right panels with shared texture)
+- `offset`: shifts geometry from rotation point without moving the pivot
+
+**Pivot trick for `setRotation()`:** `effect.setRotation()` rotates around model origin (0,0,0), which maps to the anchor point on the player. To pivot at a custom point (e.g. waist at y=10), position the cube geometry so the desired pivot is at y=0 in model space, then use `effect.setOffset(0, 10, 0)` to translate down. Rotation then pivots at the waist.
 
 ---
 
