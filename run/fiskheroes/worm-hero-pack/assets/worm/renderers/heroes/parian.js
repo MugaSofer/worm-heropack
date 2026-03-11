@@ -31,6 +31,12 @@ function init(renderer) {
 function initAnimations(renderer) {
     parent.initAnimations(renderer);
 
+    // Suppress aiming animations — Parian doesn't use guns/repulsors
+    addAnimationWithData(renderer, "basic.AIMING", "fiskheroes:aiming", "fiskheroes:aiming_timer")
+        .setCondition(function (entity) { return false; });
+    addAnimationWithData(renderer, "basic.DUAL_AIMING", "fiskheroes:dual_aiming", "fiskheroes:aiming_timer")
+        .setCondition(function (entity) { return false; });
+
     var leftPunch = addAnimationWithData(renderer, "parian.LEFT_PUNCH", "worm:sentry_left_punch", "worm:dyn/parian_punch_timer");
     leftPunch.setCondition(function (entity) {
         return entity.getData("worm:dyn/parian_punch") && Number(entity.getData("worm:dyn/parian_attack_type")) == 0;
