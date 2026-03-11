@@ -16,20 +16,63 @@ function init(hero) {
     hero.addAttribute("FALL_RESISTANCE", 2.0, 0);
     hero.addAttribute("JUMP_HEIGHT", 0.5, 0);
 
-    // Rapier — toggle equip/unequip
+    // Rapier — auto-equip
     hero.addPrimaryEquipment("fisktag:weapon{WeaponType:worm:rapier}", true, function (item) {
         return item.nbt().getString("WeaponType") == "worm:rapier";
     });
 
-    // Sting attribute profile — massive weapon damage boost
-    hero.addAttributeProfile("STING", function (profile) {
+    // Sting mode cycling: 0=off, 1=pinning, 2=lethal (slot 1)
+    hero.addKeyBindFunc("STING_0", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/foil_sting", 1);
+        return true;
+    }, "\u00A7fSting: \u00A77Off \u00A78>", 1);
+
+    hero.addKeyBindFunc("STING_1", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/foil_sting", 2);
+        return true;
+    }, "\u00A7fSting: \u00A7ePinning \u00A78>", 1);
+
+    hero.addKeyBindFunc("STING_2", function (entity, manager) {
+        manager.setData(entity, "worm:dyn/foil_sting", 0);
+        return true;
+    }, "\u00A7fSting: \u00A7cLethal \u00A78>", 1);
+
+    // Throwing darts (slot 2)
+    hero.addKeyBind("UTILITY_BELT", "Throwing Darts", 2);
+
+    hero.setKeyBindEnabled(function (entity, keyBind) {
+        var mode = Number(entity.getData("worm:dyn/foil_sting"));
+        if (keyBind == "STING_0") return mode == 0;
+        if (keyBind == "STING_1") return mode == 1;
+        if (keyBind == "STING_2") return mode == 2;
+        return true;
+    });
+
+    // Gate equipment variants on sting mode
+    hero.setModifierEnabled(function (entity, modifier) {
+        var mode = Number(entity.getData("worm:dyn/foil_sting"));
+        if (modifier.name() == "fiskheroes:equipment") {
+            if (modifier.id() == "normal") return mode == 0;
+            if (modifier.id() == "pinning") return mode == 1;
+            if (modifier.id() == "lethal") return mode == 2;
+        }
+        return true;
+    });
+
+    // Attribute profiles per sting mode
+    hero.addAttributeProfile("PINNING", function (profile) {
         profile.inheritDefaults();
-        profile.addAttribute("WEAPON_DAMAGE", 25.0, 0);
-        profile.addAttribute("PUNCH_DAMAGE", 15.0, 0);
+    });
+
+    hero.addAttributeProfile("LETHAL", function (profile) {
+        profile.inheritDefaults();
+        profile.addAttribute("WEAPON_DAMAGE", 999.0, 0);
     });
 
     hero.setAttributeProfile(function (entity) {
-        if (entity.getData("worm:dyn/foil_sting")) return "STING";
+        var mode = Number(entity.getData("worm:dyn/foil_sting"));
+        if (mode == 1) return "PINNING";
+        if (mode == 2) return "LETHAL";
         return null;
     });
 
@@ -37,29 +80,22 @@ function init(hero) {
     hero.addDamageProfile("PUNCH", {
         "types": { "BLUNT": 1.0 }
     });
-    hero.addDamageProfile("STING_PUNCH", {
-        "types": { "SHARP": 1.0 }
-    });
     hero.addDamageProfile("RAPIER", {
         "types": { "SHARP": 1.0 }
     });
-    hero.addDamageProfile("STING_RAPIER", {
-        "types": { "SHARP": 1.0 }
+    hero.addDamageProfile("LETHAL_PUNCH", {
+        "types": { "SHARP": 0.5, "SPACE": 0.5 }
+    });
+    hero.addDamageProfile("LETHAL_RAPIER", {
+        "types": { "SHARP": 0.5, "SPACE": 0.5 }
     });
 
     hero.setDamageProfile(function (entity) {
-        var sting = entity.getData("worm:dyn/foil_sting");
+        var mode = Number(entity.getData("worm:dyn/foil_sting"));
         var holding = entity.getHeldItem().name() == "fisktag:weapon";
-        if (holding && sting) return "STING_RAPIER";
+        if (mode == 2 && holding) return "LETHAL_RAPIER";
+        if (mode == 2) return "LETHAL_PUNCH";
         if (holding) return "RAPIER";
-        if (sting) return "STING_PUNCH";
         return "PUNCH";
     });
-
-    // Sting toggle via keybind
-    hero.addKeyBindFunc("STING", function (entity, manager) {
-        var current = entity.getData("worm:dyn/foil_sting");
-        manager.setData(entity, "worm:dyn/foil_sting", !current);
-        return true;
-    }, "Sting", 2);
 }

@@ -1,4 +1,70 @@
 {
   "name": "Sting",
-  "modifiers": {}
+  "modifiers": {
+    "fiskheroes:equipment|normal": {
+      "equipment": {
+        "fiskheroes:throwing_star": {
+          "cooldown": 12,
+          "uses": 5,
+          "damageProfile": {
+            "damage": 5.0,
+            "types": {
+              "SHARP": 1.0
+            },
+            "properties": {
+              "DAMAGE_DROPOFF": 0.5,
+              "HIT_COOLDOWN": 0
+            }
+          }
+        }
+      },
+      "soundEvents": {
+        "SWITCH": "fiskheroes:utility_belt_switch"
+      }
+    },
+    "fiskheroes:equipment|pinning": {
+      "equipment": {
+        "fiskheroes:throwing_star": {
+          "cooldown": 12,
+          "uses": 5,
+          "damageProfile": {
+            "damage": 5.0,
+            "types": {
+              "SHARP": 1.0
+            },
+            "properties": {
+              "DAMAGE_DROPOFF": 0.5,
+              "HIT_COOLDOWN": 0,
+              "EFFECTS": [{ "id": "minecraft:slowness", "duration": 300, "amplifier": 127, "chance": 1 }]
+            }
+          }
+        }
+      },
+      "soundEvents": {
+        "SWITCH": "fiskheroes:utility_belt_switch"
+      }
+    },
+    "fiskheroes:equipment|lethal": {
+      "equipment": {
+        "fiskheroes:throwing_star": {
+          "cooldown": 12,
+          "uses": 5,
+          "damageProfile": {
+            "damage": 999.0,
+            "types": {
+              "SHARP": 0.5,
+              "SPACE": 0.5
+            },
+            "properties": {
+              "DAMAGE_DROPOFF": 0.1,
+              "HIT_COOLDOWN": 0
+            }
+          }
+        }
+      },
+      "soundEvents": {
+        "SWITCH": "fiskheroes:utility_belt_switch"
+      }
+    }
+  }
 }
