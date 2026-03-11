@@ -45,6 +45,12 @@ function init(hero) {
     // Throwing darts (slot 2)
     hero.addKeyBind("UTILITY_BELT", "Throwing Darts", 2);
 
+    // Crossbow (slot 3)
+    hero.addKeyBind("AIM", "Crossbow", 3);
+    hero.supplyFunction("canAim", function (entity) {
+        return entity.getHeldItem().isEmpty();
+    });
+
     hero.setKeyBindEnabled(function (entity, keyBind) {
         var mode = Number(entity.getData("worm:dyn/foil_sting"));
         if (keyBind == "STING_0") return mode == 0;
@@ -58,6 +64,11 @@ function init(hero) {
     hero.setModifierEnabled(function (entity, modifier) {
         var mode = Number(entity.getData("worm:dyn/foil_sting"));
         if (modifier.name() == "fiskheroes:equipment") {
+            if (modifier.id() == "normal") return mode == 0;
+            if (modifier.id() == "pinning") return mode == 1;
+            if (modifier.id() == "lethal") return mode == 2;
+        }
+        if (modifier.name() == "fiskheroes:repulsor_blast") {
             if (modifier.id() == "normal") return mode == 0;
             if (modifier.id() == "pinning") return mode == 1;
             if (modifier.id() == "lethal") return mode == 2;
