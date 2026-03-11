@@ -11,6 +11,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 9 | Alexandria | The Triumvirate |
 | 9 | Legend | The Triumvirate |
 | 5 | Skitter | The Undersiders |
+| 4 | Foil | The Undersiders |
 | 3 | Eidolon | The Triumvirate |
 | 3 | Grue | The Undersiders |
 | 3 | Bitch | The Undersiders |
@@ -492,6 +493,62 @@ Speed scales as `(size^1.5 - 1) * 0.5` — exponential growth makes large dogs d
 - All models use `ignoreAnchor(true)` for position independence from the player skeleton.
 - Dog size animates smoothly (0.05/tick) rather than snapping — growing/shrinking is visually gradual.
 - The companion dog (dismounted) uses the tentacle system with a custom walk animation synced to movement speed.
+
+---
+
+### Foil
+
+**Tier 4** | Lily. A Striker who can imbue objects with a power that lets them cut through anything — dimensional phasing that ignores all defences. Skilled fencer and martial artist with a crossbow for ranged engagement.
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 1 | Sting Mode | Cycles through Off > Pinning > Lethal. Affects melee, throwing darts, and crossbow bolts. |
+| 2 | Throwing Darts | Throw Sting-enhanced darts. 5 uses per reload, 0.6s cooldown. |
+| 3 | Crossbow | Aim and fire crossbow bolts. Requires empty hand. |
+| 4 | Kick / Stop Kick | Martial arts kick. Cycles through front flip, back flip, and roundhouse kick animations. |
+| 5 | Dodge / Stop Dodge | Evasive dodge with full damage immunity. Cycles through roll, front flip, and back flip. |
+| I | Equip/Unequip Item | Draw or holster the rapier. |
+
+#### Sting Modes (Key 1)
+
+Foil's signature power. Cycles through three modes that affect all her ranged weapons and melee attacks:
+
+| Mode | Darts | Crossbow Bolts | Melee (Rapier) | Melee (Fists) |
+|------|-------|----------------|----------------|---------------|
+| **Off** | 5 sharp | 6 sharp | 4 sharp | 3 blunt |
+| **Pinning** | 5 sharp + Slowness 127 (15s) | 6 sharp + Slowness 127 (15s) | 4 sharp | 3 blunt |
+| **Lethal** | 999 sharp/space | 999 sharp/space | 999 sharp/space | 999 sharp/space |
+
+- **Pinning** locks targets in place — Slowness 127 is total immobilization for 15 seconds.
+- **Lethal** deals 999 damage with the Space damage type, which bypasses all immunities and resistances. Kills anything in one hit.
+
+#### Crossbow
+
+Aim with Key 3 (right-click to fire). The crossbow appears stowed on Foil's back and moves to her hand when aiming. Fires a dark bolt projectile. Damage and effects follow the current Sting mode. 15-tick cooldown between shots, 40-block range.
+
+#### Wall Climbing
+
+Foil can climb walls at any time — walk up to a wall and activate flight (default: space). She'll cling to the surface and can move along it. Leaving the wall automatically disables flight. Works in all Sting modes.
+
+#### Passive Abilities
+
+- **Arrow catching** — Snatches incoming projectiles out of the air.
+- **Rapier auto-equip** — Automatically equipped when suiting up.
+- **Slim build** — Uses Alex (slim) arm models.
+- **50% fall resistance** — Halves fall damage (multiplicative).
+- **Enhanced mobility** — +10% sprint speed, +0.5 jump height.
+
+#### Notes
+
+- Sting mode changes take effect immediately — switch mid-combat to adapt.
+- The crossbow requires empty hands to aim. Holster the rapier first (I key).
+- Lethal mode's Space damage type is custom to this pack. Nothing in the game resists it.
+- Kicks cycle automatically: front flip → back flip → roundhouse → repeat. Each press plays the next animation.
+- Kick damage (6 blunt) is not affected by Sting mode — it's always blunt.
+- Dodge grants full invulnerability (metal skin + projectile immunity + fire immunity) for the animation's duration. Cycles through roll, front flip, and back flip — classic i-frames.
+- Dodge also boosts sprint speed (+30%) during the animation for a quick repositioning burst.
 
 ---
 

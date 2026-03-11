@@ -127,6 +127,17 @@
         "time": 8
       }
     },
+    "fiskheroes:metal_skin": {},
+    "fiskheroes:projectile_immunity": {},
+    "fiskheroes:fire_immunity": {},
+    "fiskheroes:transformation|dodge": {
+      "key": "DODGE",
+      "transformation": {
+        "toggleData": "worm:dyn/foil_dodge",
+        "timerData": "worm:dyn/foil_dodge_timer",
+        "time": 8
+      }
+    },
     "fiskheroes:controlled_flight": {
       "speed": 0.05,
       "boostSpeed": 0.05,

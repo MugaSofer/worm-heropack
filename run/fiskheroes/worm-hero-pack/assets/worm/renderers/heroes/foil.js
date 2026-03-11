@@ -75,6 +75,14 @@ function initAnimations(renderer) {
         .setCondition(function (entity) { return entity.getData("worm:dyn/kick") && Number(entity.getData("worm:dyn/foil_kick_type")) == 1; });
     addAnimationWithData(renderer, "foil.ROUNDHOUSE", "worm:roundhouse_kick", "worm:dyn/kick_timer")
         .setCondition(function (entity) { return entity.getData("worm:dyn/kick") && Number(entity.getData("worm:dyn/foil_kick_type")) == 2; });
+
+    // Dodge — cycling roll / front flip / back flip
+    addAnimationWithData(renderer, "foil.DODGE_ROLL", "worm:dodge_roll", "worm:dyn/foil_dodge_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/foil_dodge") && Number(entity.getData("worm:dyn/foil_dodge_type")) == 0; });
+    addAnimationWithData(renderer, "foil.DODGE_FRONT", "worm:front_flip_kick", "worm:dyn/foil_dodge_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/foil_dodge") && Number(entity.getData("worm:dyn/foil_dodge_type")) == 1; });
+    addAnimationWithData(renderer, "foil.DODGE_BACK", "worm:back_flip_kick", "worm:dyn/foil_dodge_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/foil_dodge") && Number(entity.getData("worm:dyn/foil_dodge_type")) == 2; });
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
