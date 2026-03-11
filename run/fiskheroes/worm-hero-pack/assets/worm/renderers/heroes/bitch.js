@@ -4,6 +4,10 @@ loadTextures({
     "layer1": "worm:bitch_invisible",
     "layer2": "worm:bitch_invisible",
     "skin": "worm:bitch_layer1",
+    "helmet": "worm:bitch_helmet",
+    "chest": "worm:bitch_chest",
+    "leggings": "worm:bitch_leggings",
+    "boots": "worm:bitch_boots",
     "dog_tex": "worm:monster_dog"
 });
 
@@ -27,10 +31,15 @@ var SITTING_DEPTH = BASE_RIDER_OFFSET - DOG_BACK_Y * BASE_DOG_SCALE;
 function init(renderer) {
     parent.init(renderer);
     renderer.setTexture(function (entity, renderLayer) {
-        var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
-        if (dismount > 0.5) {
-            return "skin";
+        if (!entity.isWearingFullSuit()) {
+            if (renderLayer == "SKIN") return "skin";
+            if (renderLayer == "HELMET") return "helmet";
+            if (renderLayer == "LEGGINGS") return "leggings";
+            if (renderLayer == "BOOTS") return "boots";
+            return "chest";
         }
+        var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
+        if (dismount > 0.5) return "skin";
         if (renderLayer == "SKIN") return "layer1";
         return "layer2";
     });
@@ -122,7 +131,7 @@ function initEffects(renderer) {
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
-    if (renderLayer != "CHESTPLATE" || isFirstPersonArm) return;
+    if (renderLayer != "CHESTPLATE" || isFirstPersonArm || !entity.isWearingFullSuit()) return;
 
     var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
 
