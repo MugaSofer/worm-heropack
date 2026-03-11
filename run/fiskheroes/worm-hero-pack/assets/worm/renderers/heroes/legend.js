@@ -1,7 +1,11 @@
 extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:legend_layer1",
-    "layer2": "worm:legend_layer1"
+    "layer2": "worm:legend_layer1",
+    "helmet": "worm:legend_helmet",
+    "chest": "worm:legend_chest",
+    "leggings": "worm:legend_leggings",
+    "boots": "worm:legend_boots"
 });
 
 var utils = implement("fiskheroes:external/utils");
@@ -12,6 +16,14 @@ var energyFormGlow;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initAnimations(renderer) {

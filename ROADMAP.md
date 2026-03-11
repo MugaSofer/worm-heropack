@@ -90,6 +90,7 @@ Imp - DONE
 Skitter
 
 - Swarm gain/loss mechanic? - DONE (MVP)
+	- Add some way for fire etc. to reduce swarm
 - Knife, pepper spray, gun (as items?)
 - Tricks: spells?
 	- Swarm decoys
@@ -101,11 +102,9 @@ Skitter
 	- web zip and/or web swinging - much slower somehow?
 - Ideally: some way to have swarm attack enemies through walls
 
-Tattletale
+Tattletale - DONE
 
-- Copy any info effect we can find
 - Cutting words - some kind of stun? based on Legend's invisible + slow laser? only on humans?
-- gun
 - Buff on nearby Undersiders - slightly increased damage, can use tinker weapons they find
 
 Regent - DONE (MVP, needs polish)
@@ -113,7 +112,6 @@ Regent - DONE (MVP, needs polish)
 - TK, but if you try to lift people it fails, v. limited duration? - DONE
 	- You *can* move people in midair if they can fly?
 - Backfires - bar fills up, risk of damage on using power if above 50%. Raises higher when targeting non-humanoids.
-- Powers fail on robots & telepathy-immune
 - Taser staff
 
 Bitch - DONE (MVP, needs polish)
@@ -376,6 +374,7 @@ Faultline
 
 Gregor
 - Ranged slime blast, debuffs
+- Items - splash potions/slime/water/etc
 - Increased block place range when slime equipped in hand
 
 Shamrock
