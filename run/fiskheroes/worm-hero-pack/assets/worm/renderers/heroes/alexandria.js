@@ -2,6 +2,10 @@ extend("fiskheroes:hero_basic");
 loadTextures({
     "layer1": "worm:alexandria_layer1",
     "layer2": "worm:alexandria_layer2",
+    "helmet": "worm:alexandria_helmet",
+    "chest": "worm:alexandria_chest",
+    "leggings": "worm:alexandria_leggings",
+    "boots": "worm:alexandria_boots",
     "cape": "worm:alexandria_cape"
 });
 
@@ -12,6 +16,14 @@ var cape;
 
 function init(renderer) {
     parent.init(renderer);
+    renderer.setTexture(function (entity, renderLayer) {
+        if (entity.isWearingFullSuit()) return "layer1";
+        if (renderLayer == "SKIN") return "layer1";
+        if (renderLayer == "HELMET") return "helmet";
+        if (renderLayer == "LEGGINGS") return "leggings";
+        if (renderLayer == "BOOTS") return "boots";
+        return "chest";
+    });
 }
 
 function initAnimations(renderer) {
