@@ -10,7 +10,7 @@ Textures:
 
 Models & Animations:
 - Thin Alex-style arms from DC Universe Hero Pack (loriatpack)
-- Martial arts kick from Diabolical Heroes
+- Martial arts kicks (roundhouse, front flip, back flip) from Hell's Kitchen
 - Invisible beam renderer from Harpack
 - Beret 92F pistol model & crosshair from FiskTag (built-in pistol)
 - Beret 92F gunshot beam based on JMCT Heroes gunshot beam

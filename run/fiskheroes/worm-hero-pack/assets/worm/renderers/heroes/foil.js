@@ -67,6 +67,14 @@ function initAnimations(renderer) {
     // Replace default aiming with single-arm aim (crossbow)
     renderer.removeCustomAnimation("basic.AIMING");
     addAnimationWithData(renderer, "basic.AIMING", "fiskheroes:aiming_fpcorr", "fiskheroes:aiming_timer");
+
+    // Martial arts kicks — cycling front flip / back flip / roundhouse
+    addAnimationWithData(renderer, "foil.FRONTKICK", "worm:front_flip_kick", "worm:dyn/kick_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/kick") && Number(entity.getData("worm:dyn/foil_kick_type")) == 0; });
+    addAnimationWithData(renderer, "foil.BACKKICK", "worm:back_flip_kick", "worm:dyn/kick_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/kick") && Number(entity.getData("worm:dyn/foil_kick_type")) == 1; });
+    addAnimationWithData(renderer, "foil.ROUNDHOUSE", "worm:roundhouse_kick", "worm:dyn/kick_timer")
+        .setCondition(function (entity) { return entity.getData("worm:dyn/kick") && Number(entity.getData("worm:dyn/foil_kick_type")) == 2; });
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {

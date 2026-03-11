@@ -51,12 +51,18 @@ function init(hero) {
         return entity.getHeldItem().isEmpty();
     });
 
+    // Martial arts kick (slot 4) — alternates front flip / back flip
+    hero.addKeyBind("ROUNDHOUSEKICK", "Kick", 4);
+    hero.addKeyBind("ROUNDHOUSEKICK_STOP", "\u00A7mKick", 4);
+
     hero.setKeyBindEnabled(function (entity, keyBind) {
         var mode = Number(entity.getData("worm:dyn/foil_sting"));
         if (keyBind == "STING_0") return mode == 0;
         if (keyBind == "STING_1") return mode == 1;
         if (keyBind == "STING_2") return mode == 2;
         if (keyBind == "STING_3") return mode == 3;
+        if (keyBind == "ROUNDHOUSEKICK") return entity.getData("worm:dyn/kick_timer") == 0;
+        if (keyBind == "ROUNDHOUSEKICK_STOP") return entity.getData("worm:dyn/kick_timer") != 0;
         return true;
     });
 
@@ -88,6 +94,7 @@ function init(hero) {
     // Tick handler — disable flying when not next to a wall in climbing mode
     hero.setTickHandler(function (entity, manager) {
         var mode = Number(entity.getData("worm:dyn/foil_sting"));
+        // Wall climbing — disable flying when not near wall
         if (mode == 3 && entity.getData("fiskheroes:flying")) {
             var pos = entity.pos();
             var nearWall = entity.world().getBlock(pos.add(1, 0, 0)) != "minecraft:air"
@@ -97,6 +104,21 @@ function init(hero) {
             if (!nearWall) {
                 manager.setData(entity, "fiskheroes:flying", false);
             }
+        }
+        // Kick: auto-cancel when timer completes
+        if (entity.getData("worm:dyn/kick_timer") == 1) {
+            manager.setData(entity, "worm:dyn/kick", false);
+            // Alternate kick type for next press
+            manager.setData(entity, "worm:dyn/foil_kick_type", (Number(entity.getData("worm:dyn/foil_kick_type")) + 1) % 3);
+        }
+        // Kick: deal damage at the midpoint of the animation
+        if (entity.getData("worm:dyn/kick") && entity.getData("worm:dyn/kick_timer") > 0.4 && entity.getData("worm:dyn/kick_timer") < 0.6) {
+            var list = entity.world().getEntitiesInRangeOf(entity.pos(), 3.0);
+            list.forEach(function (target) {
+                if (!entity.equals(target) && target.isLivingEntity()) {
+                    target.hurtByAttacker(hero, "KICK", "%s was kicked to death by %s", 6.0, entity);
+                }
+            });
         }
     });
 
@@ -129,6 +151,10 @@ function init(hero) {
     });
     hero.addDamageProfile("LETHAL_RAPIER", {
         "types": { "SHARP": 0.5, "SPACE": 0.5 }
+    });
+    hero.addDamageProfile("KICK", {
+        "types": { "BLUNT": 1.0 },
+        "properties": { "HIT_COOLDOWN": 20 }
     });
 
     hero.setDamageProfile(function (entity) {

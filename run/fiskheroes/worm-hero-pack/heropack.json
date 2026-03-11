@@ -80,6 +80,7 @@
     "tt_active": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "tt_active_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "tt_headache": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
-    "foil_sting": {"type": "BYTE", "resetWithoutSuit": true}
+    "foil_sting": {"type": "BYTE", "resetWithoutSuit": true},
+    "foil_kick_type": {"type": "BYTE", "resetWithoutSuit": true}
   }
 }
