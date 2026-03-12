@@ -95,7 +95,7 @@
   "sounds": {
     "download": {
       "repository": "MugaSofer/worm-heropack",
-      "version": 1
+      "version": 2
     },
     "range": {
       "suit.bitch.bark": 16.0
