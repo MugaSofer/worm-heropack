@@ -472,20 +472,20 @@ Particles scale inversely with density — at low levels, sparse insects spread 
 
 | Key | Ability | Description |
 |-----|---------|-------------|
-| 1 | Call / Mount Dog | Toggle mount/dismount. Dismounting reveals Rachel on foot with a companion dog following. |
-| 2 | Grow Dog | Increase dog size by 0.25 (max 3.0). Scales up speed, damage, knockback, and step height. |
-| 3 | Shrink Dog | Decrease dog size by 0.25 (min 0.5). |
-| 4 | Crouch Leap | Toggle crouch stance. Hold still to charge (HUD circle fills over 3 seconds), then move to leap with massive jump height and speed burst. |
+| 1 | Call Dog / Mount-Dismount | First press summons a companion dog. Subsequent presses toggle between mounted (riding the big dog) and dismounted (companion follows on foot). Label changes after first use. |
+| 2 | Grow Dog | Increase dog size by 0.25 (max 3.0). Scales up speed, damage, knockback, and step height. Only visible while mounted. |
+| 3 | Shrink Dog | Decrease dog size by 0.25 (min 1.0). Only visible while mounted and above minimum size. |
+| 4 | Crouch Leap | Toggle crouch stance. Hold still to charge (HUD circle fills over 3 seconds), then move to leap with massive jump height and speed burst. Only visible while mounted. |
 
 #### Dog Size Scaling
 
-The monster dog's stats scale with size (default 1.75):
+The monster dog's stats scale with size (default 1.25):
 
 | Size | Punch Damage | Sprint Speed | Step Height | Jump |
 |------|-------------|-------------|-------------|------|
-| 0.5 (min) | 5 | Slow | 0.25 | 0.5 |
-| 1.0 | 10 | Normal | 0.5 | 1.0 |
-| 1.75 (default) | 17.5 | Fast | 0.875 | 1.75 |
+| 1.0 (min) | 10 | Normal | 0.5 | 1.0 |
+| 1.25 (default) | 12.5 | Moderate | 0.625 | 1.25 |
+| 2.0 | 20 | Fast | 1.0 | 2.0 |
 | 3.0 (max) | 30 | Very fast | 1.5 | 3.0 |
 
 Speed scales as `(size^1.5 - 1) * 0.5` — exponential growth makes large dogs devastatingly fast.
@@ -498,15 +498,27 @@ Speed scales as `(size^1.5 - 1) * 0.5` — exponential growth makes large dogs d
 4. The leap fires on first movement after full charge. Moving before full charge cancels the crouch.
 5. Auto-cancels if airborne for more than 3 ticks (prevents hovering).
 
-#### Mount / Dismount
+#### Three-State Mount System
 
-- **Mounted** (default): You ride the monster dog. The player model is replaced with a custom 3D dog (body + 4 animated legs) with Rachel sitting on top (torso, head with look-tracking, swinging arms). Walk animation drives both dog legs and Rachel's arms.
-- **Dismounted**: Rachel appears as a normal player with her skin. A companion dog follows on a tentacle leash. Dog size/grow/shrink/leap keybinds are hidden.
+1. **No dog** (initial): Rachel stands alone. Costume stand safe. Press Key 1 to call the dog.
+2. **Companion following**: A small dog follows Rachel on a tentacle leash. Press Key 1 again to mount.
+3. **Mounted**: You ride the monster dog. The player model is replaced with a custom 3D dog (body + 4 animated legs) with Rachel sitting on top (torso, head with look-tracking, swinging arms). Press Key 1 to dismount back to companion mode.
+
+Mount/dismount transitions are near-instant (~0.15s) with a burst of gore particles (red dust + spider eye viscera).
+
+#### Dog Bark Warning
+
+When the dog is active (called or mounted), it barks periodically when non-Undersider living entities are within 16 blocks. The bark pitch scales with dog size — small dogs have high-pitched barks, large dogs have deep growls. Cooldown between barks is 5–10 seconds.
+
+#### Gore Particles
+
+- **Mount/dismount**: Burst of red dust and spider eye fragments during the transition.
+- **Size change**: Burst of gore when the dog grows or shrinks, representing flesh tearing and reforming.
 
 #### Passive Abilities
 
 - **Massive stats** — 10 base punch damage, high knockback, +30% sprint speed, +1 jump height, full fall resistance, +20 max health, 0.5 step height. All scale with dog size.
-- **1.75x default scale** — The hitbox is 75% larger than a normal player to match the dog model.
+- **1.75x mounted scale** — The hitbox is 75% larger than a normal player while mounted to match the dog model. Returns to normal scale when dismounted.
 
 #### Notes
 
@@ -515,6 +527,7 @@ Speed scales as `(size^1.5 - 1) * 0.5` — exponential growth makes large dogs d
 - All models use `ignoreAnchor(true)` for position independence from the player skeleton.
 - Dog size animates smoothly (0.05/tick) rather than snapping — growing/shrinking is visually gradual.
 - The companion dog (dismounted) uses the tentacle system with a custom walk animation synced to movement speed.
+- Equipping the suit shows Rachel normally with no dog — safe for costume stands.
 
 ---
 

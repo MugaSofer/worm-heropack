@@ -187,25 +187,28 @@ function init(hero) {
         // Animate crouch timer
         manager.incrementData(entity, "worm:dyn/dog_crouch_timer", 60, entity.getData("worm:dyn/dog_crouch"));
 
-        // Dog bark warning — bark when hostile mobs are nearby
+        // Dog bark warning — bark when non-Undersider living entities are nearby
         var barkCd = entity.getData("worm:dyn/dog_bark_cooldown");
         if (barkCd > 0) {
             manager.setData(entity, "worm:dyn/dog_bark_cooldown", barkCd - 1);
-        } else if (entity.ticksExisted() % 20 == 0) {
-            // Check for hostiles every second
+        } else if (dogCalled && entity.ticksExisted() % 20 == 0) {
             var hostileNearby = false;
-            entity.world().getEntitiesInRangeOf(entity.pos(), BARK_RANGE).forEach(function (other) {
-                if (!entity.equals(other) && other.isLivingEntity() && other.as("PLAYER") == null) {
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), BARK_RANGE);
+            for (var i = 0; i < nearby.length; i++) {
+                var other = nearby[i];
+                if (!entity.equals(other) && other.isLivingEntity() && !team.isUndersider(other)) {
                     hostileNearby = true;
+                    break;
                 }
-            });
+            }
             if (hostileNearby) {
-                // Deeper bark when bigger: size 0.5 → pitch ~1.1, size 3.0 → pitch ~0.6
+                // Deeper bark when bigger: size 1.0 → pitch ~1.2, size 3.0 → pitch ~0.4
                 var dogSize = entity.getData("worm:dyn/dog_size");
                 if (dogSize <= 0) dogSize = BASELINE_SIZE;
-                var basePitch = 1.3 - (dogSize / MAX_DOG_SIZE) * 0.7;
-                entity.playSound("worm:suit.bitch.bark", 1.0, basePitch + Math.random() * 0.1);
-                // Deterministic-ish cooldown based on ticks to avoid desync issues
+                var basePitch = 1.4 - (dogSize / MAX_DOG_SIZE) * 1.0;
+                // Use ticksExisted for deterministic pitch variation (no Math.random)
+                var pitchVariation = (entity.ticksExisted() % 10) * 0.01;
+                entity.playSound("worm:suit.bitch.bark", 1.0, basePitch + pitchVariation);
                 var cd = BARK_COOLDOWN_MIN + (entity.ticksExisted() % 5) * 20;
                 manager.setData(entity, "worm:dyn/dog_bark_cooldown", cd);
             }
