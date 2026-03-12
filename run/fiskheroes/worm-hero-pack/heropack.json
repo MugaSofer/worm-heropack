@@ -29,7 +29,8 @@
     "COCAINE": "Cocaine",
     "SPACE": "Space",
     "ADAMANTIUM": "Adamantium",
-    "SWARM": "Swarm"
+    "SWARM": "Swarm",
+    "HEAT_VISION": "Heat Vision"
   },
   "dataVars": {
     "kick": {"type": "BOOLEAN", "resetWithoutSuit": true},
