@@ -131,9 +131,10 @@ Optional: Brutus
 - can grow *but only with Bitch around*, and/or *Bitch has a power that makes him grow*. (Investigation suggests this should be possible.)
 
 GENERAL:
-- Add general "Undersider" package. Immune/resistant to Imp's confusion, Skitter's bugs; benefit from Tattletale's buffs.
+- Add general "Undersider" package. Immune/resistant to Imp's confusion, Skitter's bugs; benefit from Tattletale's buffs. - DONE
+	- Currently a dummy, with the actual effects being in their hero profiles - consolidate?
 
-#Phase X - UNDERSIDERS B
+#Phase 3 - UNDERSIDERS B - DONE
 
 Parian
 - Craft costume - primary item. Grants various costumes, including spare costume (standard but 1 item). Canon options include:

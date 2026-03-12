@@ -1,5 +1,4 @@
 var SENTRY_RANGE = 3.0;
-var SENTRY_DAMAGE = 5.0;
 var SENTRY_COOLDOWN = 20; // ticks between punches
 var PUNCH_DURATION = 12; // ticks the punch animation lasts (0.6s matches roundhouse_kick timing)
 var heroRef = null;
@@ -41,7 +40,8 @@ function init(hero, selfType) {
 
 var cachedEquipTag = null;
 
-function tick(entity, manager, selfType) {
+function tick(entity, manager, selfType, sentryDamage) {
+    var dmg = sentryDamage || 5.0;
     // Equipment replenishment — populate all 3 puppet costumes when empty
     var nbt = entity.getWornChestplate().nbt();
     if (nbt.getTagList("Equipment").tagCount() == 0) {
@@ -60,7 +60,7 @@ function tick(entity, manager, selfType) {
     if (heroRef && entity.getData("fiskheroes:aiming") && punchTick[uid] == 0) {
         entity.world().getEntitiesInRangeOf(entity.pos(), SENTRY_RANGE).forEach(function (other) {
             if (!entity.equals(other) && other.isLivingEntity() && other.as("LIVING").getHealth() > 0) {
-                other.hurtByAttacker(heroRef, "PUNCH", "%s was pummeled by %s", SENTRY_DAMAGE, entity);
+                other.hurtByAttacker(heroRef, "PUNCH", "%s was pummeled by %s", dmg, entity);
                 didPunch = true;
             }
         });

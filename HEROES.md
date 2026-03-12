@@ -10,6 +10,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 |------|------|------|
 | 9 | Alexandria | The Triumvirate |
 | 9 | Legend | The Triumvirate |
+| 7 | Parian (Puppets) | The Undersiders |
 | 5 | Skitter | The Undersiders |
 | 4 | Foil | The Undersiders |
 | 3 | Eidolon | The Triumvirate |
@@ -18,6 +19,7 @@ A hero pack for Fisk's Superheroes (Minecraft 1.7.10) based on Wildbow's *Worm*.
 | 2 | Tattletale | The Undersiders |
 | 2 | Regent | The Undersiders |
 | 2 | Imp | The Undersiders |
+| 2 | Parian | The Undersiders |
 
 ---
 
@@ -569,6 +571,63 @@ Foil can climb walls at any time — walk up to a wall and activate flight (defa
 - Kick damage (6 blunt) is not affected by Sting mode — it's always blunt.
 - Dodge grants full invulnerability (metal skin + projectile immunity + fire immunity) for the animation's duration. Cycles through roll, front flip, and back flip — classic i-frames.
 - Dodge also boosts sprint speed (+30%) during the animation for a quick repositioning burst.
+
+---
+
+### Parian
+
+**Tier 2 (Tier 7 via Puppets)** | A fabric-controlling telekinetic who brings stuffed animal costumes to life as combat puppets. In sentry mode, you vacate the costume and it fights autonomously; you can also deploy into a bear or gorilla for heavier combat.
+
+#### Suits
+
+| Suit name | Description | Tier |
+|-----------|-------------|------|
+| `worm:parian` | Parian in her full four-piece costume. | 2 |
+| `worm:parian_spare` | Spare Costume — a single-piece chestplate version of Parian's suit. | 2 |
+| `worm:parian_bear` | Parian's bear puppet. Full-body single-piece chestplate costume. | 7 |
+| `worm:parian_gorilla` | Parian's gorilla puppet. Full-body single-piece chestplate costume. | 7 |
+
+#### Keybinds
+
+| Key | Ability | Description |
+|-----|---------|-------------|
+| 3 | Sentry Mode | Vacate the costume — it becomes an autonomous AI combatant that attacks nearby hostiles. Right-click it to return. Sneak + right-click toggles sentry flight. |
+| I | Switch Puppet | Opens radial menu to switch between Spare Costume, Bear, and Gorilla. |
+
+#### Sentry Mode
+
+When you activate sentry mode, the costume is deployed as a `EntityIronMan` AI entity:
+
+- **Targeting**: The sentry auto-acquires hostile mobs within 30 blocks.
+- **Melee attacks**: When the sentry has a target, it punches everything within 3 blocks every second (20 ticks), cycling through three animations: left punch → kick → left hook.
+- **Damage**: Varies by which costume is deployed (see below).
+- **No ranged attack**: The built-in sentry ranged AI requires a repulsor blast, which Parian doesn't have — so it only does melee.
+- **Following**: The sentry will follow you around when not in combat.
+- **Return**: Right-click the sentry entity to re-enter the costume.
+
+#### Puppet Costumes
+
+Parian carries all three puppet suits in her Equipment slots and automatically replenishes them if depleted. Press I to switch:
+
+| Puppet | Punch | Sprint | Jump | Sentry Damage | Notes |
+|--------|-------|--------|------|---------------|-------|
+| **Spare Costume** | 1 blunt | +5% | — | 5 blunt | Parian herself — weakest but mobile. |
+| **Bear** | 8 blunt | +15% | +1.0 | 8 blunt | Heavy combat puppet. Knockback bonus. |
+| **Gorilla** | 9 blunt | +20% | +1.5 | 9 blunt | Strongest puppet. Best jump and speed. |
+
+All puppets share: full fall resistance, 0.5 knockback bonus (Bear/Gorilla).
+
+#### Passive Abilities
+
+- **Slim arms** — Parian uses Alex (slim) arm models.
+- **Dress physics** — The skirt tilts forward dynamically based on movement speed.
+
+#### Notes
+
+- The sentry's `aiming` state (having a target) is what triggers melee attacks — the attacks are handled by a custom tick handler, not the built-in sentry AI.
+- All four suits share the same keybinds and power system. Switching puppets is purely about which costume you're wearing.
+- The puppet equipment auto-replenishes — you can't lose the costumes by dropping them.
+- Bear and Gorilla are single-piece chestplate costumes that render the full body (head, torso, arms, legs) on the chestplate layer.
 
 ---
 

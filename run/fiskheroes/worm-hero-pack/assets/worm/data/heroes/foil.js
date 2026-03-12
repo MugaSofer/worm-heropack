@@ -142,11 +142,13 @@ function init(hero) {
     // Attribute profiles per sting mode
     hero.addAttributeProfile("PINNING", function (profile) {
         profile.inheritDefaults();
+        profile.addAttribute("ARROW_DAMAGE", 0.5, 1);
     });
 
     hero.addAttributeProfile("LETHAL", function (profile) {
         profile.inheritDefaults();
         profile.addAttribute("WEAPON_DAMAGE", 999.0, 0);
+        profile.addAttribute("ARROW_DAMAGE", 142.0, 1);
     });
 
     hero.addAttributeProfile("DODGE", function (profile) {
