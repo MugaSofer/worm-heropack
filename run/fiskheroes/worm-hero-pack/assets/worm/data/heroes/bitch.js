@@ -6,6 +6,10 @@ var BASELINE_SIZE = 1.75;
 var GROW_STEP = 0.25;
 var ANIM_SPEED = 0.05;
 
+var BARK_RANGE = 16.0;
+var BARK_COOLDOWN_MIN = 100; // 5 seconds minimum between barks
+var BARK_COOLDOWN_MAX = 200; // 10 seconds max
+
 function init(hero) {
     hero.setName("Bitch");
     hero.setTier(3);
@@ -15,7 +19,7 @@ function init(hero) {
     hero.setLeggings("Skirt");
     hero.setBoots("Boots");
 
-    hero.setDefaultScale(1.75);
+    hero.setDefaultScale(1.0);
     hero.addPowers("worm:bitch_powers");
     hero.addPowers("worm:undersiders");
 
@@ -55,16 +59,10 @@ function init(hero) {
     hero.setAttributeProfile(getProfile);
     hero.setDamageProfile(getProfile);
 
-    hero.addKeyBindFunc("MOUNT_DOG", function (entity, manager) {
-        manager.setData(entity, "worm:dyn/dog_mounted", !entity.getData("worm:dyn/dog_mounted"));
-        return true;
-    }, "Mount / Dismount Dog", 1);
-
-    // Companion dog (tentacle) only shows when dismounted
-    hero.setModifierEnabled(function (entity, modifier) {
-        if (modifier == "fiskheroes:tentacles") return !entity.getData("worm:dyn/dog_mounted");
-        return true;
-    });
+    // TENTACLES keybind drives mount/dismount
+    // Retracted (default) = no dog (costume stands safe)
+    // Extended (pressed) = dog called, Rachel mounted
+    hero.addKeyBind("TENTACLES", "Call / Dismiss Dog", 1);
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
@@ -88,7 +86,7 @@ function init(hero) {
     }, "Crouch Leap", 4);
 
     hero.setKeyBindEnabled(function (entity, keyBind) {
-        var mounted = entity.getData("worm:dyn/dog_mounted");
+        var mounted = entity.getData("worm:dyn/dog_mounted") && entity.getData("fiskheroes:tentacle_extend_timer") == 0;
         var size = entity.getData("worm:dyn/dog_size");
         if (keyBind == "GROW_DOG") return mounted && size < MAX_DOG_SIZE;
         if (keyBind == "SHRINK_DOG") return mounted && size > MIN_DOG_SIZE;
@@ -106,8 +104,20 @@ function init(hero) {
     var heroRef = hero;
     hero.setTickHandler(function (entity, manager) {
         team.tick(entity, manager, heroRef);
-        // Mount state driven by custom keybind (defaults false = dismounted)
-        var mounted = entity.getData("worm:dyn/dog_mounted");
+        // Three states: no dog (initial) / companion following / mounted
+        // Tentacles OUT = companion dog following (dismounted)
+        // Tentacles IN + dog_called = mounted on big dog
+        // Tentacles IN + !dog_called = no dog (costume stand default)
+        var tentaclesOut = entity.getData("fiskheroes:tentacle_extend_timer") > 0;
+        var dogCalled = entity.getData("worm:dyn/dog_mounted");
+
+        // First time tentacles extend = dog has been called
+        if (!dogCalled && tentaclesOut) {
+            manager.setData(entity, "worm:dyn/dog_mounted", true);
+            dogCalled = true;
+        }
+
+        var mounted = dogCalled && !tentaclesOut;
         var dismounted = !mounted;
         if (entity.getData("worm:dyn/dog_dismounted") != dismounted) {
             manager.setData(entity, "worm:dyn/dog_dismounted", dismounted);
@@ -172,11 +182,37 @@ function init(hero) {
 
         // Animate crouch timer
         manager.incrementData(entity, "worm:dyn/dog_crouch_timer", 60, entity.getData("worm:dyn/dog_crouch"));
+
+        // Dog bark warning — bark when hostile mobs are nearby
+        var barkCd = entity.getData("worm:dyn/dog_bark_cooldown");
+        if (barkCd > 0) {
+            manager.setData(entity, "worm:dyn/dog_bark_cooldown", barkCd - 1);
+        } else if (entity.ticksExisted() % 20 == 0) {
+            // Check for hostiles every second
+            var hostileNearby = false;
+            entity.world().getEntitiesInRangeOf(entity.pos(), BARK_RANGE).forEach(function (other) {
+                if (!entity.equals(other) && other.isLivingEntity() && other.as("PLAYER") == null) {
+                    hostileNearby = true;
+                }
+            });
+            if (hostileNearby) {
+                // Deeper bark when bigger: size 0.5 → pitch ~1.1, size 3.0 → pitch ~0.6
+                var dogSize = entity.getData("worm:dyn/dog_size");
+                if (dogSize <= 0) dogSize = BASELINE_SIZE;
+                var basePitch = 1.3 - (dogSize / MAX_DOG_SIZE) * 0.7;
+                entity.playSound("worm:suit.bitch.bark", 1.0, basePitch + Math.random() * 0.1);
+                // Deterministic-ish cooldown based on ticks to avoid desync issues
+                var cd = BARK_COOLDOWN_MIN + (entity.ticksExisted() % 5) * 20;
+                manager.setData(entity, "worm:dyn/dog_bark_cooldown", cd);
+            }
+        }
     });
 }
 
 function getProfile(entity) {
-    if (entity.getData("worm:dyn/dog_dismounted")) return null;
+    // No combat profile unless mounted (dogCalled + tentacles retracted)
+    var mounted = entity.getData("worm:dyn/dog_mounted") && entity.getData("fiskheroes:tentacle_extend_timer") == 0;
+    if (!mounted) return null;
     if (entity.getData("worm:dyn/dog_crouch") || entity.getData("worm:dyn/dog_crouch_charged") > 0) {
         return "CROUCHING";
     }

@@ -90,7 +90,8 @@
     "foil_dodge_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "foil_dodge_type": {"type": "BYTE", "resetWithoutSuit": true},
     "tt_nearby": {"type": "BOOLEAN", "resetWithoutSuit": true},
-    "tt_target_scanned": {"type": "BOOLEAN", "resetWithoutSuit": true}
+    "tt_target_scanned": {"type": "BOOLEAN", "resetWithoutSuit": true},
+    "dog_bark_cooldown": {"type": "INTEGER", "resetWithoutSuit": true}
   },
   "sounds": {
     "download": {
