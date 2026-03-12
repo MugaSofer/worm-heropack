@@ -48,7 +48,8 @@ function init(renderer) {
 function initAnimations(renderer) {
     // Hide real player arms (and held items)
     addAnimation(renderer, "bitch.REMOVE_ARM", "worm:remove_arm").setData(function (entity, data) {
-        var mounted = 1.0 - entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
+        var dogCalled = entity.getData("worm:dyn/dog_mounted");
+        var mounted = dogCalled ? 1.0 - entity.getInterpolatedData("worm:dyn/dog_dismounted_timer") : 0.0;
         data.load(0, mounted);
     });
 }
@@ -135,7 +136,8 @@ function render(entity, renderLayer, isFirstPersonArm) {
 
     var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
 
-    if (dismount < 0.5) {
+    var dogCalled = entity.getData("worm:dyn/dog_mounted");
+    if (dogCalled && dismount < 0.5) {
         // --- MOUNTED: dog + Rachel on back ---
         var G = entity.getInterpolatedData("worm:dyn/dog_size_timer");
         if (G <= 0) G = 1.0;
