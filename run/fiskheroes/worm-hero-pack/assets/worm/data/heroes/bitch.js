@@ -2,7 +2,7 @@ var team = implement("worm:external/undersiders");
 
 var MIN_DOG_SIZE = 0.5;
 var MAX_DOG_SIZE = 3.0;
-var BASELINE_SIZE = 1.75;
+var BASELINE_SIZE = 1.25;
 var GROW_STEP = 0.25;
 var ANIM_SPEED = 0.05;
 
@@ -138,8 +138,8 @@ function init(hero) {
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");
         if (target == 0) {
-            manager.setData(entity, "worm:dyn/dog_size", 1.75);
-            manager.setData(entity, "worm:dyn/dog_size_timer", 1.75);
+            manager.setData(entity, "worm:dyn/dog_size", BASELINE_SIZE);
+            manager.setData(entity, "worm:dyn/dog_size_timer", BASELINE_SIZE);
             return;
         }
 

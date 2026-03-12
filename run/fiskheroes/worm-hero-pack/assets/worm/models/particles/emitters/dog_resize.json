@@ -1,0 +1,44 @@
+{
+  "particles": [
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/dog_mounted') && Math.abs(entity.getData('worm:dyn/dog_size') - entity.getData('worm:dyn/dog_size_timer')) > 0.15",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 40,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [1.5, 1.5, 1.5],
+      "motion": [0.8, 0.0, 0.0],
+      "randMotion": [0.06, 0.06, 0.06]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/dog_mounted') && Math.abs(entity.getData('worm:dyn/dog_size') - entity.getData('worm:dyn/dog_size_timer')) > 0.15",
+      "type": "minecraft:reddust",
+      "anchor": "body",
+      "amount": 20,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [1.5, 1.5, 1.5],
+      "motion": [0.9, 0.6, 0.6],
+      "randMotion": [0.05, 0.05, 0.05]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/dog_mounted') && Math.abs(entity.getData('worm:dyn/dog_size') - entity.getData('worm:dyn/dog_size_timer')) > 0.15",
+      "type": "minecraft:iconcrack_375_0",
+      "anchor": "body",
+      "amount": 20,
+      "offset": [0.0, 4.0, 0.0],
+      "randOffset": [1.5, 2.0, 1.5],
+      "motion": [0.0, -0.05, 0.0],
+      "randMotion": [0.08, 0.04, 0.08]
+    },
+    {
+      "condition": "!firstPerson && entity.getData('worm:dyn/dog_mounted') && Math.abs(entity.getData('worm:dyn/dog_size') - entity.getData('worm:dyn/dog_size_timer')) > 0.15",
+      "type": "minecraft:iconcrack_376_0",
+      "anchor": "body",
+      "amount": 10,
+      "offset": [0.0, 3.0, 0.0],
+      "randOffset": [1.8, 1.5, 1.8],
+      "motion": [0.0, -0.03, 0.0],
+      "randMotion": [0.06, 0.03, 0.06]
+    }
+  ]
+}

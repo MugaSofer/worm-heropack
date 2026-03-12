@@ -38,8 +38,9 @@ function init(renderer) {
             if (renderLayer == "BOOTS") return "boots";
             return "chest";
         }
+        var dogCalled = entity.getData("worm:dyn/dog_mounted");
         var dismount = entity.getInterpolatedData("worm:dyn/dog_dismounted_timer");
-        if (dismount > 0.5) return "skin";
+        if (!dogCalled || dismount > 0.5) return "skin";
         if (renderLayer == "SKIN") return "layer1";
         return "layer2";
     });
@@ -56,6 +57,7 @@ function initAnimations(renderer) {
 
 function initEffects(renderer) {
     utils.bindParticles(renderer, "worm:dog_mount");
+    utils.bindParticles(renderer, "worm:dog_resize");
 
     renderer.bindProperty("fiskheroes:opacity").setOpacity(function (entity, renderLayer) {
         return 0.9999;
