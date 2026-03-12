@@ -25,12 +25,14 @@ var POWERS = [
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
 var DEFAULT_POWERS = [0, 4, 8]; // Gravity, Chrono, Dmg Reflect
+var HISTORY_SIZE = 5; // how many recently-discarded powers to downweight
 
 var speedster_base = implement("fiskheroes:external/speedster_base");
 
 var debounces = [false, false, false];
 var heroRef = null;
 var prevHealth = -1;
+var history = []; // recently discarded power indices, newest first
 
 // Check if any slot has a given power
 function hasPower(entity, powerIndex) {
@@ -74,21 +76,44 @@ function getValidPowers(entity, slotIndex) {
     return valid;
 }
 
-// Synced PRNG: pick from valid pool deterministically
+// Filter out recently-discarded powers from candidates (if enough remain)
+function filterHistory(valid) {
+    if (history.length == 0) return valid;
+    var filtered = [];
+    for (var i = 0; i < valid.length; i++) {
+        var inHistory = false;
+        for (var j = 0; j < history.length; j++) {
+            if (valid[i] == history[j]) { inHistory = true; break; }
+        }
+        if (!inHistory) filtered.push(valid[i]);
+    }
+    return filtered.length >= 2 ? filtered : valid;
+}
+
+// Push a discarded power onto the history ring
+function pushHistory(powerIndex) {
+    history.unshift(powerIndex);
+    if (history.length > HISTORY_SIZE) history.pop();
+}
+
+// Synced PRNG: pick from valid pool deterministically, avoiding recent history
 function nextRandomFromPool(entity, current, valid) {
     if (valid.length == 0) return current;
     if (valid.length == 1) return valid[0];
+
+    // Prefer powers not in recent history
+    var candidates = filterHistory(valid);
 
     var s1 = Number(entity.getData("worm:dyn/slot1"));
     var s2 = Number(entity.getData("worm:dyn/slot2"));
     var s3 = Number(entity.getData("worm:dyn/slot3"));
     var hash = ((s1 * 7 + s2 * 31 + s3 * 127 + current * 13) * 1103515245 + 12345) >> 8;
-    var idx = (hash & 0x7FFF) % valid.length;
+    var idx = (hash & 0x7FFF) % candidates.length;
     // Avoid picking the same power we already have
-    if (valid[idx] == current && valid.length > 1) {
-        idx = (idx + 1) % valid.length;
+    if (candidates[idx] == current && candidates.length > 1) {
+        idx = (idx + 1) % candidates.length;
     }
-    return valid[idx];
+    return candidates[idx];
 }
 
 function init(hero) {
@@ -118,7 +143,9 @@ function init(hero) {
                     debounces[s] = true;
                     var current = Number(entity.getData(SLOT_KEYS[s]));
                     var valid = getValidPowers(entity, s);
-                    manager.setData(entity, SLOT_KEYS[s], nextRandomFromPool(entity, current, valid));
+                    var next = nextRandomFromPool(entity, current, valid);
+                    pushHistory(current);
+                    manager.setData(entity, SLOT_KEYS[s], next);
                     return true;
                 }, POWERS[pi].label + " \u00A78> (Discard)", s + 1);
             })(slot, p);
