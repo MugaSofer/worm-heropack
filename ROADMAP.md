@@ -136,34 +136,22 @@ GENERAL:
 #Phase X - UNDERSIDERS B
 
 Parian
-- Sentry mode
 - Craft costume - primary item. Grants various costumes, including spare costume (standard but 1 item). Canon options include:
-	- bear, gorilla, goat, humanoid tiger, rabbit with boxing gloves (large + tough)
+	- bear, gorilla - DONE
+	- goat, humanoid tiger, rabbit with boxing gloves (large + tough)
 	- octopus (tentacles)
 	- When holding spider silk - spider, scorpion
 	- True Power: only available when holding lots of leather or rotten meat. Crafts a giant leather costume. Enormous size + Endbringer-tier stats.
 - Needles - TK? Projectile? Tentacles? 
 
 Foil
-- Toggle Sting
-	- Pin - slow debuff
-	- Kill - scale damage by target durability (person looked at?)
-- Massively increased arrow damage
-- Shurikens?
-- Dodge? Auto-dodge?
-- Grappling hook? Crossbow?
-- Sword?
-- Seperate Flechette costume (see below)
+- Massively increased arrow damage with Sting
 
 #Phase X - WARDS
 
 Flechette
-- Sting (see above)
-- Massively increased arrow damage
-- Shurikens?
-- Dodge? Auto-dodge?
+- as Foil, minus sword
 - Grappling hook? Special Tinkertech Arbalest item?
-- Seperate Foil costume (see above)
 
 Clockblocker
  - Melee attack that applies slow + protection

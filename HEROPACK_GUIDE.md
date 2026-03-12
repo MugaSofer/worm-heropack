@@ -1898,7 +1898,16 @@ Deploys your costume as an independent AI entity (`EntityIronMan`) that targets 
 - **`fiskheroes:flame_blast`** is the only other modifier that works on sentries — it auto-fires via its `onUpdate` tick when `AIMING` is true. Other attack modifiers (heat_vision, energy_projection, sonic_waves) need keybind toggles that sentries can't press.
 
 **Custom sentry melee workaround** (for non-Iron-Man heroes):
-JS tick handlers DO run on sentry entities. You can detect `entity.getData("fiskheroes:aiming")` in the tick handler, use `entity.world().getEntitiesInRangeOf()` to find nearby enemies, and deal damage via `target.hurtByAttacker(heroRef, profileName, deathMsg, damage, entity)`. Pair with a custom `.fsk` punch animation driven by a data var (use `priority = -10` to override the default aiming pose). Note: `entity.getHero()` doesn't exist on the sentry entity — capture `heroRef` from the `init()` closure instead.
+JS tick handlers DO run on sentry entities. You can detect `entity.getData("fiskheroes:aiming")` in the tick handler, use `entity.world().getEntitiesInRangeOf()` to find nearby enemies, and deal damage via `target.hurtByAttacker(heroRef, profileName, deathMsg, damage, entity)`. Pair with a custom `.fsk` punch animation driven by a data var. Note: `entity.getHero()` doesn't exist on the sentry entity — capture `heroRef` from the `init()` closure instead. FLOAT_INTERP auto-management doesn't work on sentry entities — you must manually drive the timer with `manager.incrementData(entity, timerVar, duration, condition)` in the tick handler.
+
+**Suppressing the aiming pose**: The default `basic.AIMING` animation (registered in `hero_basic.js`) locks the right arm to point at the target using `@` (absolute set) in `fiskheroes:aiming.fsk`. This can't be overridden by priority alone. To suppress it, re-register the animation with the same key after `parent.initAnimations(renderer)`:
+```javascript
+addAnimationWithData(renderer, "basic.AIMING", "fiskheroes:aiming", "fiskheroes:aiming_timer")
+    .setCondition(function (entity) { return false; });
+addAnimationWithData(renderer, "basic.DUAL_AIMING", "fiskheroes:dual_aiming", "fiskheroes:aiming_timer")
+    .setCondition(function (entity) { return false; });
+```
+`addCustomAnimation` replaces by key, so re-registering with a false condition effectively disables the animation. Useful for any hero that doesn't use guns/repulsors.
 
 **Pathing limitation**: The ranged AI's 30-block engagement range is hardcoded. The sentry stops pathfinding once within 30 blocks with line-of-sight for 20+ ticks, even if the actual attack range is shorter. The sentry won't actively close to melee range — it relies on enemies approaching or the owner being nearby (follow-owner AI runs between combats).
 

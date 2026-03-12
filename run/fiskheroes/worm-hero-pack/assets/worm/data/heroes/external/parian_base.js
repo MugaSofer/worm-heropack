@@ -5,18 +5,48 @@ var PUNCH_DURATION = 12; // ticks the punch animation lasts (0.6s matches roundh
 var heroRef = null;
 var punchTick = {};
 
-function init(hero) {
-    heroRef = hero;
-    hero.addPrimaryEquipment('fiskheroes:superhero_chestplate{HeroType:worm:parian_spare}', true);
+var ALL_COSTUMES = ["parian_spare", "parian_bear", "parian_gorilla"];
+
+function buildEquipmentList(selfType) {
+    // On single-piece suits, Index 0 gets forced to the hero's own type.
+    // Put self first so the override is harmless, then add the others.
+    var ordered = [];
+    if (selfType) {
+        ordered.push(selfType);
+    }
+    for (var i = 0; i < ALL_COSTUMES.length; i++) {
+        if (ALL_COSTUMES[i] != selfType) {
+            ordered.push(ALL_COSTUMES[i]);
+        }
+    }
+    var items = [];
+    for (var i = 0; i < ordered.length; i++) {
+        items.push('{Index:' + i + ',Item:{Count:1,Damage:0,id:4097,tag:{HeroType:"worm:' + ordered[i] + '"}}}');
+    }
+    return '[' + items.join(',') + ']';
 }
 
-function tick(entity, manager) {
-    // Equipment replenishment (every 2 seconds)
-    if (entity.ticksExisted() % 40 == 0) {
-        var nbt = entity.getWornChestplate().nbt();
-        if (nbt.getTagList("Equipment").tagCount() == 0) {
-            manager.setTagList(nbt, "Equipment", manager.newTagList('[{Index:0,Item:{Count:1,Damage:0,id:4097,tag:{HeroType:"worm:parian_spare"}}}]'));
+function init(hero, selfType) {
+    heroRef = hero;
+    // Put self first so Index 0 override is harmless
+    if (selfType) {
+        hero.addPrimaryEquipment('fiskheroes:superhero_chestplate{HeroType:worm:' + selfType + '}', true);
+    }
+    for (var i = 0; i < ALL_COSTUMES.length; i++) {
+        if (ALL_COSTUMES[i] != selfType) {
+            hero.addPrimaryEquipment('fiskheroes:superhero_chestplate{HeroType:worm:' + ALL_COSTUMES[i] + '}', true);
         }
+    }
+}
+
+var cachedEquipTag = null;
+
+function tick(entity, manager, selfType) {
+    // Equipment replenishment — populate all 3 puppet costumes when empty
+    var nbt = entity.getWornChestplate().nbt();
+    if (nbt.getTagList("Equipment").tagCount() == 0) {
+        if (!cachedEquipTag) cachedEquipTag = buildEquipmentList(selfType);
+        manager.setTagList(nbt, "Equipment", manager.newTagList(cachedEquipTag));
     }
 
     var uid = entity.getUUID();
