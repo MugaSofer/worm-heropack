@@ -1,6 +1,6 @@
 var team = implement("worm:external/undersiders");
 
-var MIN_DOG_SIZE = 0.5;
+var MIN_DOG_SIZE = 1.0;
 var MAX_DOG_SIZE = 3.0;
 var BASELINE_SIZE = 1.25;
 var GROW_STEP = 0.25;
