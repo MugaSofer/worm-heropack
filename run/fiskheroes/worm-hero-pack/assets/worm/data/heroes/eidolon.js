@@ -3,7 +3,7 @@
 // Power indices (unified):
 //   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjuration
 //   Key 5 group: 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
-//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen
+//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense
 //
 // Any power can go in any slot. Constraint: at most one Key 4 power and one Key 5 power across all slots.
 
@@ -20,19 +20,19 @@ var POWERS = [
     { label: "\u00A7dEnergy Form", keyGroup: 0 },
     { label: "\u00A73Crystal Armor", keyGroup: 0 },
     { label: "\u00A78Intangibility", keyGroup: 0 },
-    { label: "\u00A7aFlicker Regen", keyGroup: 0 }
+    { label: "\u00A7aFlicker Regen", keyGroup: 0 },
+    { label: "\u00A7eDanger Sense", keyGroup: 0 }
 ];
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
+var HIST_KEYS = ["worm:dyn/eidolon_hist0", "worm:dyn/eidolon_hist1", "worm:dyn/eidolon_hist2", "worm:dyn/eidolon_hist3", "worm:dyn/eidolon_hist4"];
+var HIST_EMPTY = 99; // sentinel: no history entry (BYTEs init to 0, so we set these in tick)
 var DEFAULT_POWERS = [0, 4, 8]; // Gravity, Chrono, Dmg Reflect
-var HISTORY_SIZE = 5; // how many recently-discarded powers to downweight
 
 var speedster_base = implement("fiskheroes:external/speedster_base");
 
-var debounces = [false, false, false];
 var heroRef = null;
 var prevHealth = -1;
-var history = []; // recently discarded power indices, newest first
 
 // Check if any slot has a given power
 function hasPower(entity, powerIndex) {
@@ -76,33 +76,35 @@ function getValidPowers(entity, slotIndex) {
     return valid;
 }
 
-// Filter out recently-discarded powers from candidates (if enough remain)
-function filterHistory(valid) {
-    if (history.length == 0) return valid;
+// Shift history data vars and push new entry (all via synced setData)
+function pushHistory(entity, manager, powerIndex) {
+    for (var i = HIST_KEYS.length - 1; i > 0; i--) {
+        manager.setData(entity, HIST_KEYS[i], Number(entity.getData(HIST_KEYS[i - 1])));
+    }
+    manager.setData(entity, HIST_KEYS[0], powerIndex);
+}
+
+// Hard-filter recently-discarded powers from candidates (if enough remain)
+function filterHistory(entity, valid) {
     var filtered = [];
     for (var i = 0; i < valid.length; i++) {
         var inHistory = false;
-        for (var j = 0; j < history.length; j++) {
-            if (valid[i] == history[j]) { inHistory = true; break; }
+        for (var j = 0; j < HIST_KEYS.length; j++) {
+            if (valid[i] == Number(entity.getData(HIST_KEYS[j]))) { inHistory = true; break; }
         }
         if (!inHistory) filtered.push(valid[i]);
     }
     return filtered.length >= 2 ? filtered : valid;
 }
 
-// Push a discarded power onto the history ring
-function pushHistory(powerIndex) {
-    history.unshift(powerIndex);
-    if (history.length > HISTORY_SIZE) history.pop();
-}
-
-// Synced PRNG: pick from valid pool deterministically, avoiding recent history
+// Synced PRNG: pick from valid pool, excluding recent history (integer math only)
 function nextRandomFromPool(entity, current, valid) {
     if (valid.length == 0) return current;
     if (valid.length == 1) return valid[0];
 
-    // Prefer powers not in recent history
-    var candidates = filterHistory(valid);
+    // Hard-exclude recent history first
+    var candidates = filterHistory(entity, valid);
+    if (candidates.length == 1) return candidates[0];
 
     var s1 = Number(entity.getData("worm:dyn/slot1"));
     var s2 = Number(entity.getData("worm:dyn/slot2"));
@@ -134,18 +136,14 @@ function init(hero) {
     hero.addAttribute("JUMP_HEIGHT", 0.5, 0);
     hero.addAttribute("BASE_SPEED_LEVELS", 3.0, 0);
 
-    // Register cycle keybinds: 13 labels per slot, 3 slots = 39 keybinds
+    // Register cycle keybinds: POWER_COUNT labels per slot, 3 slots
+    // Callback only sets a "cycle requested" flag; actual computation is in tick handler
     for (var slot = 0; slot < 3; slot++) {
         for (var p = 0; p < POWER_COUNT; p++) {
             (function (s, pi) {
                 hero.addKeyBindFunc("SLOT" + (s + 1) + "_CYCLE_" + pi, function (entity, manager) {
-                    if (debounces[s]) return false;
-                    debounces[s] = true;
-                    var current = Number(entity.getData(SLOT_KEYS[s]));
-                    var valid = getValidPowers(entity, s);
-                    var next = nextRandomFromPool(entity, current, valid);
-                    pushHistory(current);
-                    manager.setData(entity, SLOT_KEYS[s], next);
+                    if (entity.getData("worm:dyn/eidolon_cycle") != 0) return false;
+                    manager.setData(entity, "worm:dyn/eidolon_cycle", s + 1); // 1, 2, or 3
                     return true;
                 }, POWERS[pi].label + " \u00A78> (Discard)", s + 1);
             })(slot, p);
@@ -168,10 +166,6 @@ function init(hero) {
     hero.addKeyBind("SPELL_MENU", "key.illusionMenu", 5);
 
     hero.setTickHandler(function (entity, manager) {
-        debounces[0] = false;
-        debounces[1] = false;
-        debounces[2] = false;
-
         var s1 = Number(entity.getData("worm:dyn/slot1"));
         var s2 = Number(entity.getData("worm:dyn/slot2"));
         var s3 = Number(entity.getData("worm:dyn/slot3"));
@@ -181,7 +175,27 @@ function init(hero) {
             manager.setData(entity, "worm:dyn/slot1", DEFAULT_POWERS[0]);
             manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]);
             manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]);
+            // Initialize history to sentinel
+            for (var h = 0; h < HIST_KEYS.length; h++) {
+                manager.setData(entity, HIST_KEYS[h], HIST_EMPTY);
+            }
             return false;
+        }
+
+        // Process cycle request (set by keybind callback)
+        var cycleReq = Number(entity.getData("worm:dyn/eidolon_cycle"));
+        if (cycleReq >= 1 && cycleReq <= 3) {
+            var slotIdx = cycleReq - 1;
+            var current = Number(entity.getData(SLOT_KEYS[slotIdx]));
+            var valid = getValidPowers(entity, slotIdx);
+            var next = nextRandomFromPool(entity, current, valid);
+            pushHistory(entity, manager, current);
+            manager.setData(entity, SLOT_KEYS[slotIdx], next);
+            manager.setData(entity, "worm:dyn/eidolon_cycle", 0);
+            // Re-read slot values after change
+            s1 = Number(entity.getData("worm:dyn/slot1"));
+            s2 = Number(entity.getData("worm:dyn/slot2"));
+            s3 = Number(entity.getData("worm:dyn/slot3"));
         }
 
         // Clamp out-of-range values
@@ -293,6 +307,66 @@ function init(hero) {
                     target.hurt(heroRef, "BUBBLE_PULSE", "%1$s was crushed by Eidolon's forcefield", 1.0);
                 }
             }
+        }
+
+        // Danger Sense (13): scan nearby entities, bin into 6 directional sectors
+        // Packed into INTEGER: 2 bits per sector (0=none, 1=low, 2=med, 3=high)
+        // Sectors: 0=front, 1=back, 2=left, 3=right, 4=above, 5=below
+        if (hasPower(entity, 13) && entity.ticksExisted() % 5 == 0) {
+            var dangerCounts = [0, 0, 0, 0, 0, 0];
+            var dangerClose = [0, 0, 0, 0, 0, 0];
+            var scanRange = 16.0;
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), scanRange);
+            var look = entity.getLookVector();
+            var pos = entity.pos();
+
+            for (var i = 0; i < nearby.length; i++) {
+                var other = nearby[i];
+                if (!other.isLivingEntity() || other.getUUID() == entity.getUUID()) continue;
+
+                var dx = other.posX() - pos.x();
+                var dy = other.posY() - pos.y();
+                var dz = other.posZ() - pos.z();
+                var dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                if (dist < 0.5) continue;
+
+                // Determine primary sector
+                var sector;
+                var absdy = Math.abs(dy);
+                var horizDist = Math.sqrt(dx * dx + dz * dz);
+
+                if (absdy > horizDist) {
+                    // Vertical dominates
+                    sector = dy > 0 ? 4 : 5; // above / below
+                } else {
+                    // Horizontal: project onto look vector for front/back, perpendicular for left/right
+                    var dot = (dx * look.x() + dz * look.z()) / horizDist;
+                    var cross = (dx * look.z() - dz * look.x()) / horizDist;
+                    if (Math.abs(dot) > Math.abs(cross)) {
+                        sector = dot < 0 ? 0 : 1; // front / back
+                    } else {
+                        sector = cross > 0 ? 2 : 3; // left / right
+                    }
+                }
+
+                dangerCounts[sector]++;
+                if (dist < 6.0) dangerClose[sector]++;
+            }
+
+            // Convert to danger levels: 0=none, 1=low (far), 2=med (several or close), 3=high (close+many)
+            var packed = 0;
+            for (var s = 0; s < 6; s++) {
+                var level = 0;
+                if (dangerCounts[s] > 0) {
+                    level = 1;
+                    if (dangerClose[s] > 0 || dangerCounts[s] >= 3) level = 2;
+                    if (dangerClose[s] >= 2) level = 3;
+                }
+                packed = packed | (level << (s * 2));
+            }
+            manager.setData(entity, "worm:dyn/eidolon_danger", packed);
+        } else if (!hasPower(entity, 13) && entity.getData("worm:dyn/eidolon_danger") != 0) {
+            manager.setData(entity, "worm:dyn/eidolon_danger", 0);
         }
 
         return false;

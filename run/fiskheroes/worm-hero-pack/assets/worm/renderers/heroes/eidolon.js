@@ -29,6 +29,9 @@ var chargeGlow;
 var lightningGlow;
 var crystalOverlay;
 var flickerGlow;
+var dangerPulses = [];
+// Danger sense colors: level 1=green, 2=yellow, 3=red
+var DANGER_COLORS = [0x000000, 0x44FF44, 0xFFDD22, 0xFF3322];
 
 function init(renderer) {
     parent.init(renderer);
@@ -115,6 +118,40 @@ function initEffects(renderer) {
     flickerGlow = renderer.createEffect("fiskheroes:glowerlay");
     flickerGlow.color.set(0xFFFFFF);
 
+    // Danger Sense (13) — 6 directional pulse forcefields
+    // Sectors: 0=front, 1=back, 2=left, 3=right, 4=above, 5=below
+    var senseRadius = 12.0;
+    var dangerOffsets = [
+        [0.0, 6.0, -senseRadius],   // front
+        [0.0, 6.0, senseRadius],     // back
+        [-senseRadius, 6.0, 0.0],    // left
+        [senseRadius, 6.0, 0.0],     // right
+        [0.0, 6.0 + senseRadius, 0.0], // above
+        [0.0, 6.0 - senseRadius, 0.0]  // below
+    ];
+    // Stagger pulse timing per sector
+    var pulsePeriods = [47, 53, 59, 43, 61, 51];
+
+    for (var i = 0; i < 6; i++) {
+        (function (idx) {
+            var p = renderer.bindProperty("fiskheroes:forcefield");
+            dangerPulses.push(p);
+            p.color.set(0x44FF44);
+            p.setShape(17, 7);
+            p.setCondition(function (entity) {
+                var packed = entity.getData("worm:dyn/eidolon_danger");
+                var level = (packed >> (idx * 2)) & 3;
+                if (level > 0) {
+                    p.color.set(DANGER_COLORS[level]);
+                    var off = dangerOffsets[idx];
+                    p.setOffset(off[0], off[1], off[2]);
+                    var t = entity.loop(pulsePeriods[idx]);
+                    p.setScale(20 + 10 * t);
+                }
+                return true;
+            });
+        })(i);
+    }
 }
 
 function render(entity, renderLayer, isFirstPersonArm) {
@@ -134,6 +171,19 @@ function render(entity, renderLayer, isFirstPersonArm) {
     // Flicker Regen (12) — sharp white flash when healing
     flickerGlow.opacity = (hasPower(entity, 12) && entity.getData("worm:dyn/eidolon_flicker")) ? 0.8 : 0.0;
     flickerGlow.render();
+
+    // Danger Sense (13) — directional pulse opacity (1st person only)
+    var dangerPacked = entity.getData("worm:dyn/eidolon_danger");
+    var pulsePds = [47, 53, 59, 43, 61, 51];
+    for (var i = 0; i < 6; i++) {
+        var level = (dangerPacked >> (i * 2)) & 3;
+        if (isFirstPersonArm && level > 0) {
+            var t = entity.loop(pulsePds[i]);
+            dangerPulses[i].opacity = (0.08 + level * 0.04) * (1 - t);
+        } else {
+            dangerPulses[i].opacity = 0;
+        }
+    }
 
     // Crystal Armor (10) overlay — aquamarine with health-based cracks
     if (hasPower(entity, 10)) {
