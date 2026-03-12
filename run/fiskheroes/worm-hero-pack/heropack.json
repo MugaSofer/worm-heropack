@@ -91,5 +91,14 @@
     "foil_dodge_type": {"type": "BYTE", "resetWithoutSuit": true},
     "tt_nearby": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "tt_target_scanned": {"type": "BOOLEAN", "resetWithoutSuit": true}
+  },
+  "sounds": {
+    "download": {
+      "repository": "MugaSofer/worm-heropack",
+      "version": 0
+    },
+    "range": {
+      "suit.bitch.bark": 16.0
+    }
   }
 }
