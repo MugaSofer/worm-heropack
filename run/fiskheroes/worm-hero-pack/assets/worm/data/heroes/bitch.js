@@ -133,7 +133,7 @@ function init(hero) {
         }
 
         // Animate dismount timer
-        manager.incrementData(entity, "worm:dyn/dog_dismounted_timer", 20, dismounted);
+        manager.incrementData(entity, "worm:dyn/dog_dismounted_timer", 3, dismounted);
 
         // Initialize dog size on first equip
         var target = entity.getData("worm:dyn/dog_size");
