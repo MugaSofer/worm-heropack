@@ -61,10 +61,9 @@ function init(hero) {
 
     // TENTACLES keybind drives mount/dismount
     // Two labels on same slot: "Call Dog" before first use, "Mount / Dismount Dog" after
-    hero.addKeyBind("TENTACLES", "Call Dog", 1);
-    hero.addKeyBindFunc("DOG_MOUNT_LABEL", function (entity, manager) {
-        return true;
-    }, "Mount / Dismount Dog", 1);
+    // TENTACLES registered first; DOG_CALL_LABEL registered last for display priority
+    hero.addKeyBind("TENTACLES", "Mount / Dismount Dog", 1);
+    hero.addKeyBind("DOG_CALL_LABEL", "Call Dog", 1);
 
     hero.addKeyBindFunc("GROW_DOG", function (entity, manager) {
         var size = entity.getData("worm:dyn/dog_size");
@@ -91,9 +90,8 @@ function init(hero) {
         var dogCalled = entity.getData("worm:dyn/dog_mounted");
         var mounted = dogCalled && entity.getData("fiskheroes:tentacle_extend_timer") == 0;
         var size = entity.getData("worm:dyn/dog_size");
-        // TENTACLES always enabled (drives tentacle toggle)
-        // DOG_MOUNT_LABEL overlays label on same slot once dog is called
-        if (keyBind == "DOG_MOUNT_LABEL") return dogCalled;
+        // DOG_CALL_LABEL shows before dog is called, then hides so TENTACLES label shows
+        if (keyBind == "DOG_CALL_LABEL") return !dogCalled;
         if (keyBind == "GROW_DOG") return mounted && size < MAX_DOG_SIZE;
         if (keyBind == "SHRINK_DOG") return mounted && size > MIN_DOG_SIZE;
         if (keyBind == "CROUCH_LEAP") return mounted;
