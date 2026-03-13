@@ -13,7 +13,6 @@ var debounce_method = false;
 var debounce_effect = false;
 var densityAtChargeStart = 0;
 var wasCharging = false;
-var senseTicks = 0;
 var SENSE_INTERVAL = 100;  // ticks between scans (5 seconds)
 
 function init(hero) {
@@ -146,51 +145,38 @@ function init(hero) {
         var senseOn = !entity.getData("worm:dyn/swarm_sense") && density > 0.01;
         manager.incrementData(entity, "worm:dyn/swarm_sense_timer", 10, senseOn);
 
-        // Swarm sense: periodic entity scan via chat
-        if (senseOn) {
-            senseTicks++;
-            if (senseTicks >= SENSE_INTERVAL) {
-                senseTicks = 0;
-                try {
-                    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
-                    var look = entity.getLookVector();
-                    var detected = [];
-                    for (var i = 0; i < nearby.length; i++) {
-                        var other = nearby[i];
-                        if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
-                            var toOther = other.pos().subtract(entity.pos());
-                            var dist = other.pos().distanceTo(entity.pos());
-                            // Relative direction: forward/back from dot, left/right from cross Y
-                            var dot = look.x * toOther.x + look.z * toOther.z;
-                            var cross = look.x * toOther.z - look.z * toOther.x;
-                            var dir;
-                            if (Math.abs(dot) > Math.abs(cross)) {
-                                dir = dot > 0 ? "ahead" : "behind";
-                            } else {
-                                dir = cross > 0 ? "left" : "right";
-                            }
-                            // Score: nearby big mobs rank first (low score = high threat)
-                            var score = dist / Math.max(other.getMaxHealth(), 1);
-                            detected.push({ name: other.getName(), dist: dist, dir: dir, score: score });
-                        }
+        // Swarm sense: periodic entity scan via chat (ticksExisted avoids JS counter desync)
+        if (senseOn && entity.ticksExisted() % SENSE_INTERVAL == 0) {
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), SWARM_RADIUS);
+            var look = entity.getLookVector();
+            var detected = [];
+            for (var i = 0; i < nearby.length; i++) {
+                var other = nearby[i];
+                if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
+                    var toOther = other.pos().subtract(entity.pos());
+                    var dist = other.pos().distanceTo(entity.pos());
+                    var dot = look.x() * toOther.x() + look.z() * toOther.z();
+                    var cross = look.x() * toOther.z() - look.z() * toOther.x();
+                    var dir;
+                    if (Math.abs(dot) > Math.abs(cross)) {
+                        dir = dot > 0 ? "ahead" : "behind";
+                    } else {
+                        dir = cross > 0 ? "left" : "right";
                     }
-                    // Sort by score (distance * maxHP), cap at 5
-                    detected.sort(function (a, b) { return a.score - b.score; });
-                    if (detected.length > 5) detected = detected.slice(0, 5);
-                    if (detected.length > 0 && PackLoader.getSide() == "SERVER") {
-                        var parts = [];
-                        for (var j = 0; j < detected.length; j++) {
-                            var d = detected[j];
-                            parts.push("\u00A76" + d.name + " \u00A77" + Math.round(d.dist) + "m " + d.dir);
-                        }
-                        entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Swarm Sense] \u00A77" + parts.join("\u00A78, "));
-                    }
-                } catch (e) {
-                    // Silently ignore errors
+                    var score = dist / Math.max(other.getMaxHealth(), 1);
+                    detected.push({ name: other.getName(), dist: dist, dir: dir, score: score });
                 }
             }
-        } else {
-            senseTicks = 0;
+            detected.sort(function (a, b) { return a.score - b.score; });
+            if (detected.length > 5) detected = detected.slice(0, 5);
+            if (detected.length > 0 && PackLoader.getSide() == "SERVER") {
+                var parts = [];
+                for (var j = 0; j < detected.length; j++) {
+                    var d = detected[j];
+                    parts.push("\u00A76" + d.name + " \u00A77" + Math.round(d.dist) + "m " + d.dir);
+                }
+                entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Swarm Sense] \u00A77" + parts.join("\u00A78, "));
+            }
         }
 
         var hasSwarm = density > 0.01;
