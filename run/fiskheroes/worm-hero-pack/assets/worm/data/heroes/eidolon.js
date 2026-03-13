@@ -33,6 +33,9 @@ var speedster_base = implement("fiskheroes:external/speedster_base");
 
 var heroRef = null;
 var prevHealth = -1;
+var dangerSenseTicks = 99; // start near threshold so first scan fires quickly
+var DANGER_SENSE_INTERVAL = 100; // 5 seconds
+var DANGER_SENSE_RANGE = 16.0;
 
 // Check if any slot has a given power
 function hasPower(entity, powerIndex) {
@@ -297,6 +300,40 @@ function init(hero) {
         }
         prevHealth = currentHealth;
 
+        // Danger Sense (13): exact copy of Skitter's swarm sense scan
+        if (hasPower(entity, 13) && entity.ticksExisted() % DANGER_SENSE_INTERVAL == 0) {
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), DANGER_SENSE_RANGE);
+            var look = entity.getLookVector();
+            var detected = [];
+            for (var i = 0; i < nearby.length; i++) {
+                var other = nearby[i];
+                if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
+                    var toOther = other.pos().subtract(entity.pos());
+                    var dist = other.pos().distanceTo(entity.pos());
+                    var dot = look.x() * toOther.x() + look.z() * toOther.z();
+                    var cross = look.x() * toOther.z() - look.z() * toOther.x();
+                    var dir;
+                    if (Math.abs(dot) > Math.abs(cross)) {
+                        dir = dot > 0 ? "ahead" : "behind";
+                    } else {
+                        dir = cross > 0 ? "left" : "right";
+                    }
+                    var score = dist / Math.max(other.getMaxHealth(), 1);
+                    detected.push({ name: other.getName(), dist: dist, dir: dir, score: score });
+                }
+            }
+            detected.sort(function (a, b) { return a.score - b.score; });
+            if (detected.length > 5) detected = detected.slice(0, 5);
+            if (detected.length > 0 && PackLoader.getSide() == "SERVER") {
+                var parts = [];
+                for (var j = 0; j < detected.length; j++) {
+                    var d = detected[j];
+                    parts.push("\u00A76" + d.name + " \u00A77" + Math.round(d.dist) + "m " + d.dir);
+                }
+                entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Danger Sense] \u00A77" + parts.join("\u00A78, "));
+            }
+        }
+
         // Bubble (6): continuous damage while shield is active
         var shieldTimer = entity.getData("fiskheroes:shield_blocking_timer");
         if (hasPower(entity, 6) && shieldTimer > 0) {
@@ -307,66 +344,6 @@ function init(hero) {
                     target.hurt(heroRef, "BUBBLE_PULSE", "%1$s was crushed by Eidolon's forcefield", 1.0);
                 }
             }
-        }
-
-        // Danger Sense (13): scan nearby entities, bin into 6 directional sectors
-        // Packed into INTEGER: 2 bits per sector (0=none, 1=low, 2=med, 3=high)
-        // Sectors: 0=front, 1=back, 2=left, 3=right, 4=above, 5=below
-        if (hasPower(entity, 13) && entity.ticksExisted() % 5 == 0) {
-            var dangerCounts = [0, 0, 0, 0, 0, 0];
-            var dangerClose = [0, 0, 0, 0, 0, 0];
-            var scanRange = 16.0;
-            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), scanRange);
-            var look = entity.getLookVector();
-            var pos = entity.pos();
-
-            for (var i = 0; i < nearby.length; i++) {
-                var other = nearby[i];
-                if (!other.isLivingEntity() || other.getUUID() == entity.getUUID()) continue;
-
-                var dx = other.posX() - pos.x();
-                var dy = other.posY() - pos.y();
-                var dz = other.posZ() - pos.z();
-                var dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                if (dist < 0.5) continue;
-
-                // Determine primary sector
-                var sector;
-                var absdy = Math.abs(dy);
-                var horizDist = Math.sqrt(dx * dx + dz * dz);
-
-                if (absdy > horizDist) {
-                    // Vertical dominates
-                    sector = dy > 0 ? 4 : 5; // above / below
-                } else {
-                    // Horizontal: project onto look vector for front/back, perpendicular for left/right
-                    var dot = (dx * look.x() + dz * look.z()) / horizDist;
-                    var cross = (dx * look.z() - dz * look.x()) / horizDist;
-                    if (Math.abs(dot) > Math.abs(cross)) {
-                        sector = dot < 0 ? 0 : 1; // front / back
-                    } else {
-                        sector = cross > 0 ? 2 : 3; // left / right
-                    }
-                }
-
-                dangerCounts[sector]++;
-                if (dist < 6.0) dangerClose[sector]++;
-            }
-
-            // Convert to danger levels: 0=none, 1=low (far), 2=med (several or close), 3=high (close+many)
-            var packed = 0;
-            for (var s = 0; s < 6; s++) {
-                var level = 0;
-                if (dangerCounts[s] > 0) {
-                    level = 1;
-                    if (dangerClose[s] > 0 || dangerCounts[s] >= 3) level = 2;
-                    if (dangerClose[s] >= 2) level = 3;
-                }
-                packed = packed | (level << (s * 2));
-            }
-            manager.setData(entity, "worm:dyn/eidolon_danger", packed);
-        } else if (!hasPower(entity, 13) && entity.getData("worm:dyn/eidolon_danger") != 0) {
-            manager.setData(entity, "worm:dyn/eidolon_danger", 0);
         }
 
         return false;
