@@ -133,7 +133,7 @@ hero.addKeyBindFunc("MY_FUNC", function(entity, manager) {
 
 **CRITICAL:** `addKeyBindFunc` with a slot number **must return a boolean**. Returning `undefined` (no return statement) causes `ClassCastException: Undefined cannot be cast to java.lang.Boolean` and crashes the game. Always end with `return true;` (keybind activated) or `return false;` (did nothing).
 
-Keys 1-5 are available. Multiple keybinds can share a key — when multiple are enabled simultaneously, the **first one registered** (in script order) gets its label shown in the HUD. Registration order matters for display priority. For `addKeyBind`, `isKeyBindEnabled` controls BOTH visibility AND whether the action fires. For `addKeyBindFunc`, the function always fires but `isKeyBindEnabled` controls the label display.
+Keys 1-5 are available. Multiple keybinds can share a key — when multiple are enabled simultaneously, the **last one registered** (in script order) gets its label shown in the HUD. Registration order matters for display priority. For `addKeyBind`, `isKeyBindEnabled` controls BOTH visibility AND whether the action fires. For `addKeyBindFunc`, the function always fires but `isKeyBindEnabled` controls the label display. Note: `addKeyBindFunc` labels do NOT override `addKeyBind` labels on the same slot; use fake `addKeyBind` names (e.g. `"DOG_CALL_LABEL"`) for display-only label swapping (see Rorschach in hells-kitchen pack).
 
 ### Modifier gating
 

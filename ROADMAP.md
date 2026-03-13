@@ -3,10 +3,7 @@
 
 Alexandria - DONE (needs polish)
 
-- Two-handed super blow - DONE
-	- TODO: BUGFIX: no sound effect
 - Martial arts attacks 
-	- Is arrow catch possible with projectile immunity? If not remove.
 	- flurry of blows (toned down version of Invincible's, different animation)?
 	- Any other stuff? Research other martial arts heroes (Black Widow?)
 - Improve durability 
@@ -91,6 +88,8 @@ Skitter
 
 - Swarm gain/loss mechanic? - DONE (MVP)
 	- Add some way for fire etc. to reduce swarm
+- Swarm sense - DONE
+	- Add deduping to reduce redundant chat spam.
 - Knife, pepper spray, gun (as items?)
 - Tricks: spells?
 	- Swarm decoys
@@ -105,7 +104,6 @@ Skitter
 Tattletale - DONE
 
 - Cutting words - some kind of stun? based on Legend's invisible + slow laser? only on humans?
-- Buff on nearby Undersiders - slightly increased damage, can use tinker weapons they find
 
 Regent - DONE (MVP, needs polish)
 
@@ -118,9 +116,7 @@ Bitch - DONE (MVP, needs polish)
 
 - Dog companion - DONE
  - Add attack (tentacle strike)
- - Add warning (dog barks if enemies nearby)
 - Dog transformation- DONE
-	- Cleanup available powers
 	- Dog grows spikes
 	- Add full transform/dismount animation
 - Ideally: Bitch herself as weak point somehow????
