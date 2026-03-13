@@ -36,10 +36,12 @@ var prevHealth = -1;
 var dangerSenseTicks = 99; // start near threshold so first scan fires quickly
 var DANGER_SENSE_INTERVAL = 100; // 5 seconds
 var DANGER_SENSE_RANGE = 16.0;
-var hadConjuration = false;
+// Equipment slot count — register enough air slots for all item-giving powers combined
+var EQUIPMENT_SLOTS = 20;
 
-// Conjuration items (max 5 slots)
-var CONJURE_ITEMS = [
+// Items granted by each power index (only powers that give items need entries)
+var POWER_ITEMS = {};
+POWER_ITEMS[3] = [  // Conjuration (tech)
     "fiskheroes:cold_gun",
     "fiskheroes:heat_gun",
     "fiskheroes:grappling_gun",
@@ -47,20 +49,26 @@ var CONJURE_ITEMS = [
     "minecraft:tnt"
 ];
 
-function conjureItems(entity, manager) {
+// Track which item-giving powers were active last tick
+var prevItemPowers = {};
+
+// Rebuild equipment from all active item-giving powers, packed sequentially
+function rebuildEquipment(entity, manager) {
     var nbt = entity.getWornChestplate().nbt();
     manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
     var equipment = nbt.getTagList("Equipment");
-    for (var i = 0; i < CONJURE_ITEMS.length; i++) {
-        var itemId = PackLoader.getNumericalItemId(CONJURE_ITEMS[i]);
-        var tag = manager.newCompoundTag("{Index:" + i + ",Item:{id:" + itemId + "s,Count:1,Damage:0}}");
-        manager.appendTag(equipment, tag);
+    var idx = 0;
+    for (var p in POWER_ITEMS) {
+        if (hasPower(entity, Number(p))) {
+            var items = POWER_ITEMS[p];
+            for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
+                var itemId = PackLoader.getNumericalItemId(items[i]);
+                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:1,Damage:0}}");
+                manager.appendTag(equipment, tag);
+                idx++;
+            }
+        }
     }
-}
-
-function clearItems(entity, manager) {
-    var nbt = entity.getWornChestplate().nbt();
-    manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
 }
 
 // Check if any slot has a given power
@@ -186,12 +194,10 @@ function init(hero) {
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
     hero.addKeyBind("UTILITY_BELT", "Conjure Tech", 4);
 
-    // Conjuration (3): 5 air slots for dynamic NBT conjuration
-    hero.addPrimaryEquipment("minecraft:air", false);
-    hero.addPrimaryEquipment("minecraft:air", false);
-    hero.addPrimaryEquipment("minecraft:air", false);
-    hero.addPrimaryEquipment("minecraft:air", false);
-    hero.addPrimaryEquipment("minecraft:air", false);
+    // Equipment slots for item-giving powers (air placeholders, filled dynamically)
+    for (var e = 0; e < EQUIPMENT_SLOTS; e++) {
+        hero.addPrimaryEquipment("minecraft:air", false);
+    }
     hero.addKeyBind("AIM", "Aim", -1);
     hero.supplyFunction("canAim", function (entity) {
         if (!hasPower(entity, 3)) return false;
@@ -225,10 +231,9 @@ function init(hero) {
             for (var h = 0; h < HIST_KEYS.length; h++) {
                 manager.setData(entity, HIST_KEYS[h], HIST_EMPTY);
             }
-            // Clear equipment added by addPrimaryEquipment (defaults don't include Conjuration)
+            // Clear equipment added by addPrimaryEquipment (no item powers active at start)
             if (PackLoader.getSide() == "SERVER") {
-                clearItems(entity, manager);
-                hadConjuration = false;
+                rebuildEquipment(entity, manager);
             }
             return false;
         }
@@ -254,15 +259,19 @@ function init(hero) {
         if (s2 < 0 || s2 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]); s2 = DEFAULT_POWERS[1]; }
         if (s3 < 0 || s3 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]); s3 = DEFAULT_POWERS[2]; }
 
-        // Conjuration (3): conjure/clear equipment on power change (server only)
-        var hasConj = hasPower(entity, 3);
+        // Rebuild equipment when any item-giving power changes (server only)
         if (PackLoader.getSide() == "SERVER") {
-            if (hasConj && !hadConjuration) {
-                conjureItems(entity, manager);
-            } else if (!hasConj && hadConjuration) {
-                clearItems(entity, manager);
+            var needsRebuild = false;
+            for (var p in POWER_ITEMS) {
+                var active = hasPower(entity, Number(p));
+                if (active != prevItemPowers[p]) {
+                    needsRebuild = true;
+                    prevItemPowers[p] = active;
+                }
             }
-            hadConjuration = hasConj;
+            if (needsRebuild) {
+                rebuildEquipment(entity, manager);
+            }
         }
 
         // Energy Absorption (1): charge when taking damage
