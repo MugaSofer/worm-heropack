@@ -37,7 +37,7 @@ var dangerSenseTicks = 99; // start near threshold so first scan fires quickly
 var DANGER_SENSE_INTERVAL = 100; // 5 seconds
 var DANGER_SENSE_RANGE = 16.0;
 // Equipment slot count — register enough air slots for all item-giving powers combined
-var EQUIPMENT_SLOTS = 20;
+var EQUIPMENT_SLOTS = 16;
 
 // Items granted by each power index (only powers that give items need entries)
 var POWER_ITEMS = {};
@@ -51,6 +51,17 @@ POWER_ITEMS[3] = [  // Conjuration (tech)
 
 // Track which item-giving powers were active last tick
 var prevItemPowers = {};
+
+// Count how many items all active item-giving powers should provide
+function expectedItemCount(entity) {
+    var count = 0;
+    for (var p in POWER_ITEMS) {
+        if (hasPower(entity, Number(p))) {
+            count += POWER_ITEMS[p].length;
+        }
+    }
+    return Math.min(count, EQUIPMENT_SLOTS);
+}
 
 // Rebuild equipment from all active item-giving powers, packed sequentially
 function rebuildEquipment(entity, manager) {
@@ -271,6 +282,14 @@ function init(hero) {
             }
             if (needsRebuild) {
                 rebuildEquipment(entity, manager);
+            }
+
+            // Replenish items taken out (every 2 seconds)
+            if (!needsRebuild && entity.ticksExisted() % 40 == 0) {
+                var expected = expectedItemCount(entity);
+                if (expected > 0 && entity.getWornChestplate().nbt().getTagList("Equipment").tagCount() < expected) {
+                    rebuildEquipment(entity, manager);
+                }
             }
         }
 
