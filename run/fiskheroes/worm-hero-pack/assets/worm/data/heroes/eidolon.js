@@ -1,7 +1,7 @@
 // Eidolon — 3 slots drawing from shared power pool
 //
 // Power indices (unified):
-//   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjuration
+//   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjure Tech
 //   Key 5 group: 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
 //   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense
 //
@@ -11,7 +11,7 @@ var POWERS = [
     { label: "\u00A7aGravity Control", keyGroup: 4 },
     { label: "\u00A7bEnergy Absorb", keyGroup: 4 },
     { label: "\u00A7eLightning Storm", keyGroup: 4 },
-    { label: "\u00A7bConjuration", keyGroup: 4 },
+    { label: "\u00A7bConjure Tech", keyGroup: 4 },
     { label: "\u00A7eChronokinesis", keyGroup: 5 },
     { label: "\u00A7fAerokinesis", keyGroup: 5 },
     { label: "\u00A79Bubble", keyGroup: 5 },
@@ -41,12 +41,15 @@ var EQUIPMENT_SLOTS = 16;
 
 // Items granted by each power index (only powers that give items need entries)
 var POWER_ITEMS = {};
-POWER_ITEMS[3] = [  // Conjuration (tech)
+POWER_ITEMS[3] = [  // Conjure Tech
     "fiskheroes:cold_gun",
     "fiskheroes:heat_gun",
     "fiskheroes:grappling_gun",
     "fiskheroes:holographic_display_stand",
-    "minecraft:tnt"
+    "minecraft:tnt",
+    "minecraft:piston",
+    "minecraft:dispenser",
+    "minecraft:stone_pressure_plate"
 ];
 
 // Track which item-giving powers were active last tick
@@ -203,7 +206,7 @@ function init(hero) {
     hero.addKeyBind("GROUND_SMASH", "Gravity Slam \u00A77+ \u00A7eScroll\u00A7f Raise/Lower", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
-    hero.addKeyBind("UTILITY_BELT", "Conjure Tech", 4);
+    hero.addKeyBind("UTILITY_BELT", "Grenades", 4);
 
     // Equipment slots for item-giving powers (air placeholders, filled dynamically)
     for (var e = 0; e < EQUIPMENT_SLOTS; e++) {
@@ -476,7 +479,7 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:damage_resistance": return hasPower(entity, 1);
     // Lightning Storm (2)
     case "fiskheroes:energy_projection": return hasPower(entity, 2);
-    // Conjuration (3)
+    // Conjure Tech (3) — grenades
     case "fiskheroes:equipment": return hasPower(entity, 3);
     // Chronokinesis (4)
     case "fiskheroes:super_speed": return hasPower(entity, 4);
