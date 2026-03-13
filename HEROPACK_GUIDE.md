@@ -1068,6 +1068,22 @@ if (equipList.tagCount() > 0) {
 
 Reference implementations: `dmh:god` (DMH-v1.3.2), `stellar:dr_manhattan` (StellarHeroes_2.0.5), `worm:parian` (unlimited equipment).
 
+**Multi-item dynamic conjuration (slot registration):**
+
+The equipment wheel can display up to 5 items (Index 0-4). For dynamic conjuration of multiple items, slot count is determined by `addPrimaryEquipment` calls — each call registers one slot. If you add items to Equipment NBT at indices beyond the registered count, they exist in NBT but are invisible in the wheel.
+
+Key findings:
+- `addPrimaryEquipment` count = number of equipment slots the system allocates
+- Registered slots always appear in the equipment wheel (greyed out if modifier disabled)
+- Registering with `minecraft:air` creates invisible/empty placeholder slots
+- `fiskheroes:equipment` modifier in powers JSON controls whether equipment is accessible
+- `UTILITY_BELT` keybind opens the radial wheel; without it, items auto-equip without a wheel
+- God (DMH) uses no `fiskheroes:equipment` modifier and no `UTILITY_BELT` keybind — just `SHAPE_SHIFT` + direct NBT write to Index 0
+- Grey Matter (TMF) registers 5 slots via `addPrimaryEquipment` and dynamically swaps items via `appendTag`/`removeTag`
+- `PackLoader.getNumericalItemId("fiskheroes:cold_gun")` dynamically resolves registry names to numeric IDs at runtime
+
+**IN PROGRESS:** Investigating how to conditionally show/hide equipment slots (e.g. only when a specific power is active). Currently, `addPrimaryEquipment` registrations create persistent slots that cannot be hidden at runtime.
+
 #### 7. Single-Piece Full-Body Suits
 
 A hero can define only one armor piece (e.g. just a chestplate) while still rendering the full body using `showModel`:

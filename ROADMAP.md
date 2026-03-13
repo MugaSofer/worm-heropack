@@ -24,7 +24,6 @@ Eidolon - MVP done, needs substantial polish
 
 - 3 "toggle power" options - DONE
 	- pretty much whatever you want in the toggle options; lots of options should provide flight as a secondary (e.g. gravity control, aerokinesis)
-	- Optional: refactor - rather than 2 active & 1 passive pool you cycle through, all 3 slots pick randomly, forced to pick a passive option if 2 active ones are already selected.
 - TODO: decide how to handle durability. Currently, classed as a low-tier hero, but some abilities buff durability. Switch to high-tier hero, but durability is disabled if you have no defensive ability active?
 - If possible: abilities from canon
  - ACTIVE:
@@ -41,15 +40,18 @@ Eidolon - MVP done, needs substantial polish
 	- Dessication
 	- Beam that creates icicles - AoE beam + icicle particles?
 	- Sparks that zap people who get near them with lightning strikes - is this possible? 
-	- Wall of Earth - just a shield with the right texture, as with ice & metal heroes
+	- Wall of Earth - just a shield with the right texture, as with ice & metal heroes? Gives dirt blocks?
 	- Telekinesis
 	- Elemental blasts (mixture and/or each one different)
 	- "a series of darts that left dark streaks in the air"
 	- Matter creation - creates large black orb of carbon, dealing damage.
+		- And gives coal blocks?
 	- Vaccuum - as aerokinesis, but with large damaging passive AoE, no TK
 	- "He hurled globes of energy the size of small houses at Leviathan, and each one was sufficient to knock the creature away, flaying away the thing’s skin and simultaneously slowing it."
 	- Trap enemy in forcefield - TK + forcefield visuals? scale visuals with target? can this block powers?
 	- "barriers of living wood" - shield with wood texture, similar to Magneto metal shield etc. limited HP, similar to Dr Strange shield, but it regenerates. Possibly passive wood armor too.
+		- and/or gives you wood blocks to place? Lots of plant blocks?
+	- Ice creation - give items (as with Parian). Only in water? Boosted in water (more blocks, or full ice instead of just snow)?
  - PASSIVE:
 	- crystal armor - DONE 
 		- Increase size a bit?
@@ -59,8 +61,10 @@ Eidolon - MVP done, needs substantial polish
 	- Generic brute package?
 	- Dark Energy - Alexandria package, silent, dark effect around punches
 	- Biokinetic regen & bone armor (gets thicker with more damage?)
+		- And gives meat? Bone? Spawn eggs?
 	- "sense the shift(s) in air pressure"
 - More original but in-theme powers
+	- Tech creation - expand to give tech-y blocks/items?
 		
 
 GENERAL: 

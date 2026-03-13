@@ -36,6 +36,32 @@ var prevHealth = -1;
 var dangerSenseTicks = 99; // start near threshold so first scan fires quickly
 var DANGER_SENSE_INTERVAL = 100; // 5 seconds
 var DANGER_SENSE_RANGE = 16.0;
+var hadConjuration = false;
+
+// Conjuration items (max 5 slots)
+var CONJURE_ITEMS = [
+    "fiskheroes:cold_gun",
+    "fiskheroes:heat_gun",
+    "fiskheroes:grappling_gun",
+    "fiskheroes:holographic_display_stand",
+    "minecraft:tnt"
+];
+
+function conjureItems(entity, manager) {
+    var nbt = entity.getWornChestplate().nbt();
+    manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
+    var equipment = nbt.getTagList("Equipment");
+    for (var i = 0; i < CONJURE_ITEMS.length; i++) {
+        var itemId = PackLoader.getNumericalItemId(CONJURE_ITEMS[i]);
+        var tag = manager.newCompoundTag("{Index:" + i + ",Item:{id:" + itemId + "s,Count:1,Damage:0}}");
+        manager.appendTag(equipment, tag);
+    }
+}
+
+function clearItems(entity, manager) {
+    var nbt = entity.getWornChestplate().nbt();
+    manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
+}
 
 // Check if any slot has a given power
 function hasPower(entity, powerIndex) {
@@ -160,6 +186,23 @@ function init(hero) {
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
     hero.addKeyBind("UTILITY_BELT", "Conjure Tech", 4);
 
+    // Conjuration (3): 5 air slots for dynamic NBT conjuration
+    hero.addPrimaryEquipment("minecraft:air", false);
+    hero.addPrimaryEquipment("minecraft:air", false);
+    hero.addPrimaryEquipment("minecraft:air", false);
+    hero.addPrimaryEquipment("minecraft:air", false);
+    hero.addPrimaryEquipment("minecraft:air", false);
+    hero.addKeyBind("AIM", "Aim", -1);
+    hero.supplyFunction("canAim", function (entity) {
+        if (!hasPower(entity, 3)) return false;
+        var held = entity.getHeldItem().name();
+        return held == "fiskheroes:cold_gun" || held == "fiskheroes:heat_gun" || held == "fiskheroes:grappling_gun";
+    });
+    hero.setHasPermission(function (entity, permission) {
+        if (!hasPower(entity, 3)) return false;
+        return permission == "USE_COLD_GUN" || permission == "USE_HEAT_GUN" || permission == "USE_GRAPPLING_GUN";
+    });
+
     // Key 5: Active abilities (Key 5 group powers)
     hero.addKeyBind("SUPER_SPEED", "Slow Time", 5);
     hero.addKeyBind("SLOW_MOTION", "Slow Time", 5);
@@ -181,6 +224,11 @@ function init(hero) {
             // Initialize history to sentinel
             for (var h = 0; h < HIST_KEYS.length; h++) {
                 manager.setData(entity, HIST_KEYS[h], HIST_EMPTY);
+            }
+            // Clear equipment added by addPrimaryEquipment (defaults don't include Conjuration)
+            if (PackLoader.getSide() == "SERVER") {
+                clearItems(entity, manager);
+                hadConjuration = false;
             }
             return false;
         }
@@ -205,6 +253,17 @@ function init(hero) {
         if (s1 < 0 || s1 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot1", DEFAULT_POWERS[0]); s1 = DEFAULT_POWERS[0]; }
         if (s2 < 0 || s2 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]); s2 = DEFAULT_POWERS[1]; }
         if (s3 < 0 || s3 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]); s3 = DEFAULT_POWERS[2]; }
+
+        // Conjuration (3): conjure/clear equipment on power change (server only)
+        var hasConj = hasPower(entity, 3);
+        if (PackLoader.getSide() == "SERVER") {
+            if (hasConj && !hadConjuration) {
+                conjureItems(entity, manager);
+            } else if (!hasConj && hadConjuration) {
+                clearItems(entity, manager);
+            }
+            hadConjuration = hasConj;
+        }
 
         // Energy Absorption (1): charge when taking damage
         var hasEnergyAbsorb = hasPower(entity, 1);
