@@ -17,16 +17,45 @@ var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
 var FULL_CONTROL = 1.0;
 
 // Strain (backfire) config
-var STRAIN_BUILD_TK = 0.005;     // per tick while grabbing without full control (~10s to fill)
-var STRAIN_BUILD_NERVE = 0.04;   // per tick while nerve attacking (~1.25s to fill)
+var STRAIN_BUILD_TK = 0.003;     // per tick while grabbing without full control (~17s to fill)
+var STRAIN_BUILD_NERVE = 0.025;  // per tick while nerve attacking (~2s to fill)
 var STRAIN_DRAIN = 0.001;        // per tick while idle (~50s to drain)
 var STRAIN_BACKFIRE_THRESHOLD = 0.5;
 var BACKFIRE_DAMAGE = 2.0;
 
-// Per-entity control map (keyed by entity UUID)
+// Per-entity control map (keyed by entity UUID), persisted in chestplate NBT
 var controlMap = {};
+var controlMapLoaded = false;
 var resistMsgCooldown = 0;
 var backfireMsgCooldown = 0;
+
+// Load controlMap from chestplate NBT (format: "uuid:control,uuid:control,...")
+function loadControlMap(entity) {
+    var nbt = entity.getWornChestplate().nbt();
+    var str = nbt.getString("regent_control") || "";
+    controlMap = {};
+    if (str === "") return;
+    var entries = str.split(",");
+    for (var i = 0; i < entries.length; i++) {
+        var colonPos = entries[i].indexOf(":");
+        if (colonPos >= 0) {
+            var uuid = entries[i].substring(0, colonPos);
+            var val = parseFloat(entries[i].substring(colonPos + 1));
+            if (!isNaN(val)) controlMap[uuid] = val;
+        }
+    }
+}
+
+// Save controlMap to chestplate NBT
+function saveControlMap(entity, manager) {
+    var parts = [];
+    for (var uuid in controlMap) {
+        // Round to 3 decimal places to keep string short
+        parts.push(uuid + ":" + Math.round(controlMap[uuid] * 1000) / 1000);
+    }
+    var nbt = entity.getWornChestplate().nbt();
+    manager.setString(nbt, "regent_control", parts.join(","));
+}
 
 function init(hero) {
     hero.setName("Regent");
@@ -68,6 +97,13 @@ function init(hero) {
 
     hero.setTickHandler(function (entity, manager) {
         team.tick(entity, manager, heroRef);
+
+        // Load persistent control map from NBT on first tick
+        if (!controlMapLoaded && PackLoader.getSide() == "SERVER") {
+            loadControlMap(entity);
+            controlMapLoaded = true;
+        }
+
         var grabId = entity.getData("fiskheroes:grab_id");
         var cooldown = entity.getData("worm:dyn/tk_cooldown");
         var grabTicks = entity.getData("worm:dyn/tk_grab_ticks");
@@ -127,6 +163,7 @@ function init(hero) {
                 // Build up control while grabbing
                 control = Math.min(FULL_CONTROL, control + CONTROL_PER_TICK);
                 controlMap[uuid] = control;
+                if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
 
                 // Mirror to Regent for HUD display
                 manager.setData(entity, "worm:dyn/tk_control_display", control);
@@ -161,13 +198,31 @@ function init(hero) {
         var usingTK = grabId > -1;
         var usingNerve = entity.getData("fiskheroes:heat_vision");
 
-        if (usingTK) {
-            // Full control = less strain (maintaining is easy), partial = more strain (fighting resistance)
-            var grabbed = grabId > -1 ? entity.world().getEntityById(grabId) : null;
-            var hasFullControl = grabbed != null && (controlMap[grabbed.getUUID()] || 0) >= FULL_CONTROL;
-            strain = hasFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_TK);
+        // Check if current target is fully controlled (for strain reduction)
+        var targetFullControl = false;
+        if (usingTK && grabId > -1) {
+            var strainTarget = entity.world().getEntityById(grabId);
+            if (strainTarget != null) targetFullControl = (controlMap[strainTarget.getUUID()] || 0) >= FULL_CONTROL;
         } else if (usingNerve) {
-            strain = Math.min(0.95, strain + STRAIN_BUILD_NERVE);
+            // Check nearest entity in beam direction for full control
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 10.0);
+            var look = entity.getLookVector();
+            for (var ni = 0; ni < nearby.length; ni++) {
+                var other = nearby[ni];
+                if (other.getUUID() == entity.getUUID() || !other.isLivingEntity()) continue;
+                var toOther = other.pos().subtract(entity.pos()).normalized();
+                var dot = look.x() * toOther.x() + look.y() * toOther.y() + look.z() * toOther.z();
+                if (dot > 0.95 && (controlMap[other.getUUID()] || 0) >= FULL_CONTROL) {
+                    targetFullControl = true;
+                    break;
+                }
+            }
+        }
+
+        if (usingTK) {
+            strain = targetFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_TK);
+        } else if (usingNerve) {
+            strain = targetFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_NERVE);
         } else {
             strain = Math.max(0, strain - STRAIN_DRAIN);
         }
