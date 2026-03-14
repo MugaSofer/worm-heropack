@@ -3,7 +3,7 @@
 // Power indices (unified):
 //   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjure Tech
 //   Key 5 group: 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
-//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense, 14=Plant Growth, 15=Ice Formation
+//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense, 14=Plant Growth, 15=Ice Formation, 16=Enhanced Senses
 //
 // Any power can go in any slot. Constraint: at most one Key 4 power and one Key 5 power across all slots.
 
@@ -12,32 +12,61 @@
 // Otherwise, pool = all powers answering any active need, 1 copy per need answered
 var NEED_CRITICAL = { FALLING: true, SUFFOCATING: true, VERY_HURT: true };
 
-function getActiveNeeds(entity) {
-    var needs = {};
+// Needs bitmask — stored in eidolon_danger data var by server, read by both sides
+// This ensures both client and server always see the same needs when cycling
+var NEED_BITS = {
+    CAPES: 1, FALLING: 2, SUFFOCATING: 4, VERY_HURT: 8,
+    HURT: 16, COMBAT: 32, GROUNDED: 64,
+    // Bits 7+ packed into second byte (eidolon_needs2) since signed BYTE max is 127
+    WATER: 1, PEACE: 2, DARKNESS: 4
+};
+
+// Server computes this every tick; result stored in data vars
+function computeNeedsBitmask(entity) {
+    var b1 = 0, b2 = 0;
     // Critical
-    if (!entity.isOnGround() && entity.motionY() < -0.5) needs.FALLING = true;
-    if (entity.getAir() < 200) needs.SUFFOCATING = true;
-    if (entity.getHealth() < entity.getMaxHealth() * 0.35) needs.VERY_HURT = true;
+    if (!entity.isOnGround() && entity.motionY() < -0.5) b1 |= NEED_BITS.FALLING;
+    if (entity.getAir() < 200) b1 |= NEED_BITS.SUFFOCATING;
+    if (entity.getHealth() < entity.getMaxHealth() * 0.35) b1 |= NEED_BITS.VERY_HURT;
     // High
-    if (entity.getData("fiskheroes:time_since_damaged") < 40) needs.HURT = true;
+    if (entity.getData("fiskheroes:time_since_damaged") < 40) b1 |= NEED_BITS.HURT;
     var inCombat = entity.getData("fiskheroes:time_since_damaged") < 100;
-    if (inCombat) needs.COMBAT = true;
+    if (inCombat) b1 |= NEED_BITS.COMBAT;
     // Low
-    if (!hasFlightPower(entity)) needs.GROUNDED = true;
-    if (entity.isInWater()) needs.WATER = true;
-    if (!inCombat) needs.PEACE = true;
-    // Capes — nearby entities wearing superhero chestplates
+    if (!hasFlightPower(entity)) b1 |= NEED_BITS.GROUNDED;
+    if (entity.isInWater()) b2 |= NEED_BITS.WATER;
+    if (!inCombat) b2 |= NEED_BITS.PEACE;
+    if (!entity.world().isDaytime()) b2 |= NEED_BITS.DARKNESS;
+    // Capes — expensive entity scan
     var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 16.0);
     for (var i = 0; i < nearby.length; i++) {
         var other = nearby[i];
         if (other.getUUID() != entity.getUUID() && other.isLivingEntity()) {
             var chest = other.getEquipmentInSlot(3);
             if (chest != null && chest.name() == "fiskheroes:superhero_chestplate") {
-                needs.CAPES = true;
+                b1 |= NEED_BITS.CAPES;
                 break;
             }
         }
     }
+    return [b1, b2];
+}
+
+// Read needs from stored bitmask data vars (both sides read the same synced values)
+function getActiveNeeds(entity) {
+    var b1 = Number(entity.getData("worm:dyn/eidolon_danger"));
+    var b2 = Number(entity.getData("worm:dyn/eidolon_needs2"));
+    var needs = {};
+    if (b1 & 1) needs.CAPES = true;
+    if (b1 & 2) needs.FALLING = true;
+    if (b1 & 4) needs.SUFFOCATING = true;
+    if (b1 & 8) needs.VERY_HURT = true;
+    if (b1 & 16) needs.HURT = true;
+    if (b1 & 32) needs.COMBAT = true;
+    if (b1 & 64) needs.GROUNDED = true;
+    if (b2 & 1) needs.WATER = true;
+    if (b2 & 2) needs.PEACE = true;
+    if (b2 & 4) needs.DARKNESS = true;
     return needs;
 }
 
@@ -55,9 +84,10 @@ var POWERS = [
     { label: "\u00A73Crystal Armor", keyGroup: 0, answers: ["COMBAT", "HURT", "VERY_HURT"] },
     { label: "\u00A78Intangibility", keyGroup: 0, answers: ["VERY_HURT", "FALLING", "GROUNDED", "SUFFOCATING"] },
     { label: "\u00A7aFlicker Regen", keyGroup: 0, answers: ["HURT", "VERY_HURT"] },
-    { label: "\u00A7eDanger Sense", keyGroup: 0, answers: ["PEACE", "CAPES"] },
+    { label: "\u00A7eDanger Sense", keyGroup: 0, answers: ["PEACE", "CAPES", "DARKNESS"] },
     { label: "\u00A72Plant Growth", keyGroup: 0, answers: ["PEACE", "COMBAT", "CAPES"] },
-    { label: "\u00A7bIce Formation", keyGroup: 0, answers: ["WATER", "PEACE", "CAPES"] }
+    { label: "\u00A7bIce Formation", keyGroup: 0, answers: ["WATER", "PEACE", "CAPES"] },
+    { label: "\u00A7eEnhanced Senses", keyGroup: 0, answers: ["DARKNESS", "PEACE", "COMBAT"] }
 ];
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
@@ -66,12 +96,12 @@ var HIST_EMPTY = 99; // sentinel: no history entry (BYTEs init to 0, so we set t
 var DEFAULT_POWERS = [0, 4, 8]; // Gravity, Chrono, Dmg Reflect
 
 var speedster_base = implement("fiskheroes:external/speedster_base");
+var sensor = implement("worm:external/sensor");
 
 var heroRef = null;
 var prevHealth = -1;
-var dangerSenseTicks = 99; // start near threshold so first scan fires quickly
 var DANGER_SENSE_INTERVAL = 100; // 5 seconds
-var DANGER_SENSE_RANGE = 16.0;
+var ENHANCED_SENSES_INTERVAL = 80; // 4 seconds
 // Equipment slot count — register enough air slots for all item-giving powers combined
 var EQUIPMENT_SLOTS = 16;
 
@@ -115,7 +145,6 @@ POWER_ITEMS_WATER[15] = [  // Ice Formation (water only — freezing water into 
 // Track which item-giving powers were active last tick
 var prevItemPowers = {};
 var prevInWater = false;
-var prevHadFlight = false;
 
 // Count how many items all active item-giving powers should provide
 function expectedItemCount(entity) {
@@ -342,6 +371,7 @@ function init(hero) {
     // Key 4: Active abilities (Key 4 group powers)
     hero.addKeyBind("GRAVITY_MANIPULATION", "Gravity Control", 4);
     hero.addKeyBind("GROUND_SMASH", "Gravity Slam \u00A77+ \u00A7eScroll\u00A7f Raise/Lower", 4);
+    hero.addKeyBind("GROUND_SMASH_VISUAL", "Gravity Slam", 4);
     hero.addKeyBind("HEAT_VISION", "Expel Energy", 4);
     hero.addKeyBind("ENERGY_PROJECTION", "Lightning Storm", 4);
     hero.addKeyBind("UTILITY_BELT", "Grenades", 4);
@@ -390,31 +420,36 @@ function init(hero) {
             return false;
         }
 
-        // Process cycle request (set by keybind callback)
+        // Process cycle request — SERVER ONLY to prevent desync
+        // Client sets eidolon_cycle flag via keybind; server computes and pushes result
+        // with setDataWithNotify for immediate propagation to client
         var cycleReq = Number(entity.getData("worm:dyn/eidolon_cycle"));
-        if (cycleReq >= 1 && cycleReq <= 3) {
+        if (cycleReq >= 1 && cycleReq <= 3 && PackLoader.getSide() == "SERVER") {
             var slotIdx = cycleReq - 1;
             var current = Number(entity.getData(SLOT_KEYS[slotIdx]));
             var valid = getValidPowers(entity, slotIdx);
             var next = nextRandomFromPool(entity, current, valid);
             // Debug: show active needs and selection
-            if (PackLoader.getSide() == "SERVER") {
-                var needs = getActiveNeeds(entity);
-                var needNames = [];
-                for (var n in needs) needNames.push(n);
-                var pool = buildNeedsPool(entity, valid);
-                var poolNames = [];
-                for (var pi = 0; pi < pool.length; pi++) poolNames.push(POWERS[pool[pi]].label);
-                entity.as("PLAYER").addChatMessage("\u00A78[Needs] \u00A77" + needNames.join(", "));
-                entity.as("PLAYER").addChatMessage("\u00A78[Pool] \u00A77" + poolNames.join(", "));
-            }
+            var needs = getActiveNeeds(entity);
+            var needNames = [];
+            for (var n in needs) needNames.push(n);
+            var pool = buildNeedsPool(entity, valid);
+            var poolNames = [];
+            for (var pi = 0; pi < pool.length; pi++) poolNames.push(POWERS[pool[pi]].label);
+            entity.as("PLAYER").addChatMessage("\u00A78[Needs] \u00A77" + needNames.join(", "));
+            entity.as("PLAYER").addChatMessage("\u00A78[Pool] \u00A77" + poolNames.join(", "));
             pushHistory(entity, manager, current);
-            manager.setData(entity, SLOT_KEYS[slotIdx], next);
-            manager.setData(entity, "worm:dyn/eidolon_cycle", 0);
+            // Use setDataWithNotify for immediate sync to client
+            manager.setDataWithNotify(entity, SLOT_KEYS[slotIdx], next);
+            manager.setDataWithNotify(entity, "worm:dyn/eidolon_cycle", 0);
             // Re-read slot values after change
             s1 = Number(entity.getData("worm:dyn/slot1"));
             s2 = Number(entity.getData("worm:dyn/slot2"));
             s3 = Number(entity.getData("worm:dyn/slot3"));
+            // Auto-activate flight when cycling gives a flight power
+            if (hasFlightPower(entity) && !entity.getData("fiskheroes:flying")) {
+                manager.setData(entity, "fiskheroes:flying", true);
+            }
         }
 
         // Clamp out-of-range values
@@ -422,12 +457,15 @@ function init(hero) {
         if (s2 < 0 || s2 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]); s2 = DEFAULT_POWERS[1]; }
         if (s3 < 0 || s3 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]); s3 = DEFAULT_POWERS[2]; }
 
-        // Auto-activate flight when gaining a flight power
-        var hasFlight = hasFlightPower(entity);
-        if (hasFlight && !prevHadFlight && !entity.getData("fiskheroes:flying")) {
-            manager.setData(entity, "fiskheroes:flying", true);
+        // Server computes full needs bitmask every tick, stores in data vars
+        // Both sides read these when cycling, guaranteeing identical pools
+        if (PackLoader.getSide() == "SERVER") {
+            var bitmask = computeNeedsBitmask(entity);
+            var oldB1 = Number(entity.getData("worm:dyn/eidolon_danger"));
+            var oldB2 = Number(entity.getData("worm:dyn/eidolon_needs2"));
+            if (bitmask[0] != oldB1) manager.setDataWithNotify(entity, "worm:dyn/eidolon_danger", bitmask[0]);
+            if (bitmask[1] != oldB2) manager.setDataWithNotify(entity, "worm:dyn/eidolon_needs2", bitmask[1]);
         }
-        prevHadFlight = hasFlight;
 
         // Rebuild equipment when any item-giving power changes or water state changes (server only)
         if (PackLoader.getSide() == "SERVER") {
@@ -555,38 +593,26 @@ function init(hero) {
         }
         prevHealth = currentHealth;
 
-        // Danger Sense (13): exact copy of Skitter's swarm sense scan
+        // Danger Sense (13): threat-prioritized entity scan
         if (hasPower(entity, 13) && entity.ticksExisted() % DANGER_SENSE_INTERVAL == 0) {
-            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), DANGER_SENSE_RANGE);
-            var look = entity.getLookVector();
-            var detected = [];
-            for (var i = 0; i < nearby.length; i++) {
-                var other = nearby[i];
-                if (other.isLivingEntity() && other.getUUID() != entity.getUUID()) {
-                    var toOther = other.pos().subtract(entity.pos());
-                    var dist = other.pos().distanceTo(entity.pos());
-                    var dot = look.x() * toOther.x() + look.z() * toOther.z();
-                    var cross = look.x() * toOther.z() - look.z() * toOther.x();
-                    var dir;
-                    if (Math.abs(dot) > Math.abs(cross)) {
-                        dir = dot > 0 ? "ahead" : "behind";
-                    } else {
-                        dir = cross > 0 ? "left" : "right";
-                    }
-                    var score = dist / Math.max(other.getMaxHealth(), 1);
-                    detected.push({ name: other.getName(), dist: dist, dir: dir, score: score });
+            sensor.detect(entity, {
+                range: 16.0,
+                maxResults: 5,
+                prefix: "\u00A78\u00A7o[Danger Sense] \u00A77"
+            });
+        }
+
+        // Enhanced Senses (16): audio-flavored proximity awareness
+        if (hasPower(entity, 16) && entity.ticksExisted() % ENHANCED_SENSES_INTERVAL == 0) {
+            sensor.detect(entity, {
+                range: 24.0,
+                maxResults: 3,
+                prefix: "\u00A78\u00A7o[Enhanced Senses] \u00A77",
+                score: function (e) { return e.dist; }, // pure distance, not threat-weighted
+                format: function (r) {
+                    return "\u00A77You hear \u00A76" + r.name + " \u00A77" + Math.round(r.dist) + "m " + r.dir;
                 }
-            }
-            detected.sort(function (a, b) { return a.score - b.score; });
-            if (detected.length > 5) detected = detected.slice(0, 5);
-            if (detected.length > 0 && PackLoader.getSide() == "SERVER") {
-                var parts = [];
-                for (var j = 0; j < detected.length; j++) {
-                    var d = detected[j];
-                    parts.push("\u00A76" + d.name + " \u00A77" + Math.round(d.dist) + "m " + d.dir);
-                }
-                entity.as("PLAYER").addChatMessage("\u00A78\u00A7o[Danger Sense] \u00A77" + parts.join("\u00A78, "));
-            }
+            });
         }
 
         // Bubble (6): continuous damage while shield is active
@@ -624,7 +650,7 @@ function gravityProfile(profile) {
 }
 
 function getAttributeProfile(entity) {
-    return hasPower(entity, 0) && entity.getData("fiskheroes:gravity_manip") && entity.getHeldItem().isEmpty() ? "GRAVITY" : null;
+    return hasPower(entity, 0) && entity.getData("worm:dyn/bombardment_held") ? "GRAVITY" : null;
 }
 
 function getDamageProfile(entity) {
@@ -636,6 +662,7 @@ function isModifierEnabled(entity, modifier) {
     // Gravity Control (0)
     case "fiskheroes:gravity_manipulation": return hasPower(entity, 0);
     case "fiskheroes:ground_smash": return hasPower(entity, 0);
+    case "fiskheroes:transformation": return hasPower(entity, 0);
     // Energy Absorption (1)
     case "fiskheroes:heat_vision": return hasPower(entity, 1) && entity.getData("worm:dyn/eidolon_charge") > 0.1;
     case "fiskheroes:frost_walking": return hasPower(entity, 1);
@@ -694,6 +721,7 @@ function isKeyBindEnabled(entity, keyBind) {
     // Key 4 activation keybinds
     case "GRAVITY_MANIPULATION": return hasPower(entity, 0);
     case "GROUND_SMASH": return hasPower(entity, 0);
+    case "GROUND_SMASH_VISUAL": return hasPower(entity, 0);
     case "HEAT_VISION": return hasPower(entity, 1) && entity.getData("worm:dyn/eidolon_charge") > 0.1;
     case "ENERGY_PROJECTION": return hasPower(entity, 2);
     case "UTILITY_BELT": return hasPower(entity, 3);

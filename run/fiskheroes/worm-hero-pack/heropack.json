@@ -53,6 +53,7 @@
     "eidolon_hist4": {"type": "BYTE", "resetWithoutSuit": true},
     "eidolon_cycle": {"type": "BYTE", "resetWithoutSuit": true},
     "eidolon_danger": {"type": "BYTE", "resetWithoutSuit": true},
+    "eidolon_needs2": {"type": "BYTE", "resetWithoutSuit": true},
     "eidolon_absorb": {"type": "BOOLEAN", "resetWithoutSuit": true},
     "eidolon_charge": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "night_vision": {"type": "BOOLEAN", "resetWithoutSuit": true},

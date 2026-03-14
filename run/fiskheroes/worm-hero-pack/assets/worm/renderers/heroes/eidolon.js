@@ -118,6 +118,11 @@ function initEffects(renderer) {
     flickerGlow = renderer.createEffect("fiskheroes:glowerlay");
     flickerGlow.color.set(0xFFFFFF);
 
+    // Enhanced Senses (16) — night vision
+    renderer.bindProperty("fiskheroes:night_vision").setCondition(function (entity) {
+        return hasPower(entity, 16);
+    });
+
     // Danger Sense (13) — 4 directional expanding pulse forcefields
     // Sectors: 0=front, 1=left, 2=right, 3=above
     // Pulse starts small+far, expands and approaches, then fades

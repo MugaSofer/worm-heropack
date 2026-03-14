@@ -69,6 +69,15 @@
         "recovery": 0
       }
     },
+    "fiskheroes:transformation|gravity_held": {
+      "key": "GROUND_SMASH_VISUAL",
+      "transformation": {
+        "toggleData": "worm:dyn/bombardment_held",
+        "timerData": "worm:dyn/bombardment_held_timer",
+        "time": 5
+      },
+      "isToggle": false
+    },
     "fiskheroes:ground_smash": {
       "damageProfile": {
         "damage": 16.0,
