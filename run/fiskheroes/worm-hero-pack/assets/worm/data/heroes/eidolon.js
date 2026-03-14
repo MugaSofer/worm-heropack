@@ -69,7 +69,8 @@ POWER_ITEMS[15] = [  // Ice Formation
     ["minecraft:snowball", 0, 16],
     ["minecraft:snow_layer", 0, 64],
     ["minecraft:ice", 0, 64],
-    ["minecraft:packed_ice", 0, 64]
+    ["minecraft:packed_ice", 0, 64],
+    ["fiskheroes:ice_layer", 0, 64]
 ];
 
 // Track which item-giving powers were active last tick
