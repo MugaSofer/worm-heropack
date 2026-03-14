@@ -210,11 +210,14 @@ hero.setTickHandler(function(entity, manager) {
 ### Properties, attributes, and damage profiles
 
 ```javascript
-// Breathing in space/water
+// Breathing in space — use BREATHE_SPACE property
 hero.setHasProperty(function(entity, property) {
-    if (property == "BREATHE_SPACE" || property == "BREATHE_WATER") return true;
+    if (property == "BREATHE_SPACE") return true;
     return false;
 });
+// Breathing underwater — use fiskheroes:water_breathing MODIFIER (not a property!)
+// Add to powers JSON: "fiskheroes:water_breathing": {}
+// Then gate in isModifierEnabled. "BREATHE_WATER" property does NOT work.
 
 // Conditional attribute profiles (e.g., extended reach when using gravity)
 hero.addAttributeProfile("GRAVITY", function(profile) {
@@ -1852,7 +1855,7 @@ Increases the player's **natural** hunger-based regeneration rate. NOT the same 
 Easily confused with `healing_factor`, which heals regardless of hunger. If you want "always regenerating" use `healing_factor`. If you want "heals faster when well-fed" use `regeneration`.
 
 #### `fiskheroes:water_breathing`
-Breathe underwater. No parameters. Alternative to `hasProperty` returning true for `"BREATHE_WATER"`.
+Breathe underwater. No parameters. **This is the only way to grant underwater breathing** — the `"BREATHE_WATER"` property does NOT work (despite `"BREATHE_SPACE"` working fine for space breathing). Add to powers JSON and gate via `isModifierEnabled`.
 
 #### `fiskheroes:night_vision`
 Built-in night vision modifier. We use `hasProperty` with `"NIGHT_VISION"` instead (see Legend), but this exists as a modifier too.

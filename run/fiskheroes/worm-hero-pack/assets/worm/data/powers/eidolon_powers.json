@@ -170,6 +170,7 @@
         "DISABLE": "fiskheroes:vision_intang_off"
       }
     },
+    "fiskheroes:water_breathing": {},
     "fiskheroes:super_speed": {
       "canUseTreadmill": false,
       "canUseTachyons": false

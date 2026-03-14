@@ -7,23 +7,57 @@
 //
 // Any power can go in any slot. Constraint: at most one Key 4 power and one Key 5 power across all slots.
 
+// Situational needs — Eidolon's shard gives him what he needs
+// Critical needs (FALLING, SUFFOCATING, VERY_HURT) restrict pool to only powers answering them
+// Otherwise, pool = all powers answering any active need, 1 copy per need answered
+var NEED_CRITICAL = { FALLING: true, SUFFOCATING: true, VERY_HURT: true };
+
+function getActiveNeeds(entity) {
+    var needs = {};
+    // Critical
+    if (!entity.isOnGround() && entity.motionY() < -0.5) needs.FALLING = true;
+    if (entity.getAir() < 200) needs.SUFFOCATING = true;
+    if (entity.getHealth() < entity.getMaxHealth() * 0.35) needs.VERY_HURT = true;
+    // High
+    if (entity.getData("fiskheroes:time_since_damaged") < 40) needs.HURT = true;
+    var inCombat = entity.getData("fiskheroes:time_since_damaged") < 100;
+    if (inCombat) needs.COMBAT = true;
+    // Low
+    if (!hasFlightPower(entity)) needs.GROUNDED = true;
+    if (entity.isInWater()) needs.WATER = true;
+    if (!inCombat) needs.PEACE = true;
+    // Capes — nearby entities wearing superhero chestplates
+    var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 16.0);
+    for (var i = 0; i < nearby.length; i++) {
+        var other = nearby[i];
+        if (other.getUUID() != entity.getUUID() && other.isLivingEntity()) {
+            var chest = other.getEquipmentInSlot(3);
+            if (chest != null && chest.name() == "fiskheroes:superhero_chestplate") {
+                needs.CAPES = true;
+                break;
+            }
+        }
+    }
+    return needs;
+}
+
 var POWERS = [
-    { label: "\u00A7aGravity Control", keyGroup: 4 },
-    { label: "\u00A7bEnergy Absorb", keyGroup: 4 },
-    { label: "\u00A7eLightning Storm", keyGroup: 4 },
-    { label: "\u00A7bConjure Tech", keyGroup: 4 },
-    { label: "\u00A7eChronokinesis", keyGroup: 5 },
-    { label: "\u00A7fAerokinesis", keyGroup: 5 },
-    { label: "\u00A79Bubble", keyGroup: 5 },
-    { label: "\u00A7dIllusions", keyGroup: 5 },
-    { label: "\u00A76Dmg Reflect", keyGroup: 0 },
-    { label: "\u00A7dEnergy Form", keyGroup: 0 },
-    { label: "\u00A73Crystal Armor", keyGroup: 0 },
-    { label: "\u00A78Intangibility", keyGroup: 0 },
-    { label: "\u00A7aFlicker Regen", keyGroup: 0 },
-    { label: "\u00A7eDanger Sense", keyGroup: 0 },
-    { label: "\u00A72Plant Growth", keyGroup: 0 },
-    { label: "\u00A7bIce Formation", keyGroup: 0 }
+    { label: "\u00A7aGravity Control", keyGroup: 4, answers: ["COMBAT", "FALLING", "GROUNDED"] },
+    { label: "\u00A7bEnergy Absorb", keyGroup: 4, answers: ["COMBAT", "HURT", "WATER"] },
+    { label: "\u00A7eLightning Storm", keyGroup: 4, answers: ["COMBAT", "FALLING", "GROUNDED"] },
+    { label: "\u00A7bConjure Tech", keyGroup: 4, answers: ["COMBAT", "PEACE", "WATER"] },
+    { label: "\u00A7eChronokinesis", keyGroup: 5, answers: ["COMBAT"] },
+    { label: "\u00A7fAerokinesis", keyGroup: 5, answers: ["COMBAT", "FALLING", "GROUNDED"] },
+    { label: "\u00A79Bubble", keyGroup: 5, answers: ["COMBAT", "HURT", "VERY_HURT", "CAPES"] },
+    { label: "\u00A7dIllusions", keyGroup: 5, answers: ["COMBAT", "CAPES"] },
+    { label: "\u00A76Dmg Reflect", keyGroup: 0, answers: ["COMBAT", "HURT"] },
+    { label: "\u00A7dEnergy Form", keyGroup: 0, answers: ["COMBAT", "VERY_HURT", "FALLING", "GROUNDED", "SUFFOCATING"] },
+    { label: "\u00A73Crystal Armor", keyGroup: 0, answers: ["COMBAT", "HURT", "VERY_HURT"] },
+    { label: "\u00A78Intangibility", keyGroup: 0, answers: ["VERY_HURT", "FALLING", "GROUNDED", "SUFFOCATING"] },
+    { label: "\u00A7aFlicker Regen", keyGroup: 0, answers: ["HURT", "VERY_HURT"] },
+    { label: "\u00A7eDanger Sense", keyGroup: 0, answers: ["PEACE", "CAPES"] },
+    { label: "\u00A72Plant Growth", keyGroup: 0, answers: ["PEACE", "COMBAT", "CAPES"] },
+    { label: "\u00A7bIce Formation", keyGroup: 0, answers: ["WATER", "PEACE", "CAPES"] }
 ];
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
@@ -81,6 +115,7 @@ POWER_ITEMS_WATER[15] = [  // Ice Formation (water only — freezing water into 
 // Track which item-giving powers were active last tick
 var prevItemPowers = {};
 var prevInWater = false;
+var prevHadFlight = false;
 
 // Count how many items all active item-giving powers should provide
 function expectedItemCount(entity) {
@@ -193,13 +228,71 @@ function filterHistory(entity, valid) {
     return filtered.length >= 2 ? filtered : valid;
 }
 
-// Synced PRNG: pick from valid pool, excluding recent history (integer math only)
+// Build needs-weighted pool from valid candidates
+// Each power gets 1 copy per active need it answers; powers answering nothing are excluded
+// If critical needs are active, only powers answering critical needs are included
+function buildNeedsPool(entity, valid) {
+    var needs = getActiveNeeds(entity);
+
+    // Check if any critical need is active
+    var hasCritical = false;
+    for (var n in needs) {
+        if (NEED_CRITICAL[n]) { hasCritical = true; break; }
+    }
+
+    var pool = [];
+    for (var i = 0; i < valid.length; i++) {
+        var power = POWERS[valid[i]];
+        var copies = 0;
+        for (var a = 0; a < power.answers.length; a++) {
+            var need = power.answers[a];
+            if (needs[need]) {
+                if (hasCritical) {
+                    // Only count critical needs when critical needs are active
+                    if (NEED_CRITICAL[need]) copies++;
+                } else {
+                    copies++;
+                }
+            }
+        }
+        for (var c = 0; c < copies; c++) {
+            pool.push(valid[i]);
+        }
+    }
+    return pool;
+}
+
+// Synced PRNG: pick from needs-weighted pool, excluding recent history (integer math only)
 function nextRandomFromPool(entity, current, valid) {
     if (valid.length == 0) return current;
     if (valid.length == 1) return valid[0];
 
-    // Hard-exclude recent history first
-    var candidates = filterHistory(entity, valid);
+    // Build needs-weighted pool
+    var weighted = buildNeedsPool(entity, valid);
+    // Fallback to unweighted if no needs matched (shouldn't happen — PEACE/COMBAT always active)
+    var candidates = weighted.length > 0 ? weighted : valid;
+
+    // Hard-exclude recent history (but only from unique entries for the check)
+    var unique = [];
+    var seen = {};
+    for (var i = 0; i < candidates.length; i++) {
+        if (!seen[candidates[i]]) {
+            seen[candidates[i]] = true;
+            unique.push(candidates[i]);
+        }
+    }
+    var filtered = filterHistory(entity, unique);
+    // If history filtering removed options, rebuild weighted pool from filtered set
+    if (filtered.length < unique.length && filtered.length >= 2) {
+        var filteredSet = {};
+        for (var i = 0; i < filtered.length; i++) filteredSet[filtered[i]] = true;
+        var newCandidates = [];
+        for (var i = 0; i < candidates.length; i++) {
+            if (filteredSet[candidates[i]]) newCandidates.push(candidates[i]);
+        }
+        candidates = newCandidates.length > 0 ? newCandidates : candidates;
+    }
+
     if (candidates.length == 1) return candidates[0];
 
     var s1 = Number(entity.getData("worm:dyn/slot1"));
@@ -304,6 +397,17 @@ function init(hero) {
             var current = Number(entity.getData(SLOT_KEYS[slotIdx]));
             var valid = getValidPowers(entity, slotIdx);
             var next = nextRandomFromPool(entity, current, valid);
+            // Debug: show active needs and selection
+            if (PackLoader.getSide() == "SERVER") {
+                var needs = getActiveNeeds(entity);
+                var needNames = [];
+                for (var n in needs) needNames.push(n);
+                var pool = buildNeedsPool(entity, valid);
+                var poolNames = [];
+                for (var pi = 0; pi < pool.length; pi++) poolNames.push(POWERS[pool[pi]].label);
+                entity.as("PLAYER").addChatMessage("\u00A78[Needs] \u00A77" + needNames.join(", "));
+                entity.as("PLAYER").addChatMessage("\u00A78[Pool] \u00A77" + poolNames.join(", "));
+            }
             pushHistory(entity, manager, current);
             manager.setData(entity, SLOT_KEYS[slotIdx], next);
             manager.setData(entity, "worm:dyn/eidolon_cycle", 0);
@@ -317,6 +421,13 @@ function init(hero) {
         if (s1 < 0 || s1 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot1", DEFAULT_POWERS[0]); s1 = DEFAULT_POWERS[0]; }
         if (s2 < 0 || s2 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]); s2 = DEFAULT_POWERS[1]; }
         if (s3 < 0 || s3 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]); s3 = DEFAULT_POWERS[2]; }
+
+        // Auto-activate flight when gaining a flight power
+        var hasFlight = hasFlightPower(entity);
+        if (hasFlight && !prevHadFlight && !entity.getData("fiskheroes:flying")) {
+            manager.setData(entity, "fiskheroes:flying", true);
+        }
+        prevHadFlight = hasFlight;
 
         // Rebuild equipment when any item-giving power changes or water state changes (server only)
         if (PackLoader.getSide() == "SERVER") {
@@ -563,6 +674,8 @@ function isModifierEnabled(entity, modifier) {
     case "fiskheroes:fire_immunity": return hasPower(entity, 1) || hasPower(entity, 10);
     // Intangibility (11)
     case "fiskheroes:intangibility": return hasPower(entity, 11);
+    // Water breathing: Energy Form (9) or Intangibility (11)
+    case "fiskheroes:water_breathing": return hasPower(entity, 9) || hasPower(entity, 11);
 
     default: return true;
     }
