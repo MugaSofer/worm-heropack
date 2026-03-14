@@ -2749,7 +2749,7 @@ heroData.addPotionEffect(entity, 16, 200, 0) // night vision, 10s, amp 0
 
 **Important:** `hasModifier` uses substring matching — `hasModifier(h, "flight")` matches `"fiskheroes:controlled_flight"`. To match exactly, compare the full name. To match `"fiskheroes:flight"` vs `"fiskheroes:controlled_flight"`, be specific: search for just `"controlled_flight"` rather than `"flight"`.
 
-**Flight detection note:** `fiskheroes:flight` is NOT stored as a modifier — it's added via `hero.addAttribute("FLIGHT_SPEED", ...)` in the hero JS and is not visible in the registry. The reliable check for flying heroes is `fiskheroes:controlled_flight`, which IS a modifier and is present for all standard flyers. Also check `entity.getData("fiskheroes:flying")` for whether the hero is actively airborne.
+**Flight detection note:** Three flight modifier names exist in the wild: `fiskheroes:controlled_flight` (most common), `fiskheroes:flight` (simple/passive), and `fiskheroes:propelled_flight` (Viltrumites etc.). Use `entityHasModifier(entity, "flight")` — the substring match catches all three. Also check `entity.getData("fiskheroes:flying")` for whether the hero is actively airborne.
 
 ---
 

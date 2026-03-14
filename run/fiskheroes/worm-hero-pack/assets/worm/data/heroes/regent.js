@@ -150,8 +150,7 @@ function init(hero) {
                 // Anti-lift: check if grabbed entity is near ground (including adjacent blocks for edges)
                 // Flying characters can be moved through the air freely
                 var canFly = grabbed.getData("fiskheroes:flying")
-                    || heroData.entityHasModifier(grabbed, "controlled_flight")
-                    || heroData.entityHasModifier(grabbed, "fiskheroes:flight");
+                    || heroData.entityHasModifier(grabbed, "flight");
                 var gp = grabbed.pos();
                 var nearGround = canFly
                     || heightAboveGround(entity.world(), gp) <= 1
