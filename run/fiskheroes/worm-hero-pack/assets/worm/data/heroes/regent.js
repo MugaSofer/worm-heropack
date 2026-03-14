@@ -30,6 +30,7 @@ var controlMap = {};
 var controlMapLoaded = false;
 var resistMsgCooldown = 0;
 var backfireMsgCooldown = 0;
+var nerveTargetControlled = false;
 
 // Load controlMap from chestplate NBT (format: "uuid:control,uuid:control,...")
 function loadControlMap(entity) {
@@ -237,6 +238,7 @@ function init(hero) {
             }
             if (nerveTarget != null) {
                 var nUuid = nerveTarget.getUUID();
+                nerveTargetControlled = (controlMap[nUuid] || 0) >= FULL_CONTROL;
                 // Chunked control + strain: one hit per cooldown period
                 if (entity.ticksExisted() % NERVE_CONTROL_COOLDOWN == 0) {
                     var nControl = Math.min(FULL_CONTROL, (controlMap[nUuid] || 0) + CONTROL_PER_NERVE);
@@ -245,6 +247,8 @@ function init(hero) {
                     if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
                 }
                 targetResistance = 1.0 - (controlMap[nUuid] || 0);
+            } else {
+                nerveTargetControlled = false;
             }
         }
 
@@ -278,9 +282,10 @@ function init(hero) {
 function isModifierEnabled(entity, modifier) {
     switch (modifier.name()) {
     case "fiskheroes:telekinesis":
-        return !entity.getData("fiskheroes:heat_vision") && entity.getData("worm:dyn/tk_cooldown") == 0;
+        return entity.getData("worm:dyn/tk_cooldown") == 0;
     case "fiskheroes:heat_vision":
-        return !entity.getData("fiskheroes:telekinesis");
+        var expected = nerveTargetControlled ? "nerve_controlled" : "nerve_base";
+        return modifier.id() == expected;
     default:
         return true;
     }
@@ -289,9 +294,9 @@ function isModifierEnabled(entity, modifier) {
 function isKeyBindEnabled(entity, keyBind) {
     switch (keyBind) {
     case "TELEKINESIS":
-        return !entity.getData("fiskheroes:heat_vision") && entity.getData("worm:dyn/tk_cooldown") == 0;
+        return entity.getData("worm:dyn/tk_cooldown") == 0;
     case "HEAT_VISION":
-        return !entity.getData("fiskheroes:telekinesis");
+        return true;
     default:
         return true;
     }

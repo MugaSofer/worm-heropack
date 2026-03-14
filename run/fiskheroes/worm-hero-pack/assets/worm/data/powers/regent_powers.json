@@ -20,7 +20,7 @@
         "GRAB": "fiskheroes:shadowchain_start"
       }
     },
-    "fiskheroes:heat_vision": {
+    "fiskheroes:heat_vision|nerve_base": {
       "damageProfile": {
         "damage": 0.01,
         "types": {
@@ -44,6 +44,38 @@
               "id": "minecraft:weakness",
               "duration": 20,
               "amplifier": 5,
+              "chance": 1
+            }
+          ]
+        }
+      },
+      "range": 32.0,
+      "radius": 0.0
+    },
+    "fiskheroes:heat_vision|nerve_controlled": {
+      "damageProfile": {
+        "damage": 0.01,
+        "types": {
+          "TELEPATHIC": 1.0
+        },
+        "properties": {
+          "EFFECTS": [
+            {
+              "id": "minecraft:nausea",
+              "duration": 400,
+              "amplifier": 3,
+              "chance": 1
+            },
+            {
+              "id": "minecraft:slowness",
+              "duration": 400,
+              "amplifier": 127,
+              "chance": 1
+            },
+            {
+              "id": "minecraft:weakness",
+              "duration": 400,
+              "amplifier": 127,
               "chance": 1
             }
           ]
