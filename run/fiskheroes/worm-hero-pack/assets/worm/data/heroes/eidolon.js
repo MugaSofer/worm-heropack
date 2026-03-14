@@ -64,27 +64,53 @@ POWER_ITEMS[14] = [  // Plant Growth
     ["minecraft:waterlily", 0, 64]
 ];
 
-POWER_ITEMS[15] = [  // Ice Formation
+POWER_ITEMS[15] = [  // Ice Formation (always)
     ["minecraft:snow", 0, 64],
     ["minecraft:snowball", 0, 16],
     ["minecraft:snow_layer", 0, 64],
-    ["minecraft:ice", 0, 64],
-    ["minecraft:packed_ice", 0, 64],
     ["fiskheroes:ice_layer", 0, 64]
+];
+
+// Extra items granted when in water (keyed by same power index)
+var POWER_ITEMS_WATER = {};
+POWER_ITEMS_WATER[15] = [  // Ice Formation (water only — freezing water into solid ice)
+    ["minecraft:ice", 0, 64],
+    ["minecraft:packed_ice", 0, 64]
 ];
 
 // Track which item-giving powers were active last tick
 var prevItemPowers = {};
+var prevInWater = false;
 
 // Count how many items all active item-giving powers should provide
 function expectedItemCount(entity) {
     var count = 0;
+    var inWater = entity.isInWater();
     for (var p in POWER_ITEMS) {
         if (hasPower(entity, Number(p))) {
             count += POWER_ITEMS[p].length;
+            if (inWater && POWER_ITEMS_WATER[p]) {
+                count += POWER_ITEMS_WATER[p].length;
+            }
         }
     }
     return Math.min(count, EQUIPMENT_SLOTS);
+}
+
+// Append items from a list to equipment NBT
+function appendItems(items, equipment, manager, idx) {
+    for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
+        // Entries: "item_name" | ["item_name", damage] | ["item_name", damage, count]
+        var entry = items[i];
+        var itemName = typeof entry == "string" ? entry : entry[0];
+        var dmg = typeof entry == "string" ? 0 : entry[1];
+        var count = (typeof entry != "string" && entry.length > 2) ? entry[2] : 1;
+        var itemId = typeof itemName == "number" ? itemName : PackLoader.getNumericalItemId(itemName);
+        var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:" + count + ",Damage:" + dmg + "}}");
+        manager.appendTag(equipment, tag);
+        idx++;
+    }
+    return idx;
 }
 
 // Rebuild equipment from all active item-giving powers, packed sequentially
@@ -92,20 +118,13 @@ function rebuildEquipment(entity, manager) {
     var nbt = entity.getWornChestplate().nbt();
     manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
     var equipment = nbt.getTagList("Equipment");
+    var inWater = entity.isInWater();
     var idx = 0;
     for (var p in POWER_ITEMS) {
         if (hasPower(entity, Number(p))) {
-            var items = POWER_ITEMS[p];
-            for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
-                // Entries: "item_name" | ["item_name", damage] | ["item_name", damage, count]
-                var entry = items[i];
-                var itemName = typeof entry == "string" ? entry : entry[0];
-                var dmg = typeof entry == "string" ? 0 : entry[1];
-                var count = (typeof entry != "string" && entry.length > 2) ? entry[2] : 1;
-                var itemId = typeof itemName == "number" ? itemName : PackLoader.getNumericalItemId(itemName);
-                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:" + count + ",Damage:" + dmg + "}}");
-                manager.appendTag(equipment, tag);
-                idx++;
+            idx = appendItems(POWER_ITEMS[p], equipment, manager, idx);
+            if (inWater && POWER_ITEMS_WATER[p]) {
+                idx = appendItems(POWER_ITEMS_WATER[p], equipment, manager, idx);
             }
         }
     }
@@ -299,7 +318,7 @@ function init(hero) {
         if (s2 < 0 || s2 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot2", DEFAULT_POWERS[1]); s2 = DEFAULT_POWERS[1]; }
         if (s3 < 0 || s3 >= POWER_COUNT) { manager.setData(entity, "worm:dyn/slot3", DEFAULT_POWERS[2]); s3 = DEFAULT_POWERS[2]; }
 
-        // Rebuild equipment when any item-giving power changes (server only)
+        // Rebuild equipment when any item-giving power changes or water state changes (server only)
         if (PackLoader.getSide() == "SERVER") {
             var needsRebuild = false;
             for (var p in POWER_ITEMS) {
@@ -307,6 +326,15 @@ function init(hero) {
                 if (active != prevItemPowers[p]) {
                     needsRebuild = true;
                     prevItemPowers[p] = active;
+                }
+            }
+            // Water state change triggers rebuild for water-conditional items
+            var inWater = entity.isInWater();
+            if (inWater != prevInWater) {
+                prevInWater = inWater;
+                // Only rebuild if a power with water items is active
+                for (var p in POWER_ITEMS_WATER) {
+                    if (hasPower(entity, Number(p))) { needsRebuild = true; break; }
                 }
             }
             if (needsRebuild) {

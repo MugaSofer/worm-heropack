@@ -136,7 +136,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 
 ### Eidolon
 
-**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 15 abilities. The most versatile hero in the pack.
+**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 16 abilities. The most versatile hero in the pack.
 
 #### Keybinds
 
@@ -144,7 +144,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 |-----|---------|-------------|
 | 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm > Conjure Tech |
 | 2 | Cycle Slot 2 | Cycles active power: Chronokinesis > Aerokinesis > Forcefield > Illusions |
-| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility > Flicker Regen > Danger Sense > Plant Growth |
+| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility > Flicker Regen > Danger Sense > Plant Growth > Ice Formation |
 | 4 | Slot 1 Ability | Activates the current Slot 1 power (see below). |
 | 5 | Slot 2 Ability | Activates the current Slot 2 power (see below). |
 
@@ -177,6 +177,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Flicker Regen** | Rapid healing factor (20 tick delay). Sharp white flash visual when healing. | No |
 | **Danger Sense** | Every 5 seconds, scans for living entities within 16 blocks and reports the 5 highest-threat targets with name, distance, and direction in chat. | No |
 | **Plant Growth** | Conjures natural blocks: Log, Leaves, Sapling, Vine, Cactus, Melon Block, Lily Pad. Items replenish automatically. | No |
+| **Ice Formation** | Conjures ice/snow: Snow Block, Snowball, Snow Layer, Ice Layer (always). Ice, Packed Ice (only in water — freezing surrounding water). All in stacks. Items replenish automatically. | No |
 
 #### Energy Absorption Details
 
