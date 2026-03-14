@@ -190,7 +190,7 @@ function init(hero) {
             }
             // Show control bar for whatever entity we're looking at (if any control exists)
             var lookControl = 0;
-            var lookNearby = entity.world().getEntitiesInRangeOf(entity.pos(), 12.0);
+            var lookNearby = entity.world().getEntitiesInRangeOf(entity.pos(), 32.0);
             var lookVec = entity.getLookVector();
             var lookBestDot = 0;
             for (var li = 0; li < lookNearby.length; li++) {
@@ -219,7 +219,7 @@ function init(hero) {
             if (strainTarget != null) targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
         } else if (usingNerve) {
             // Find nearest entity in look direction + build control on cooldown
-            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 10.0);
+            var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 32.0);
             var look = entity.getLookVector();
             var bestDist = 999;
             var nerveTarget = null;
