@@ -12,7 +12,8 @@ function heightAboveGround(world, pos) {
 }
 
 // Control buildup config
-var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill
+var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill (TK)
+var CONTROL_PER_TICK_NERVE = 0.0005;  // ~33 nerve blasts to fill (slower, ranged)
 var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
 var FULL_CONTROL = 1.0;
 
@@ -186,11 +187,22 @@ function init(hero) {
             if (grabTicks != 0) {
                 manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
             }
-            // Fade HUD when not grabbing
-            var display = entity.getData("worm:dyn/tk_control_display");
-            if (display > 0) {
-                manager.setData(entity, "worm:dyn/tk_control_display", 0);
+            // Show control bar for whatever entity we're looking at (if any control exists)
+            var lookControl = 0;
+            var lookNearby = entity.world().getEntitiesInRangeOf(entity.pos(), 12.0);
+            var lookVec = entity.getLookVector();
+            var lookBestDot = 0;
+            for (var li = 0; li < lookNearby.length; li++) {
+                var lookOther = lookNearby[li];
+                if (lookOther.getUUID() == entity.getUUID() || !lookOther.isLivingEntity()) continue;
+                var lookTo = lookOther.pos().subtract(entity.pos()).normalized();
+                var lookDot = lookVec.x() * lookTo.x() + lookVec.y() * lookTo.y() + lookVec.z() * lookTo.z();
+                if (lookDot > 0.95 && lookDot > lookBestDot) {
+                    lookBestDot = lookDot;
+                    lookControl = controlMap[lookOther.getUUID()] || 0;
+                }
             }
+            manager.setData(entity, "worm:dyn/tk_control_display", lookControl);
         }
 
         // Strain mechanic: builds while using powers, drains when idle
@@ -204,10 +216,11 @@ function init(hero) {
             var strainTarget = entity.world().getEntityById(grabId);
             if (strainTarget != null) targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
         } else if (usingNerve) {
-            // Check nearest entity in beam direction for control level
+            // Check nearest entity in beam direction for control level + build control
             var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 10.0);
             var look = entity.getLookVector();
             var bestDot = 0;
+            var nerveTarget = null;
             for (var ni = 0; ni < nearby.length; ni++) {
                 var other = nearby[ni];
                 if (other.getUUID() == entity.getUUID() || !other.isLivingEntity()) continue;
@@ -215,8 +228,15 @@ function init(hero) {
                 var dot = look.x() * toOther.x() + look.y() * toOther.y() + look.z() * toOther.z();
                 if (dot > 0.95 && dot > bestDot) {
                     bestDot = dot;
-                    targetResistance = 1.0 - Math.min(1.0, controlMap[other.getUUID()] || 0);
+                    nerveTarget = other;
                 }
+            }
+            if (nerveTarget != null) {
+                var nUuid = nerveTarget.getUUID();
+                var nControl = Math.min(FULL_CONTROL, (controlMap[nUuid] || 0) + CONTROL_PER_TICK_NERVE);
+                controlMap[nUuid] = nControl;
+                targetResistance = 1.0 - nControl;
+                if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
             }
         }
 
