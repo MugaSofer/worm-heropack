@@ -448,7 +448,7 @@ function init(hero) {
             s3 = Number(entity.getData("worm:dyn/slot3"));
             // Auto-activate flight when cycling gives a flight power
             if (hasFlightPower(entity) && !entity.getData("fiskheroes:flying")) {
-                manager.setData(entity, "fiskheroes:flying", true);
+                manager.setDataWithNotify(entity, "fiskheroes:flying", true);
             }
         }
 
