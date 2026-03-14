@@ -136,15 +136,15 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 
 ### Eidolon
 
-**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 14 abilities. The most versatile hero in the pack.
+**Tier 3** | The Triumvirate's trump card. Three independently selectable power slots drawn from a pool of 15 abilities. The most versatile hero in the pack.
 
 #### Keybinds
 
 | Key | Ability | Description |
 |-----|---------|-------------|
-| 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm > Conjuration |
+| 1 | Cycle Slot 1 | Cycles active power: Gravity Control > Energy Absorption > Lightning Storm > Conjure Tech |
 | 2 | Cycle Slot 2 | Cycles active power: Chronokinesis > Aerokinesis > Forcefield > Illusions |
-| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility > Flicker Regen |
+| 3 | Cycle Slot 3 | Cycles passive power: Damage Reflection > Energy Form > Crystal Armor > Intangibility > Flicker Regen > Danger Sense > Plant Growth |
 | 4 | Slot 1 Ability | Activates the current Slot 1 power (see below). |
 | 5 | Slot 2 Ability | Activates the current Slot 2 power (see below). |
 
@@ -155,7 +155,7 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Gravity Control** | Gravity Manipulation (AoE pull/push, range 50, radius 12), Gravity Slam (16 energy damage, radius 6, knockback 2) | — | Yes |
 | **Energy Absorption** | Expel Energy (15 energy damage eye beams, range 32, cooks entities — requires 10%+ charge) | Frost walking (radius 4); projectile, fire, blunt, explosion immunity; 75% energy resistance | No |
 | **Lightning Storm** | Lightning Storm (16 energy damage beam, range 30) | Electric aura (1 electricity/tick, 2 block range), lightning flicker trail | Yes |
-| **Conjuration** | Conjure Tech — opens equipment wheel: Freeze Grenade (24 cold/explosion), Grenade (30 explosion, radius 10), Smoke Pellet | — | No |
+| **Conjure Tech** | Grenades (Freeze Grenade, Grenade, Smoke Pellet) + conjures equipment: Cold Gun, Heat Gun, Grappling Gun, Holographic Display Stand, TNT, Piston, Dispenser, Pressure Plate. Items replenish automatically. | Gun permissions (cold/heat/grapple) | No |
 
 #### Slot 2 — Active (Key 2 to change, Key 5 to use)
 
@@ -175,6 +175,8 @@ Note: Bombardment keybind (Key 4) becomes super boost activation while flying at
 | **Crystal Armor** | Increased durability. Projectile & Fire immunity. Aquamarine crystal overlay with health-based cracks. | No |
 | **Intangibility** | Phase through blocks and entities. Auto-activates flight (you'd fall through the world otherwise), can breathe in space & underwater. | Yes |
 | **Flicker Regen** | Rapid healing factor (20 tick delay). Sharp white flash visual when healing. | No |
+| **Danger Sense** | Every 5 seconds, scans for living entities within 16 blocks and reports the 5 highest-threat targets with name, distance, and direction in chat. | No |
+| **Plant Growth** | Conjures natural blocks: Log, Leaves, Sapling, Vine, Cactus, Melon Block, Lily Pad. Items replenish automatically. | No |
 
 #### Energy Absorption Details
 

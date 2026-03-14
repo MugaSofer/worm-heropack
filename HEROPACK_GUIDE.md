@@ -1082,7 +1082,44 @@ Key findings:
 - Grey Matter (TMF) registers 5 slots via `addPrimaryEquipment` and dynamically swaps items via `appendTag`/`removeTag`
 - `PackLoader.getNumericalItemId("fiskheroes:cold_gun")` dynamically resolves registry names to numeric IDs at runtime
 
-**IN PROGRESS:** Investigating how to conditionally show/hide equipment slots (e.g. only when a specific power is active). Currently, `addPrimaryEquipment` registrations create persistent slots that cannot be hidden at runtime.
+**Conditional equipment visibility is not possible** — `addPrimaryEquipment` registrations always show in the wheel (greyed out if modifier disabled). Workaround: register with `minecraft:air` (shows as empty slot rather than a visible item), then fill/clear dynamically via NBT. Empty slots are the cost of doing business.
+
+**Dynamic multi-power equipment system** (Eidolon pattern):
+```javascript
+// Register enough air slots for all item-giving powers combined
+var EQUIPMENT_SLOTS = 16;
+for (var e = 0; e < EQUIPMENT_SLOTS; e++) {
+    hero.addPrimaryEquipment("minecraft:air", false);
+}
+
+// Item lists per power index — entries: "name" | ["name", damage] | [numericId, damage]
+var POWER_ITEMS = {};
+POWER_ITEMS[3] = ["fiskheroes:cold_gun", "minecraft:tnt"];
+POWER_ITEMS[14] = ["minecraft:log", ["minecraft:double_plant", 2]];
+
+// Rebuild: pack all active powers' items sequentially into slots
+function rebuildEquipment(entity, manager) {
+    var nbt = entity.getWornChestplate().nbt();
+    manager.setTagList(nbt, "Equipment", manager.newTagList("[]"));
+    var equipment = nbt.getTagList("Equipment");
+    var idx = 0;
+    for (var p in POWER_ITEMS) {
+        if (hasPower(entity, Number(p))) {
+            var items = POWER_ITEMS[p];
+            for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
+                var entry = items[i];
+                var itemName = typeof entry == "string" ? entry : entry[0];
+                var dmg = typeof entry == "string" ? 0 : entry[1];
+                var itemId = typeof itemName == "number" ? itemName : PackLoader.getNumericalItemId(itemName);
+                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:1,Damage:" + dmg + "}}");
+                manager.appendTag(equipment, tag);
+                idx++;
+            }
+        }
+    }
+}
+```
+Replenishment: check `tagCount() < expectedItemCount` every ~2 seconds and rebuild if items were taken.
 
 #### 7. Single-Piece Full-Body Suits
 
