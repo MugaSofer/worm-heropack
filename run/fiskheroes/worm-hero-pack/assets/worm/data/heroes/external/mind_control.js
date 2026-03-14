@@ -398,6 +398,23 @@ var TELEPATHY_TRAINED = {
 
 // ── Main API ─────────────────────────────────────────────────────────
 
+// Returns true if entity has non-humanoid biology (harder for Regent to control).
+// Non-humanoid = nonstandard anatomy heroes, or vanilla mobs without hero suits.
+function isNonHumanoid(entity) {
+    var resistance = resistsControl(entity);
+    if (resistance == "anatomy") return true;
+    // Vanilla mobs without hero suits have non-human nervous systems
+    try {
+        var helm = entity.getEquipmentInSlot(4);
+        if (helm == null || helm.isEmpty()) return true;
+        var heroType = helm.nbt().getString("HeroType");
+        if (heroType == null || heroType == "") return true;
+    } catch (e) {
+        return true; // can't read equipment → probably a mob
+    }
+    return false;
+}
+
 // Check if entity is wearing a robot hero suit (no nervous system).
 // Used by Imp's visibility system — robots can detect her.
 function seesElectronically(entity) {

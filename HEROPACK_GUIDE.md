@@ -2633,13 +2633,123 @@ The wrapper objects use a proxy pattern: unknown properties return `null` (type 
 - **No entity spawning** — duplication spell spawns entities but that's hardcoded Java
 - **No healing/buffing others** — only `hurt`/`hurtByAttacker` on other entities. (Though it can be approximated with potion effects on an attack.)
 - **No motion setting** on entities — readable but not writable
-- **No potion application** — only readable via `hasPotionEffect`. (Though it can be approximated with potion effects on an attack.)
+- **No potion application** (official API) — only readable via `hasPotionEffect`. Bypassed via reflection; see below.
 - **No inventory manipulation** — can read items but not modify
 - **No homing projectiles** — all projectiles are straight-line
 - **No custom shaders** — no GLSL, post-processing, or screen distortion
-- **No mob aggro clearing** — targeting/AI methods not exposed. Vanilla Minecraft mob aggro persists through `fiskheroes:invisible`
+- **No mob aggro clearing** (official API) — targeting/AI methods not exposed. Bypassed via reflection (`setAttackTarget`); see below. Vanilla Minecraft mob aggro persists through `fiskheroes:invisible`.
 - **No command execution** — no way to run `/gamemode` or any server command from scripts
 - **No entity removal** — cannot despawn or kill mob entities programmatically
+
+### Reflection Sandbox Escape
+
+The JS sandbox blocks `Java.type()`, `Packages`, `Class.forName()`, and `java.lang.System`. However, `entity.getClass()` works, and the JS wrapper's `entity` field (type `EntityLivingBase`) is accessible via `setAccessible(true)`. This gives access to the raw MC entity and all methods via SRG-obfuscated names, plus the Fisk mod's class loader for querying the hero registry.
+
+**Status: Production — used in `worm:external/hero_data`.**
+
+#### Getting the Raw MC Entity
+
+```javascript
+function getMCEntity(jsEntity) {
+    var cls = jsEntity.getClass();
+    while (cls != null) {
+        var fields = cls.getDeclaredFields();
+        for (var i = 0; i < fields.length; i++) {
+            if (fields[i].getName() == "entity") {
+                fields[i].setAccessible(true);
+                return fields[i].get(jsEntity);
+            }
+        }
+        cls = cls.getSuperclass();
+    }
+    return null;
+}
+```
+
+Players return `EntityPlayerMP`, mobs return their entity class. **Cache the result** — reflection is expensive; never call per-tick on multiple entities.
+
+#### Calling Methods via SRG Names
+
+MC 1.7.10 uses obfuscated method names in production. All confirmed working:
+
+```javascript
+var mc = getMCEntity(entity);
+mc["func_70651_bq"]();          // getActivePotionEffects()
+mc["func_70638_az"]();          // getAttackTarget()
+mc["func_70624_b"](target);    // setAttackTarget(EntityLivingBase)
+```
+
+**Key SRG mappings:**
+
+| Method | SRG name | Params |
+|--------|----------|--------|
+| getHealth | `func_110143_aJ` | () |
+| getMaxHealth | `func_110138_aP` | () |
+| setHealth | `func_71150_b` | (float) |
+| getActivePotionEffects | `func_70651_bq` | () |
+| addPotionEffect | `func_70690_d` | (PotionEffect) |
+| removePotionEffect | `func_70618_n` | (int potionId) |
+| getAttackTarget | `func_70638_az` | () |
+| setAttackTarget | `func_70624_b` | (EntityLivingBase) |
+| getEntityId | `func_145782_y` | () |
+| attackEntityFrom | `func_70097_a` | (DamageSource, float) |
+| setDead | `func_70106_y` | () |
+| swingItem | `func_71038_i` | () |
+
+#### Constructing Objects (e.g. PotionEffect)
+
+Can't use `Java.type()`. Get classes from method parameter/return types instead:
+
+```javascript
+// addPotionEffect — CONFIRMED WORKING
+var addMethod = findMethod(mc.getClass(), "func_70690_d");
+var peClass = addMethod.getParameterTypes()[0];             // PotionEffect.class
+var intType = findMethod(mc.getClass(), "func_145782_y").getReturnType(); // int.class
+var constructor = peClass.getConstructor(intType, intType, intType);
+var effect = constructor.newInstance(16, 200, 0); // night vision, 10s
+mc["func_70690_d"](effect);
+```
+
+#### Querying the Hero Registry
+
+Use the MC class loader to access Fisk mod classes:
+
+```javascript
+var cl = mc.getClass().getClassLoader();
+var heroIterClass = cl.loadClass("com.fiskmods.heroes.common.hero.HeroIteration");
+var regField = heroIterClass.getDeclaredField("REGISTRY");
+regField.setAccessible(true);
+var registry = regField.get(null); // BackupMap of all registered heroes (87 in base mod)
+```
+
+Each registry entry is a `HeroIteration` with a `fullName` field (e.g. `"fiskheroes:iron_man"`) and a `hero` field (type `HeroJS`). Call `heroJS.getPowers()` to get an `ImmutableSet` of `Power` objects; each has a `modifiers` field (ImmutableMap keyed by modifier name string).
+
+**Use `worm:external/hero_data` instead of writing this yourself.** It wraps all of the above with caching and a clean API:
+
+```javascript
+var heroData = implement("worm:external/hero_data");
+
+// Call once per hero on first SERVER tick to initialize
+heroData.setup(entity);
+
+// Query modifiers from any hero's powers JSON (supports partial match)
+heroData.hasModifier("fiskheroes:iron_man", "water_breathing")    // true
+heroData.hasModifier("fiskheroes:iron_man", "repulsor_blast")     // true
+heroData.entityHasModifier(grabbed, "controlled_flight")          // checks grabbed entity's hero
+
+// Get a hero's full modifier list
+heroData.getModifiers("worm:regent")   // ["fiskheroes:telekinesis", ...]
+
+// Get raw MC entity (for SRG method calls) — result is cached internally
+heroData.getRawEntity(entity)
+
+// Apply a potion effect
+heroData.addPotionEffect(entity, 16, 200, 0) // night vision, 10s, amp 0
+```
+
+**Important:** `hasModifier` uses substring matching — `hasModifier(h, "flight")` matches `"fiskheroes:controlled_flight"`. To match exactly, compare the full name. To match `"fiskheroes:flight"` vs `"fiskheroes:controlled_flight"`, be specific: search for just `"controlled_flight"` rather than `"flight"`.
+
+**Flight detection note:** `fiskheroes:flight` is NOT stored as a modifier — it's added via `hero.addAttribute("FLIGHT_SPEED", ...)` in the hero JS and is not visible in the registry. The reliable check for flying heroes is `fiskheroes:controlled_flight`, which IS a modifier and is present for all standard flyers. Also check `entity.getData("fiskheroes:flying")` for whether the hero is actively airborne.
 
 ---
 

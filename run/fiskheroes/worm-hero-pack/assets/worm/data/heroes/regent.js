@@ -1,5 +1,6 @@
 var team = implement("worm:external/undersiders");
 var mc = implement("worm:external/mind_control");
+var heroData = implement("worm:external/hero_data");
 
 // How many blocks above ground the entity at pos is (max 10)
 function heightAboveGround(world, pos) {
@@ -30,6 +31,7 @@ var controlMap = {};
 var controlMapLoaded = false;
 var resistMsgCooldown = 0;
 var backfireMsgCooldown = 0;
+var nonHumanMsgCooldown = 0;
 var nerveTargetControlled = false;
 
 // Load controlMap from chestplate NBT (format: "uuid:control,uuid:control,...")
@@ -104,6 +106,7 @@ function init(hero) {
         // Load persistent control map from NBT on first tick
         if (!controlMapLoaded && PackLoader.getSide() == "SERVER") {
             loadControlMap(entity);
+            heroData.setup(entity);
             controlMapLoaded = true;
         }
 
@@ -116,6 +119,7 @@ function init(hero) {
         }
         if (resistMsgCooldown > 0) resistMsgCooldown--;
         if (backfireMsgCooldown > 0) backfireMsgCooldown--;
+        if (nonHumanMsgCooldown > 0) nonHumanMsgCooldown--;
 
         if (grabId > -1) {
             var grabbed = entity.world().getEntityById(grabId);
@@ -144,8 +148,13 @@ function init(hero) {
                 }
 
                 // Anti-lift: check if grabbed entity is near ground (including adjacent blocks for edges)
+                // Flying characters can be moved through the air freely
+                var canFly = grabbed.getData("fiskheroes:flying")
+                    || heroData.entityHasModifier(grabbed, "controlled_flight")
+                    || heroData.entityHasModifier(grabbed, "fiskheroes:flight");
                 var gp = grabbed.pos();
-                var nearGround = heightAboveGround(entity.world(), gp) <= 1
+                var nearGround = canFly
+                    || heightAboveGround(entity.world(), gp) <= 1
                     || heightAboveGround(entity.world(), gp.add(1, 0, 0)) <= 1
                     || heightAboveGround(entity.world(), gp.add(-1, 0, 0)) <= 1
                     || heightAboveGround(entity.world(), gp.add(0, 0, 1)) <= 1
@@ -213,11 +222,22 @@ function init(hero) {
         var usingNerve = entity.getData("fiskheroes:heat_vision");
 
         // Strain scales inversely with control over target (1.0 = no control, 0.0 = full control)
+        // Non-humanoid targets cause 2x strain (unfamiliar nervous system)
         var targetResistance = 1.0;
+        var strainMultiplier = 1.0;
         var nerveHit = false;
         if (usingTK && grabId > -1) {
             var strainTarget = entity.world().getEntityById(grabId);
-            if (strainTarget != null) targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
+            if (strainTarget != null) {
+                targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
+                if (mc.isNonHumanoid(strainTarget)) {
+                    strainMultiplier = 2.0;
+                    if (PackLoader.getSide() == "SERVER" && nonHumanMsgCooldown <= 0) {
+                        entity.as("PLAYER").addChatMessage("\u00A76\u00A7o*Unfamiliar anatomy... this is harder to control.*");
+                        nonHumanMsgCooldown = 200;
+                    }
+                }
+            }
         } else if (usingNerve) {
             // Find nearest entity in look direction + build control on cooldown
             var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 32.0);
@@ -239,6 +259,13 @@ function init(hero) {
             if (nerveTarget != null) {
                 var nUuid = nerveTarget.getUUID();
                 nerveTargetControlled = (controlMap[nUuid] || 0) >= FULL_CONTROL;
+                if (mc.isNonHumanoid(nerveTarget)) {
+                    strainMultiplier = 2.0;
+                    if (PackLoader.getSide() == "SERVER" && nonHumanMsgCooldown <= 0) {
+                        entity.as("PLAYER").addChatMessage("\u00A76\u00A7o*Unfamiliar anatomy... this is harder to control.*");
+                        nonHumanMsgCooldown = 200;
+                    }
+                }
                 // Chunked control + strain: one hit per cooldown period
                 if (entity.ticksExisted() % NERVE_CONTROL_COOLDOWN == 0) {
                     var nControl = Math.min(FULL_CONTROL, (controlMap[nUuid] || 0) + CONTROL_PER_NERVE);
@@ -253,9 +280,9 @@ function init(hero) {
         }
 
         if (usingTK) {
-            strain = Math.min(0.95, strain + STRAIN_BUILD_TK * targetResistance);
+            strain = Math.min(0.95, strain + STRAIN_BUILD_TK * targetResistance * strainMultiplier);
         } else if (usingNerve && nerveHit) {
-            strain = Math.min(0.95, strain + STRAIN_PER_NERVE * targetResistance);
+            strain = Math.min(0.95, strain + STRAIN_PER_NERVE * targetResistance * strainMultiplier);
         } else {
             strain = Math.max(0, strain - STRAIN_DRAIN);
         }
