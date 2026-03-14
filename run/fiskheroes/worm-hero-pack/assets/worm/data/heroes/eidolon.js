@@ -3,7 +3,7 @@
 // Power indices (unified):
 //   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjure Tech
 //   Key 5 group: 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
-//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense, 14=Plant Growth
+//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense, 14=Plant Growth, 15=Ice Formation
 //
 // Any power can go in any slot. Constraint: at most one Key 4 power and one Key 5 power across all slots.
 
@@ -22,7 +22,8 @@ var POWERS = [
     { label: "\u00A78Intangibility", keyGroup: 0 },
     { label: "\u00A7aFlicker Regen", keyGroup: 0 },
     { label: "\u00A7eDanger Sense", keyGroup: 0 },
-    { label: "\u00A72Plant Growth", keyGroup: 0 }
+    { label: "\u00A72Plant Growth", keyGroup: 0 },
+    { label: "\u00A7bIce Formation", keyGroup: 0 }
 ];
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
@@ -47,20 +48,28 @@ POWER_ITEMS[3] = [  // Conjure Tech
     "fiskheroes:heat_gun",
     "fiskheroes:grappling_gun",
     "fiskheroes:holographic_display_stand",
-    "minecraft:tnt",
-    "minecraft:piston",
-    "minecraft:dispenser",
-    "minecraft:stone_pressure_plate"
+    ["minecraft:tnt", 0, 64],
+    ["minecraft:piston", 0, 64],
+    ["minecraft:dispenser", 0, 64],
+    ["minecraft:stone_pressure_plate", 0, 64]
 ];
 
 POWER_ITEMS[14] = [  // Plant Growth
-    "minecraft:log",
-    "minecraft:leaves",
-    "minecraft:sapling",
-    "minecraft:vine",
-    "minecraft:cactus",
-    "minecraft:melon_block",
-    "minecraft:waterlily"
+    ["minecraft:log", 0, 64],
+    ["minecraft:leaves", 0, 64],
+    ["minecraft:sapling", 0, 64],
+    ["minecraft:vine", 0, 64],
+    ["minecraft:cactus", 0, 64],
+    ["minecraft:melon_block", 0, 64],
+    ["minecraft:waterlily", 0, 64]
+];
+
+POWER_ITEMS[15] = [  // Ice Formation
+    ["minecraft:snow", 0, 64],
+    ["minecraft:snowball", 0, 16],
+    ["minecraft:snow_layer", 0, 64],
+    ["minecraft:ice", 0, 64],
+    ["minecraft:packed_ice", 0, 64]
 ];
 
 // Track which item-giving powers were active last tick
@@ -87,12 +96,13 @@ function rebuildEquipment(entity, manager) {
         if (hasPower(entity, Number(p))) {
             var items = POWER_ITEMS[p];
             for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
-                // Entries: "item_name" | ["item_name", damage] | [numericId, damage]
+                // Entries: "item_name" | ["item_name", damage] | ["item_name", damage, count]
                 var entry = items[i];
                 var itemName = typeof entry == "string" ? entry : entry[0];
                 var dmg = typeof entry == "string" ? 0 : entry[1];
+                var count = (typeof entry != "string" && entry.length > 2) ? entry[2] : 1;
                 var itemId = typeof itemName == "number" ? itemName : PackLoader.getNumericalItemId(itemName);
-                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:1,Damage:" + dmg + "}}");
+                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:" + count + ",Damage:" + dmg + "}}");
                 manager.appendTag(equipment, tag);
                 idx++;
             }
