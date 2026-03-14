@@ -3,7 +3,7 @@
 // Power indices (unified):
 //   Key 4 group: 0=Gravity Control, 1=Energy Absorption, 2=Lightning Storm, 3=Conjure Tech
 //   Key 5 group: 4=Chronokinesis, 5=Aerokinesis, 6=Bubble, 7=Illusions
-//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense
+//   Passive:     8=Damage Reflection, 9=Energy Form, 10=Crystal Armor, 11=Intangibility, 12=Flicker Regen, 13=Danger Sense, 14=Plant Growth
 //
 // Any power can go in any slot. Constraint: at most one Key 4 power and one Key 5 power across all slots.
 
@@ -21,7 +21,8 @@ var POWERS = [
     { label: "\u00A73Crystal Armor", keyGroup: 0 },
     { label: "\u00A78Intangibility", keyGroup: 0 },
     { label: "\u00A7aFlicker Regen", keyGroup: 0 },
-    { label: "\u00A7eDanger Sense", keyGroup: 0 }
+    { label: "\u00A7eDanger Sense", keyGroup: 0 },
+    { label: "\u00A72Plant Growth", keyGroup: 0 }
 ];
 var POWER_COUNT = POWERS.length;
 var SLOT_KEYS = ["worm:dyn/slot1", "worm:dyn/slot2", "worm:dyn/slot3"];
@@ -52,6 +53,16 @@ POWER_ITEMS[3] = [  // Conjure Tech
     "minecraft:stone_pressure_plate"
 ];
 
+POWER_ITEMS[14] = [  // Plant Growth
+    "minecraft:log",
+    "minecraft:leaves",
+    "minecraft:sapling",
+    "minecraft:vine",
+    "minecraft:cactus",
+    "minecraft:melon_block",
+    "minecraft:waterlily"
+];
+
 // Track which item-giving powers were active last tick
 var prevItemPowers = {};
 
@@ -76,8 +87,12 @@ function rebuildEquipment(entity, manager) {
         if (hasPower(entity, Number(p))) {
             var items = POWER_ITEMS[p];
             for (var i = 0; i < items.length && idx < EQUIPMENT_SLOTS; i++) {
-                var itemId = PackLoader.getNumericalItemId(items[i]);
-                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:1,Damage:0}}");
+                // Entries: "item_name" | ["item_name", damage] | [numericId, damage]
+                var entry = items[i];
+                var itemName = typeof entry == "string" ? entry : entry[0];
+                var dmg = typeof entry == "string" ? 0 : entry[1];
+                var itemId = typeof itemName == "number" ? itemName : PackLoader.getNumericalItemId(itemName);
+                var tag = manager.newCompoundTag("{Index:" + idx + ",Item:{id:" + itemId + "s,Count:1,Damage:" + dmg + "}}");
                 manager.appendTag(equipment, tag);
                 idx++;
             }
