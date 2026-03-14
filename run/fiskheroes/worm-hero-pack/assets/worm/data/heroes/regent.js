@@ -198,31 +198,32 @@ function init(hero) {
         var usingTK = grabId > -1;
         var usingNerve = entity.getData("fiskheroes:heat_vision");
 
-        // Check if current target is fully controlled (for strain reduction)
-        var targetFullControl = false;
+        // Strain scales inversely with control over target (1.0 = no control, 0.0 = full control)
+        var targetResistance = 1.0;
         if (usingTK && grabId > -1) {
             var strainTarget = entity.world().getEntityById(grabId);
-            if (strainTarget != null) targetFullControl = (controlMap[strainTarget.getUUID()] || 0) >= FULL_CONTROL;
+            if (strainTarget != null) targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
         } else if (usingNerve) {
-            // Check nearest entity in beam direction for full control
+            // Check nearest entity in beam direction for control level
             var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 10.0);
             var look = entity.getLookVector();
+            var bestDot = 0;
             for (var ni = 0; ni < nearby.length; ni++) {
                 var other = nearby[ni];
                 if (other.getUUID() == entity.getUUID() || !other.isLivingEntity()) continue;
                 var toOther = other.pos().subtract(entity.pos()).normalized();
                 var dot = look.x() * toOther.x() + look.y() * toOther.y() + look.z() * toOther.z();
-                if (dot > 0.95 && (controlMap[other.getUUID()] || 0) >= FULL_CONTROL) {
-                    targetFullControl = true;
-                    break;
+                if (dot > 0.95 && dot > bestDot) {
+                    bestDot = dot;
+                    targetResistance = 1.0 - Math.min(1.0, controlMap[other.getUUID()] || 0);
                 }
             }
         }
 
         if (usingTK) {
-            strain = targetFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_TK);
+            strain = Math.min(0.95, strain + STRAIN_BUILD_TK * targetResistance);
         } else if (usingNerve) {
-            strain = targetFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_NERVE);
+            strain = Math.min(0.95, strain + STRAIN_BUILD_NERVE * targetResistance);
         } else {
             strain = Math.max(0, strain - STRAIN_DRAIN);
         }
