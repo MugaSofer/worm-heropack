@@ -58,6 +58,12 @@
       "type": "CHARGE",
       "texture": "worm:textures/gui/bars/regent_control.png",
       "data": "worm:dyn/tk_control_display"
+    },
+    {
+      "type": "CHARGE",
+      "texture": "worm:textures/gui/bars/regent_strain.png",
+      "data": "worm:dyn/regent_strain",
+      "condition": "worm:dyn/regent_strain"
     }
   ]
 }

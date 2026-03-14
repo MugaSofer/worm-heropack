@@ -72,6 +72,7 @@
     "tk_grab_ticks": {"type": "INTEGER", "resetWithoutSuit": true},
     "tk_control": {"type": "FLOAT", "resetWithoutSuit": true},
     "tk_control_display": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
+    "regent_strain": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "dog_size": {"type": "FLOAT", "resetWithoutSuit": true},
     "dog_size_timer": {"type": "FLOAT_INTERP", "resetWithoutSuit": true},
     "dog_crouch": {"type": "BOOLEAN", "resetWithoutSuit": true},

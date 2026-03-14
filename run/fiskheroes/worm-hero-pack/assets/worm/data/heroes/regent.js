@@ -16,9 +16,17 @@ var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill
 var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
 var FULL_CONTROL = 1.0;
 
+// Strain (backfire) config
+var STRAIN_BUILD_TK = 0.005;     // per tick while grabbing without full control (~10s to fill)
+var STRAIN_BUILD_NERVE = 0.04;   // per tick while nerve attacking (~1.25s to fill)
+var STRAIN_DRAIN = 0.001;        // per tick while idle (~50s to drain)
+var STRAIN_BACKFIRE_THRESHOLD = 0.5;
+var BACKFIRE_DAMAGE = 2.0;
+
 // Per-entity control map (keyed by entity UUID)
 var controlMap = {};
 var resistMsgCooldown = 0;
+var backfireMsgCooldown = 0;
 
 function init(hero) {
     hero.setName("Regent");
@@ -49,6 +57,15 @@ function init(hero) {
     });
 
     var heroRef = hero;
+    hero.addDamageProfile("BACKFIRE", {
+        "types": {
+            "TELEPATHIC": 1.0
+        },
+        "properties": {
+            "ADD_KNOCKBACK": -0.2
+        }
+    });
+
     hero.setTickHandler(function (entity, manager) {
         team.tick(entity, manager, heroRef);
         var grabId = entity.getData("fiskheroes:grab_id");
@@ -59,6 +76,7 @@ function init(hero) {
             manager.setData(entity, "worm:dyn/tk_cooldown", cooldown - 1);
         }
         if (resistMsgCooldown > 0) resistMsgCooldown--;
+        if (backfireMsgCooldown > 0) backfireMsgCooldown--;
 
         if (grabId > -1) {
             var grabbed = entity.world().getEntityById(grabId);
@@ -86,9 +104,14 @@ function init(hero) {
                     return false;
                 }
 
-                // Anti-lift check
-                var height = heightAboveGround(entity.world(), grabbed.pos());
-                if (height > 1) {
+                // Anti-lift: check if grabbed entity is near ground (including adjacent blocks for edges)
+                var gp = grabbed.pos();
+                var nearGround = heightAboveGround(entity.world(), gp) <= 1
+                    || heightAboveGround(entity.world(), gp.add(1, 0, 0)) <= 1
+                    || heightAboveGround(entity.world(), gp.add(-1, 0, 0)) <= 1
+                    || heightAboveGround(entity.world(), gp.add(0, 0, 1)) <= 1
+                    || heightAboveGround(entity.world(), gp.add(0, 0, -1)) <= 1;
+                if (!nearGround) {
                     manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
                     manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
@@ -130,6 +153,37 @@ function init(hero) {
             var display = entity.getData("worm:dyn/tk_control_display");
             if (display > 0) {
                 manager.setData(entity, "worm:dyn/tk_control_display", 0);
+            }
+        }
+
+        // Strain mechanic: builds while using powers, drains when idle
+        var strain = entity.getData("worm:dyn/regent_strain");
+        var usingTK = grabId > -1;
+        var usingNerve = entity.getData("fiskheroes:heat_vision");
+
+        if (usingTK) {
+            // Full control = less strain (maintaining is easy), partial = more strain (fighting resistance)
+            var grabbed = grabId > -1 ? entity.world().getEntityById(grabId) : null;
+            var hasFullControl = grabbed != null && (controlMap[grabbed.getUUID()] || 0) >= FULL_CONTROL;
+            strain = hasFullControl ? strain : Math.min(0.95, strain + STRAIN_BUILD_TK);
+        } else if (usingNerve) {
+            strain = Math.min(0.95, strain + STRAIN_BUILD_NERVE);
+        } else {
+            strain = Math.max(0, strain - STRAIN_DRAIN);
+        }
+        manager.setData(entity, "worm:dyn/regent_strain", strain);
+
+        // Backfire: above threshold, periodic self-damage while using powers
+        // Interval shrinks as strain increases: 60 ticks at 0.5 → 15 ticks at 0.95
+        if (strain > STRAIN_BACKFIRE_THRESHOLD && (usingTK || usingNerve)) {
+            var intensity = (strain - STRAIN_BACKFIRE_THRESHOLD) / (0.95 - STRAIN_BACKFIRE_THRESHOLD);
+            var interval = Math.max(15, Math.round(60 - intensity * 45));
+            if (entity.ticksExisted() % interval == 0) {
+                entity.hurtByAttacker(heroRef, "BACKFIRE", "%s lost control of their power", BACKFIRE_DAMAGE, entity);
+                if (PackLoader.getSide() == "SERVER" && backfireMsgCooldown <= 0) {
+                    entity.as("PLAYER").addChatMessage("\u00A7c\u00A7o*Your power surges back against you*");
+                    backfireMsgCooldown = 60;
+                }
             }
         }
 
