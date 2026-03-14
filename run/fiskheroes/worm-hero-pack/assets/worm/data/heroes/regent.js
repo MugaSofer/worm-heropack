@@ -13,13 +13,14 @@ function heightAboveGround(world, pos) {
 
 // Control buildup config
 var CONTROL_PER_TICK = 0.0014;  // ~12 grabs to fill (TK)
-var CONTROL_PER_TICK_NERVE = 0.0005;  // ~33 nerve blasts to fill (slower, ranged)
+var CONTROL_PER_NERVE = 0.05;         // per nerve blast hit (~20 hits to fill)
+var NERVE_CONTROL_COOLDOWN = 30;      // ticks between control gains (1.5s)
 var MAX_GRAB_TICKS = 60;        // 3 seconds max grab before full control
 var FULL_CONTROL = 1.0;
 
 // Strain (backfire) config
 var STRAIN_BUILD_TK = 0.003;     // per tick while grabbing without full control (~17s to fill)
-var STRAIN_BUILD_NERVE = 0.025;  // per tick while nerve attacking (~2s to fill)
+var STRAIN_PER_NERVE = 0.12;     // per nerve blast hit (chunked, same cooldown as control)
 var STRAIN_DRAIN = 0.001;        // per tick while idle (~50s to drain)
 var STRAIN_BACKFIRE_THRESHOLD = 0.5;
 var BACKFIRE_DAMAGE = 2.0;
@@ -212,38 +213,45 @@ function init(hero) {
 
         // Strain scales inversely with control over target (1.0 = no control, 0.0 = full control)
         var targetResistance = 1.0;
+        var nerveHit = false;
         if (usingTK && grabId > -1) {
             var strainTarget = entity.world().getEntityById(grabId);
             if (strainTarget != null) targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
         } else if (usingNerve) {
-            // Check nearest entity in beam direction for control level + build control
+            // Find nearest entity in look direction + build control on cooldown
             var nearby = entity.world().getEntitiesInRangeOf(entity.pos(), 10.0);
             var look = entity.getLookVector();
-            var bestDot = 0;
+            var bestDist = 999;
             var nerveTarget = null;
             for (var ni = 0; ni < nearby.length; ni++) {
                 var other = nearby[ni];
                 if (other.getUUID() == entity.getUUID() || !other.isLivingEntity()) continue;
-                var toOther = other.pos().subtract(entity.pos()).normalized();
-                var dot = look.x() * toOther.x() + look.y() * toOther.y() + look.z() * toOther.z();
-                if (dot > 0.95 && dot > bestDot) {
-                    bestDot = dot;
+                var toOther = other.pos().subtract(entity.pos());
+                var dist = other.pos().distanceTo(entity.pos());
+                if (dist < 0.5) continue;
+                var dot = (look.x() * toOther.x() + look.z() * toOther.z()) / dist;
+                if (dot > 0.7 && dist < bestDist) {
+                    bestDist = dist;
                     nerveTarget = other;
                 }
             }
             if (nerveTarget != null) {
                 var nUuid = nerveTarget.getUUID();
-                var nControl = Math.min(FULL_CONTROL, (controlMap[nUuid] || 0) + CONTROL_PER_TICK_NERVE);
-                controlMap[nUuid] = nControl;
-                targetResistance = 1.0 - nControl;
-                if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
+                // Chunked control + strain: one hit per cooldown period
+                if (entity.ticksExisted() % NERVE_CONTROL_COOLDOWN == 0) {
+                    var nControl = Math.min(FULL_CONTROL, (controlMap[nUuid] || 0) + CONTROL_PER_NERVE);
+                    controlMap[nUuid] = nControl;
+                    nerveHit = true;
+                    if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
+                }
+                targetResistance = 1.0 - (controlMap[nUuid] || 0);
             }
         }
 
         if (usingTK) {
             strain = Math.min(0.95, strain + STRAIN_BUILD_TK * targetResistance);
-        } else if (usingNerve) {
-            strain = Math.min(0.95, strain + STRAIN_BUILD_NERVE * targetResistance);
+        } else if (usingNerve && nerveHit) {
+            strain = Math.min(0.95, strain + STRAIN_PER_NERVE * targetResistance);
         } else {
             strain = Math.max(0, strain - STRAIN_DRAIN);
         }
