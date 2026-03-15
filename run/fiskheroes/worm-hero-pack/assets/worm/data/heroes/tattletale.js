@@ -1,4 +1,5 @@
 var team = implement("worm:external/undersiders");
+//var heroData = implement("worm:external/hero_data");
 
 // Thinker Power config
 var SCAN_RANGE = 64;
@@ -10,8 +11,6 @@ var HEADACHE_SCAN_SPIKE = 0.05;
 var HEADACHE_DAMAGE_THRESHOLD = 0.7;
 var DAMAGE_INTERVAL = 40;     // ticks between damage ticks above threshold
 
-var scanTimer = 0;
-var damageTimer = 0;
 var healthCache = {};  // UUID → last health% (session dedup for repeat scans)
 
 // Easter egg insights for known heroes (keyed on hero ID after ":")
@@ -226,32 +225,27 @@ function init(hero) {
 
         if (active) {
             // Build headache passively
-            headache = Math.min(0.95, headache + HEADACHE_BUILD);
+            if (PackLoader.getSide() == "SERVER") {
+                headache = Math.min(0.95, headache + HEADACHE_BUILD);
+            }
 
-            // Periodic scanning
-            scanTimer++;
-            if (scanTimer >= SCAN_INTERVAL) {
-                scanTimer = 0;
+            // Periodic scanning — server only, ticksExisted avoids shared-counter desync
+            if (PackLoader.getSide() == "SERVER" && entity.ticksExisted() % SCAN_INTERVAL == 0) {
                 if (scanTarget(entity, manager)) {
                     headache = entity.getData("worm:dyn/tt_headache");
                 }
             }
 
-            // Damage above threshold
-            if (headache > HEADACHE_DAMAGE_THRESHOLD) {
-                damageTimer++;
-                if (damageTimer >= DAMAGE_INTERVAL) {
-                    damageTimer = 0;
-                    entity.hurtByAttacker(heroRef, "HEADACHE", "%s thought too hard", 1.0, entity);
-                }
-            } else {
-                damageTimer = 0;
+            // Damage above threshold — server only to prevent double damage
+            if (PackLoader.getSide() == "SERVER" && headache > HEADACHE_DAMAGE_THRESHOLD
+                    && entity.ticksExisted() % DAMAGE_INTERVAL == 0) {
+                entity.hurtByAttacker(heroRef, "HEADACHE", "%s thought too hard", 1.0, entity);
             }
         } else {
             // Drain headache
-            headache = Math.max(0, headache - HEADACHE_DRAIN);
-            scanTimer = 0;
-            damageTimer = 0;
+            if (PackLoader.getSide() == "SERVER") {
+                headache = Math.max(0, headache - HEADACHE_DRAIN);
+            }
         }
 
         manager.setData(entity, "worm:dyn/tt_headache", headache);
