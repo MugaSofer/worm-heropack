@@ -365,22 +365,39 @@ A custom Earth Bet pistol (fictional manufacturer — serial numbers filed off).
 
 | Key | Ability | Description |
 |-----|---------|-------------|
-| 1 | Nerve Attack | Invisible beam that disrupts the target's nervous system. Applies Nausea IV, Slowness VI, and Weakness VI for 1 second. |
+| 1 | Nerve Attack | Invisible beam that disrupts the target's nervous system. Applies Nausea IV, Slowness VI, and Weakness VI for 1 second. Also builds control on the target (~20 hits to fill). |
 | 2 | Body Control | Telekinetic grab — seize a mob and puppeteer it. Builds control over repeated grabs. |
 
 #### Body Control Mechanic
 
 Regent's signature ability works through a **control buildup** system:
 
-1. **Grab a mob** (Key 2) — telekinetic hold, range 12 blocks. Mobs only (no items, projectiles, or players).
+1. **Grab a mob** (Key 2) — telekinetic hold, range 32 blocks.
 2. **Control builds** while holding — each tick adds ~0.14% control. The HUD charge bar shows progress.
 3. **Grab duration limited** — before full control, each grab lasts max 3 seconds, then drops with a 2-second cooldown.
 4. **Repeat grabs** — control persists between grabs (tracked per entity UUID). ~12 grabs to reach full control.
 5. **Full control** — once the bar is full, grab duration becomes unlimited. The target is your puppet.
 
-##### Anti-Lift Safety
+Control is saved in the chestplate NBT and persists across sessions.
 
-If a grabbed entity is lifted more than 1 block off the ground, the grab auto-releases with a cooldown. Regent controls bodies, he doesn't levitate them.
+##### Anti-Lift
+
+If a grabbed entity is more than 1 block off the ground, the grab auto-releases with a cooldown. Regent controls bodies, he doesn't levitate them. **Exception:** actively flying targets can be grabbed freely — Regent is seizing control of their body, including their flight.
+
+##### Resistance
+
+Some entities cannot be grabbed at all:
+- **Mindless** (undead, slimes) — no nervous system to hijack
+- **Robots/synthetics** — nothing organic to control
+- **Immune** (magic shields, cosmic entities, gods) — will outright resists control
+
+Non-humanoid targets (mobs without hero suits, or heroes with alien/nonstandard biology) are harder to work with and cause **2× strain**.
+
+#### Strain & Backfire
+
+Using powers builds **strain** — the right HUD bar. Above 50% strain, Regent starts taking periodic self-damage while using powers. The higher the strain, the more frequent the hits.
+
+Strain drains slowly when idle. It builds faster when the target has low control (unfamiliar nervous system) and 2× faster on non-humanoids.
 
 #### Passive Abilities
 
@@ -391,8 +408,7 @@ If a grabbed entity is lifted more than 1 block off the ground, the grab auto-re
 
 - Nerve Attack and Body Control are mutually exclusive — can't use both simultaneously.
 - Nerve Attack is invisible (no beam visual). The target just starts stumbling.
-- The control charge bar only appears while actively grabbing a target.
-- Control buildup persists per entity across sessions — once you've worked on controlling a mob, progress is saved.
+- The control charge bar appears while grabbing, or when looking at any entity you have partial control over.
 
 ---
 

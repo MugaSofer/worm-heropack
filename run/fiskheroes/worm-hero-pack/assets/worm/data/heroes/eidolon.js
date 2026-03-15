@@ -98,6 +98,33 @@ var DEFAULT_POWERS = [0, 4, 8]; // Gravity, Chrono, Dmg Reflect
 var speedster_base = implement("fiskheroes:external/speedster_base");
 var sensor = implement("worm:external/sensor");
 
+// Check if player has a Book and Quill in main inventory (gates debug display)
+function _hasBookAndQuill(entity) {
+    try {
+        var cls = entity.getClass();
+        var mc = null;
+        while (cls != null && mc == null) {
+            try { var f = cls.getDeclaredField("entity"); f.setAccessible(true); mc = f.get(entity); } catch(e) {}
+            cls = cls.getSuperclass();
+        }
+        if (mc == null) return false;
+        var ic = mc.getClass();
+        var inv = null;
+        while (ic != null && inv == null) {
+            try { var fi = ic.getDeclaredField("inventory"); fi.setAccessible(true); inv = fi.get(mc); } catch(e) {}
+            ic = ic.getSuperclass();
+        }
+        if (inv == null) return false;
+        var mf = inv.getClass().getDeclaredField("mainInventory");
+        mf.setAccessible(true);
+        var slots = mf.get(inv);
+        for (var i = 0; i < slots.length; i++) {
+            if (slots[i] != null && slots[i].getItem().getClass().getSimpleName() == "ItemWritableBook") return true;
+        }
+    } catch(e) {}
+    return false;
+}
+
 var heroRef = null;
 var prevHealth = -1;
 var DANGER_SENSE_INTERVAL = 100; // 5 seconds
@@ -436,8 +463,10 @@ function init(hero) {
             var pool = buildNeedsPool(entity, valid);
             var poolNames = [];
             for (var pi = 0; pi < pool.length; pi++) poolNames.push(POWERS[pool[pi]].label);
-            entity.as("PLAYER").addChatMessage("\u00A78[Needs] \u00A77" + needNames.join(", "));
-            entity.as("PLAYER").addChatMessage("\u00A78[Pool] \u00A77" + poolNames.join(", "));
+            if (_hasBookAndQuill(entity)) {
+                entity.as("PLAYER").addChatMessage("\u00A78[Needs] \u00A77" + needNames.join(", "));
+                entity.as("PLAYER").addChatMessage("\u00A78[Pool] \u00A77" + poolNames.join(", "));
+            }
             pushHistory(entity, manager, current);
             // Use setDataWithNotify for immediate sync to client
             manager.setDataWithNotify(entity, SLOT_KEYS[slotIdx], next);
