@@ -98,28 +98,51 @@ var DEFAULT_POWERS = [0, 4, 8]; // Gravity, Chrono, Dmg Reflect
 var speedster_base = implement("fiskheroes:external/speedster_base");
 var sensor = implement("worm:external/sensor");
 
-// Check if player has a Book and Quill in main inventory (gates debug display)
+// Check if player has a Book and Quill anywhere in their inventory (gates debug display).
+// Uses type-based field lookup because vanilla MC field names are SRG-obfuscated in production.
+// Check if player has a Book and Quill anywhere in their inventory (gates debug display).
+// Uses type-based field lookup (field names are SRG-obfuscated); identifies items via toString
+// since getItem() is also obfuscated. ItemStack.toString() returns e.g. "1xitem.writingBook@0".
 function _hasBookAndQuill(entity) {
     try {
-        var cls = entity.getClass();
+        // Get raw EntityPlayerMP via Fisk wrapper's "entity" field (Fisk mod field, not obfuscated)
+        var wc = entity.getClass();
         var mc = null;
-        while (cls != null && mc == null) {
-            try { var f = cls.getDeclaredField("entity"); f.setAccessible(true); mc = f.get(entity); } catch(e) {}
-            cls = cls.getSuperclass();
+        while (wc != null && mc == null) {
+            try { var wf = wc.getDeclaredField("entity"); wf.setAccessible(true); mc = wf.get(entity); } catch(e) {}
+            wc = wc.getSuperclass();
         }
         if (mc == null) return false;
-        var ic = mc.getClass();
+        // Find InventoryPlayer field by type
+        var ec = mc.getClass();
         var inv = null;
-        while (ic != null && inv == null) {
-            try { var fi = ic.getDeclaredField("inventory"); fi.setAccessible(true); inv = fi.get(mc); } catch(e) {}
-            ic = ic.getSuperclass();
+        while (ec != null && inv == null) {
+            var ef = ec.getDeclaredFields();
+            for (var i = 0; i < ef.length; i++) {
+                if (ef[i].getType().getSimpleName() == "InventoryPlayer") {
+                    ef[i].setAccessible(true);
+                    inv = ef[i].get(mc);
+                    break;
+                }
+            }
+            ec = ec.getSuperclass();
         }
         if (inv == null) return false;
-        var mf = inv.getClass().getDeclaredField("mainInventory");
-        mf.setAccessible(true);
-        var slots = mf.get(inv);
-        for (var i = 0; i < slots.length; i++) {
-            if (slots[i] != null && slots[i].getItem().getClass().getSimpleName() == "ItemWritableBook") return true;
+        // Search all ItemStack[] fields; identify items via toString (getItem() is SRG-obfuscated)
+        // ItemStack.toString() returns "{count}x{unlocalizedName}@{damage}", e.g. "1xitem.writingBook@0"
+        var ic = inv.getClass();
+        while (ic != null) {
+            var ifs = ic.getDeclaredFields();
+            for (var j = 0; j < ifs.length; j++) {
+                if (ifs[j].getType().getSimpleName() == "ItemStack[]") {
+                    ifs[j].setAccessible(true);
+                    var slots = ifs[j].get(inv);
+                    for (var k = 0; k < slots.length; k++) {
+                        if (slots[k] != null && ("" + slots[k]).indexOf("writingBook") >= 0) return true;
+                    }
+                }
+            }
+            ic = ic.getSuperclass();
         }
     } catch(e) {}
     return false;
