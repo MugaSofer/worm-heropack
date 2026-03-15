@@ -103,11 +103,11 @@ function init(hero) {
     hero.setTickHandler(function (entity, manager) {
         team.tick(entity, manager, heroRef);
 
-        // Load persistent control map from NBT on first tick
-        if (!controlMapLoaded && PackLoader.getSide() == "SERVER") {
+        // Load persistent control map from NBT on first tick (both sides, for HUD accuracy)
+        if (!controlMapLoaded) {
             loadControlMap(entity);
-            heroData.setup(entity);
             controlMapLoaded = true;
+            heroData.setup(entity);
         }
 
         var grabId = entity.getData("fiskheroes:grab_id");
@@ -124,95 +124,101 @@ function init(hero) {
         if (grabId > -1) {
             var grabbed = entity.world().getEntityById(grabId);
             if (grabbed != null) {
-                // Release entities that resist control
-                var resistance = mc.resistsControl(grabbed);
-                // Hard blocks: mindless mobs, robots, and immune heroes
-                // "resistant", "anatomy", "trained" pass through for now (future: backfire mechanic)
-                if (resistance == "mindless" || resistance == "robot" || resistance == "immune") {
-                    manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
-                    manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
-                    manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
-                    manager.setData(entity, "worm:dyn/tk_cooldown", 40);
-                    manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
-                    if (PackLoader.getSide() == "SERVER" && resistMsgCooldown <= 0) {
-                        var p = entity.as("PLAYER");
-                        if (p != null) {
-                            var msg = resistance == "mindless" ? "No nervous system to hijack."
-                                    : resistance == "immune"  ? "Their mind resists your control."
-                                    : "Nothing organic to control.";
-                            p.addChatMessage("\u00A77\u00A7o" + msg);
-                            resistMsgCooldown = 60;
-                        }
-                    }
-                    return false;
-                }
-
-                // Anti-lift: check if grabbed entity is near ground (including adjacent blocks for edges)
-                // Flying characters can be moved through the air freely
-                var canFly = grabbed.getData("fiskheroes:flying")
-                    || heroData.entityHasModifier(grabbed, "flight");
-                var gp = grabbed.pos();
-                var nearGround = canFly
-                    || heightAboveGround(entity.world(), gp) <= 1
-                    || heightAboveGround(entity.world(), gp.add(1, 0, 0)) <= 1
-                    || heightAboveGround(entity.world(), gp.add(-1, 0, 0)) <= 1
-                    || heightAboveGround(entity.world(), gp.add(0, 0, 1)) <= 1
-                    || heightAboveGround(entity.world(), gp.add(0, 0, -1)) <= 1;
-                if (!nearGround) {
-                    manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
-                    manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
-                    manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
-                    manager.setData(entity, "worm:dyn/tk_cooldown", 40);
-                    manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
-                    return false;
-                }
-
-                // Look up control for this entity
-                var uuid = grabbed.getUUID();
-                var control = controlMap[uuid] || 0;
-
-                // Build up control while grabbing
-                control = Math.min(FULL_CONTROL, control + CONTROL_PER_TICK);
-                controlMap[uuid] = control;
-                if (PackLoader.getSide() == "SERVER") saveControlMap(entity, manager);
-
-                // Mirror to Regent for HUD display
-                manager.setData(entity, "worm:dyn/tk_control_display", control);
-
-                // If not fully controlled, enforce grab duration limit
-                if (control < FULL_CONTROL) {
-                    grabTicks = grabTicks + 1;
-                    manager.setData(entity, "worm:dyn/tk_grab_ticks", grabTicks);
-                    if (grabTicks >= MAX_GRAB_TICKS) {
+                // All grab management is SERVER-only to avoid position desync and cooldown sync issues.
+                // setDataWithNotify propagates releases to clients.
+                if (PackLoader.getSide() == "SERVER") {
+                    // Release entities that resist control
+                    var resistance = mc.resistsControl(grabbed);
+                    if (resistance == "mindless" || resistance == "robot" || resistance == "immune") {
                         manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
                         manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
                         manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
-                        manager.setData(entity, "worm:dyn/tk_cooldown", 40);
+                        manager.setDataWithNotify(entity, "worm:dyn/tk_cooldown", 40);
                         manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
+                        if (resistMsgCooldown <= 0) {
+                            var p = entity.as("PLAYER");
+                            if (p != null) {
+                                var msg = resistance == "mindless" ? "No nervous system to hijack."
+                                        : resistance == "immune"  ? "Their mind resists your control."
+                                        : "Nothing organic to control.";
+                                p.addChatMessage("\u00A77\u00A7o" + msg);
+                                resistMsgCooldown = 60;
+                            }
+                        }
+                        return false;
                     }
+
+                    // Look up control for this entity
+                    var uuid = "" + grabbed.getUUID();
+                    var control = controlMap[uuid] || 0;
+
+                    // Anti-lift: release if target is airborne and not actively flying.
+                    var canFly = grabbed.getData("fiskheroes:flying");
+                    var gp = grabbed.pos();
+                    var nearGround = canFly
+                        || heightAboveGround(entity.world(), gp) <= 1
+                        || heightAboveGround(entity.world(), gp.add(1, 0, 0)) <= 1
+                        || heightAboveGround(entity.world(), gp.add(-1, 0, 0)) <= 1
+                        || heightAboveGround(entity.world(), gp.add(0, 0, 1)) <= 1
+                        || heightAboveGround(entity.world(), gp.add(0, 0, -1)) <= 1;
+                    if (!nearGround) {
+                        manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
+                        manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
+                        manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
+                        manager.setDataWithNotify(entity, "worm:dyn/tk_cooldown", 40);
+                        manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
+                        return false;
+                    }
+
+                    // Build up control while grabbing
+                    var newControl = Math.min(FULL_CONTROL, control + CONTROL_PER_TICK);
+                    controlMap[uuid] = newControl;
+                    if (newControl !== control) {
+                        saveControlMap(entity, manager);
+                    }
+                    control = newControl;
+
+                    // Mirror to Regent for HUD display
+                    manager.setData(entity, "worm:dyn/tk_control_display", control);
+
+                    // If not fully controlled, enforce grab duration limit
+                    if (control < FULL_CONTROL) {
+                        grabTicks = grabTicks + 1;
+                        manager.setData(entity, "worm:dyn/tk_grab_ticks", grabTicks);
+                        if (grabTicks >= MAX_GRAB_TICKS) {
+                            manager.setDataWithNotify(entity, "fiskheroes:telekinesis", false);
+                            manager.setDataWithNotify(entity, "fiskheroes:grab_id", -1);
+                            manager.setDataWithNotify(entity, "fiskheroes:grab_distance", 0);
+                            manager.setDataWithNotify(entity, "worm:dyn/tk_cooldown", 40);
+                            manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
+                        }
+                    }
+                    // If fully controlled, no time limit
                 }
-                // If fully controlled, no time limit
             }
         } else {
             if (grabTicks != 0) {
                 manager.setData(entity, "worm:dyn/tk_grab_ticks", 0);
             }
             // Show control bar for whatever entity we're looking at (if any control exists)
-            var lookControl = 0;
-            var lookNearby = entity.world().getEntitiesInRangeOf(entity.pos(), 32.0);
-            var lookVec = entity.getLookVector();
-            var lookBestDot = 0;
-            for (var li = 0; li < lookNearby.length; li++) {
-                var lookOther = lookNearby[li];
-                if (lookOther.getUUID() == entity.getUUID() || !lookOther.isLivingEntity()) continue;
-                var lookTo = lookOther.pos().subtract(entity.pos()).normalized();
-                var lookDot = lookVec.x() * lookTo.x() + lookVec.y() * lookTo.y() + lookVec.z() * lookTo.z();
-                if (lookDot > 0.95 && lookDot > lookBestDot) {
-                    lookBestDot = lookDot;
-                    lookControl = controlMap[lookOther.getUUID()] || 0;
+            // Client-only: server doesn't need to scan for HUD display
+            if (PackLoader.getSide() != "SERVER") {
+                var lookControl = 0;
+                var lookNearby = entity.world().getEntitiesInRangeOf(entity.pos(), 32.0);
+                var lookVec = entity.getLookVector();
+                var lookBestDot = 0;
+                for (var li = 0; li < lookNearby.length; li++) {
+                    var lookOther = lookNearby[li];
+                    if (lookOther.getUUID() == entity.getUUID() || !lookOther.isLivingEntity()) continue;
+                    var lookTo = lookOther.pos().subtract(entity.pos()).normalized();
+                    var lookDot = lookVec.x() * lookTo.x() + lookVec.y() * lookTo.y() + lookVec.z() * lookTo.z();
+                    if (lookDot > 0.95 && lookDot > lookBestDot) {
+                        lookBestDot = lookDot;
+                        lookControl = controlMap["" + lookOther.getUUID()] || 0;
+                    }
                 }
+                manager.setData(entity, "worm:dyn/tk_control_display", lookControl);
             }
-            manager.setData(entity, "worm:dyn/tk_control_display", lookControl);
         }
 
         // Strain mechanic: builds while using powers, drains when idle
@@ -228,7 +234,7 @@ function init(hero) {
         if (usingTK && grabId > -1) {
             var strainTarget = entity.world().getEntityById(grabId);
             if (strainTarget != null) {
-                targetResistance = 1.0 - Math.min(1.0, controlMap[strainTarget.getUUID()] || 0);
+                targetResistance = 1.0 - Math.min(1.0, controlMap["" + strainTarget.getUUID()] || 0);
                 if (mc.isNonHumanoid(strainTarget)) {
                     strainMultiplier = 2.0;
                     if (PackLoader.getSide() == "SERVER" && nonHumanMsgCooldown <= 0) {
@@ -256,7 +262,7 @@ function init(hero) {
                 }
             }
             if (nerveTarget != null) {
-                var nUuid = nerveTarget.getUUID();
+                var nUuid = "" + nerveTarget.getUUID();
                 nerveTargetControlled = (controlMap[nUuid] || 0) >= FULL_CONTROL;
                 if (mc.isNonHumanoid(nerveTarget)) {
                     strainMultiplier = 2.0;
@@ -292,9 +298,9 @@ function init(hero) {
         if (strain > STRAIN_BACKFIRE_THRESHOLD && (usingTK || usingNerve)) {
             var intensity = (strain - STRAIN_BACKFIRE_THRESHOLD) / (0.95 - STRAIN_BACKFIRE_THRESHOLD);
             var interval = Math.max(15, Math.round(60 - intensity * 45));
-            if (entity.ticksExisted() % interval == 0) {
+            if (entity.ticksExisted() % interval == 0 && PackLoader.getSide() == "SERVER") {
                 entity.hurtByAttacker(heroRef, "BACKFIRE", "%s lost control of their power", BACKFIRE_DAMAGE, entity);
-                if (PackLoader.getSide() == "SERVER" && backfireMsgCooldown <= 0) {
+                if (backfireMsgCooldown <= 0) {
                     entity.as("PLAYER").addChatMessage("\u00A7c\u00A7o*Your power surges back against you*");
                     backfireMsgCooldown = 60;
                 }

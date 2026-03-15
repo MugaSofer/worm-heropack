@@ -1,7 +1,7 @@
 
-#Phase 1 - DONE (for now)
+#Phase 1 - DONE 
 
-Alexandria - DONE (needs polish)
+Alexandria - DONE
 
 - Martial arts attacks 
 	- flurry of blows (toned down version of Invincible's, different animation)?
@@ -67,7 +67,7 @@ Eidolon - MVP done, needs substantial polish
 GENERAL: 
 - Damage numbers - currently tuned for "vanilla" minecraft balance, rather than matching canon. Should we add a toggle? 
 	
-#Phase 4 - UNDERSIDERS
+#Phase 4 - UNDERSIDERS - DONE (MVP)
 
 Grue - DONE
 
@@ -91,11 +91,8 @@ Skitter
 	- Add some way for fire etc. to reduce swarm
 - Swarm sense - DONE
 	- Add deduping to reduce redundant chat spam.
+- More attack modes? Suffocation? 
 - Knife, pepper spray, gun (as items?)
-- Tricks: spells?
-	- Swarm decoys
-	- Blinding
-	- Capsaicin Wasps (reskinned whip)?
 - Sentry Mode for swarm clones? Just spawns a swarm? Can this be done without losing the suit?
 - Spider-man webs? Only for Weaver?
 	- sticky web?
@@ -110,7 +107,9 @@ Regent - DONE (MVP, needs polish)
 
 - TK, but if you try to lift people it fails, v. limited duration? - DONE
 	- You *can* move people in midair if they can fly?
-- Backfires - bar fills up, risk of damage on using power if above 50%. Raises higher when targeting non-humanoids.
+- Backfires - bar fills up, risk of damage on using power if above 50%. - DONE
+	- Raises faster when targeting non-humanoids.
+- Ability to totalle freeze targets once you've assumed full control?
 - Taser staff
 
 Bitch - DONE (MVP, needs polish)
@@ -131,7 +130,7 @@ GENERAL:
 - Add general "Undersider" package. Immune/resistant to Imp's confusion, Skitter's bugs; benefit from Tattletale's buffs. - DONE
 	- Currently a dummy, with the actual effects being in their hero profiles - consolidate?
 
-#Phase 3 - UNDERSIDERS B - DONE
+#Phase 3 - UNDERSIDERS B - DONE (MVP)
 
 Parian
 - Craft costume - primary item. Grants various costumes, including spare costume (standard but 1 item). Canon options include:
@@ -144,6 +143,19 @@ Parian
 
 Foil
 - Massively increased arrow damage with Sting
+
+
+
+
+
+
+
+
+
+
+
+
+Post-Release Possibilities:
 
 #Phase X - WARDS
 
