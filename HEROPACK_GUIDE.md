@@ -2751,6 +2751,53 @@ heroData.addPotionEffect(entity, 16, 200, 0) // night vision, 10s, amp 0
 
 **Flight detection note:** Three flight modifier names exist in the wild: `fiskheroes:controlled_flight` (most common), `fiskheroes:flight` (simple/passive), and `fiskheroes:propelled_flight` (Viltrumites etc.). Use `entityHasModifier(entity, "flight")` — the substring match catches all three. Also check `entity.getData("fiskheroes:flying")` for whether the hero is actively airborne.
 
+#### Accessing Vanilla MC Fields and Items via Reflection
+
+**Field names on vanilla MC classes are SRG-obfuscated in production.** `getDeclaredField("inventory")` will fail silently (exception caught). Use type-based lookup instead — class simple names ARE stable because Forge's runtime deobfuscation preserves them:
+
+```javascript
+// Find InventoryPlayer field by type, not by name
+var ec = mc.getClass();
+var inv = null;
+while (ec != null && inv == null) {
+    var ef = ec.getDeclaredFields();
+    for (var i = 0; i < ef.length; i++) {
+        if (ef[i].getType().getSimpleName() == "InventoryPlayer") {
+            ef[i].setAccessible(true);
+            inv = ef[i].get(mc);
+            break;
+        }
+    }
+    ec = ec.getSuperclass();
+}
+```
+
+**Item type identification:** `ItemStack.getItem()` is also SRG-obfuscated. Use `ItemStack.toString()` instead — it returns `"{count}x{unlocalizedName}@{damage}"` (e.g. `"1xitem.writingBook@0"`):
+
+```javascript
+// Check all ItemStack[] fields in InventoryPlayer for a Book and Quill
+var ic = inv.getClass();
+while (ic != null) {
+    var ifs = ic.getDeclaredFields();
+    for (var j = 0; j < ifs.length; j++) {
+        if (ifs[j].getType().getSimpleName() == "ItemStack[]") {
+            ifs[j].setAccessible(true);
+            var slots = ifs[j].get(inv);
+            for (var k = 0; k < slots.length; k++) {
+                if (slots[k] != null && ("" + slots[k]).indexOf("writingBook") >= 0) {
+                    // found it
+                }
+            }
+        }
+    }
+    ic = ic.getSuperclass();
+}
+```
+
+Known unlocalized item names: `item.writingBook` (Book and Quill), `item.book` (Book), `item.writtenBook` (Written Book).
+
+**Rule of thumb:** Fisk mod fields/classes → use name directly. Vanilla MC fields/methods → use SRG names for methods, type-based lookup for fields, `toString()` for item identification.
+
 ---
 
 ## Appendix B: Tiering & Stat Reference
